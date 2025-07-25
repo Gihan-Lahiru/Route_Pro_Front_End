@@ -1,0 +1,139 @@
+/* === Local Guides Section === */
+.drivers-section {
+  padding: 4rem 1rem;
+  background: #f9fafb; /* subtle modern background */
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* ✅ Correct: centers cards horizontally */
+  gap: 1.5rem;
+}
+
+
+
+
+.driver-card {
+  flex: 0 0 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+
+.driver-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  background: #eaeaea;
+  transition: transform 0.3s ease;
+}
+
+.driver-card:hover .driver-image {
+  transform: scale(1.05);
+}
+
+.price-badge {
+  position: absolute;
+  bottom: 215px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 20px;
+}
+.abvailability-badge {
+  position: absolute;
+  bottom: 160px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 20px;
+}
+
+.badge {
+  position: absolute;
+  top: 10px;
+  padding: 5px 10px;
+  font-size: 11px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #fff;
+}
+
+.badge.verified {
+  right: 10px;
+  background: #00bfa6;
+}
+
+.badge.recommended {
+  left: 10px;
+  background: #f44336;
+}
+
+.card-body {
+  padding: 1rem;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.star {
+  color: #ddd;
+  font-size: 18px;
+  transition: color 0.3s ease;
+}
+
+.star.filled {
+  color: #ffc107;
+}
+
+.reviews {
+  margin-left: 6px;
+  font-size: 13px;
+  color: #555;
+}
+
+.driver-info {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.driver-info li {
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+/* === Responsive improvements === */
+@media (max-width: 768px) {
+  .cards {
+    gap: 1rem;
+  }
+
+  .driver-card {
+    flex: 0 0 250px;
+  }
+
+  .driver-image {
+    height: 180px;
+  }
+
+  .card-body {
+    padding: 0.8rem;
+  }
+}
