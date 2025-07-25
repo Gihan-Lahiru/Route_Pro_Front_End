@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import "./LoginPage.css";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -23,7 +22,7 @@ const LoginPage = () => {
       if (result.success) {
         alert("Login successful!");
 
-        // Optionally store user info in localStorage
+        // Save user info
         localStorage.setItem("userId", result.userId);
         localStorage.setItem("role", result.role);
 
@@ -38,10 +37,10 @@ const LoginPage = () => {
           navigate("/");
         }
       } else {
-        alert("Error: " + result.error);
+        alert("Login failed: " + result.error);
       }
     } catch (error) {
-      alert("Something went wrong. Please try again.");
+      alert("Server error. Please try again later.");
       console.error("Login error:", error);
     }
   };
@@ -87,4 +86,3 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-
