@@ -1,0 +1,40 @@
+.availability-panel {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.available {
+  color: green;
+}
+
+.unavailable {
+  color: red;
+}
+
+.driver-info input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.save-btn {
+  margin-top: 10px;
+  padding: 10px 16px;
+  background-color: #218838;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.toggle-btn {
+  margin-top: 10px;
+  padding: 10px 16px;
+  background-color: #3dc059;
+  color: white;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+}

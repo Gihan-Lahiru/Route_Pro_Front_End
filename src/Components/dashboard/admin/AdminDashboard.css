@@ -1,0 +1,15 @@
+.admin-dashboard {
+  max-width: 1200px;
+  margin: auto;
+  padding: 30px;
+  background-color: #6788ec;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+.admin-dashboard {
+  width: 100%;
+  max-width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: #cea2bc;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}

@@ -1,0 +1,136 @@
+.dashboard {
+  background-color: #f0f4f7;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Header */
+.dashboard h1 {
+  color: #2c3e50;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  color: #606c76;
+  margin-bottom: 20px;
+}
+
+/* Summary Cards Row */
+.summary-row {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.summary-card {
+  flex: 1 1 30%;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  box-sizing: border-box;
+  min-width: 250px;
+}
+
+/* Status Styles */
+.status {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.status.available {
+  color: rgb(58, 138, 58);
+}
+
+.status.unavailable {
+  color: red;
+}
+
+.status-card button {
+  background-color: rgb(40, 206, 40);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.status-card button:hover {
+  background-color: rgb(40, 206, 40);
+}
+
+/* View Toggle Buttons */
+.view-buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  border-radius: 30px;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  max-width: 100%;
+}
+
+.view-buttons button {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  background-color: transparent;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.view-buttons button:hover {
+  background-color: #e6f4e9;
+}
+
+.view-buttons button.active {
+  background-color: #28a745;
+  color: white;
+  font-weight: bold;
+}
+
+/* Section View */
+.view-container {
+  margin-top: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Responsive Tweaks */
+@media (max-width: 768px) {
+  .summary-row {
+    flex-direction: column;
+  }
+
+  .summary-card {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+
+  .view-buttons {
+    flex-direction: column;
+  }
+
+  .view-buttons button {
+    width: 100%;
+    border-top: 1px solid #ddd;
+  }
+
+  .view-buttons button:first-child {
+    border-top: none;
+  }
+
+  .dashboard {
+    padding: 15px;
+  }
+}
