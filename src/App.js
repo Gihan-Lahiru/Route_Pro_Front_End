@@ -16,7 +16,13 @@ import GuideRegistrationForm from "./Components/GuideRegistrationForm";
 import DriverRegistrationForm from "./Components/DriverRegistrationForm";
 import TravelerRegistrationForm from "./Components/TravelerRegistrationForm";
 import LoginPage from "./Components/LoginPage";
-import BookDriver from "./Components/BookDriver"; // BookDriver page
+import BookDriver from "./Components/BookDriver";
+
+// ✅ Import DriverDashboard
+import DriverDashboard from "./dashboard/driver/DriverDashboard/DriverDashboard";
+import GuideDashboard from "./dashboard/guide/GuideDashboard/GuideDashboard";
+import AdminDashboard from "./dashboard/admin/AdminDashboard";
+import TravelerDashboard from "./dashboard/traveler/TravelerDashboard";
 
 // Homepage content extracted as a component so we can use hooks like useNavigate
 const HomePage = () => {
@@ -30,8 +36,6 @@ const HomePage = () => {
         experience local culture, and create unforgettable memories in the Pearl
         of the Indian Ocean.
       </p>
-
-     
 
       <HeroSection />
       <FeaturesSection />
@@ -52,23 +56,22 @@ function App() {
 
         <main style={{ marginTop: "70px" }}>
           <Routes>
-            <Route path="/guide-registration" element={<GuideRegistrationForm />} />
-
-             <Route path="/traveler-register" element={<TravelerRegistrationForm />} />
-
-            <Route path="/driver-registration" element={<DriverRegistrationForm />} />
-
-            <Route path="/user-login" element={<LoginPage />} />
-
             <Route path="/" element={<HomePage />} />
-
+            <Route path="/guide-registration" element={<GuideRegistrationForm />} />
+            <Route path="/traveler-register" element={<TravelerRegistrationForm />} />
+            <Route path="/driver-registration" element={<DriverRegistrationForm />} />
+            <Route path="/user-login" element={<LoginPage />} />
             <Route path="/culture" element={<Cultural />} />
-
-            {/* Route Planner Page */}
             <Route path="/route" element={<RoutePlanner />} />
-
-            {/* Book Driver Page */}
             <Route path="/bookdriver" element={<BookDriver />} />
+
+            {/* ✅ Add driver dashboard route */}
+            <Route path="/driver-dashboard" element={<DriverDashboard />} />
+            <Route path="/guider-dashboard" element={<GuideDashboard />} />
+            <Route path="/admin-dashboard" element={<AdminDashboard />} /> 
+            <Route path="/traveler-dashboard" element={<TravelerDashboard />} />   
+
+
           </Routes>
         </main>
 
