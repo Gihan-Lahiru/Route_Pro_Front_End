@@ -1,31 +1,36 @@
 import React from "react";
 import "./contactus.css";
 
-export default function ContactUs() {
+const ContactUs = () => {
   return (
-    <div className="contact-card">
-      <h3>Contact Us</h3>
+    <div className="contact-container">
+      <header className="contact-header">
+        <h1>Contact Us</h1>
+        <p>We’re here to help you with support, partnerships, security, and investment inquiries.</p>
+      </header>
 
-      <div className="contact-section">
-        <h5>MEMBER RELATIONS AND SUPPORT</h5>
-        <p>support@routepro.com</p>
-      </div>
+      <section className="contact-section">
+        <h2>Member Relations & Support</h2>
+        <p>Email: <strong>support@routepro.com</strong></p>
+      </section>
 
-      <div className="contact-section">
-        <h5>PARTNERSHIPS & BRAND ENQUIRIES</h5>
-        <p>partnerships@routepro.com</p>
-      </div>
+      <section className="contact-section">
+        <h2>Partnerships & Brand Enquiries</h2>
+        <p>Email: <strong>partnerships@routepro.com</strong></p>
+      </section>
 
-      <div className="contact-section">
-        <h5>REPORT A SECURITY ISSUE</h5>
-        <p>security@routepro.com</p>
-      </div>
+      <section className="contact-section">
+        <h2>Report a Security Issue</h2>
+        <p>Email: <strong>security@routepro.com</strong></p>
+      </section>
 
-      <div className="contact-section">
-        <h5>INVESTORS</h5>
-        <p>www.routeproinvest.com</p>
-        <p>investors@routepro.com</p>
-      </div>
+      <section className="contact-section">
+        <h2>Investors</h2>
+        <p>Website: <a href="https://www.routeproinvest.com" target="_blank" rel="noopener noreferrer">www.routeproinvest.com</a></p>
+        <p>Email: <strong>investors@routepro.com</strong></p>
+      </section>
     </div>
   );
-}
+};
+
+export default ContactUs;
