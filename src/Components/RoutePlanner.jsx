@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./RoutePlanner.css";
 import MapComponent from "./MapComponent";
 import { useNavigate } from "react-router-dom";
@@ -17,13 +17,12 @@ const RoutePlanner = () => {
   });
   const [nearbyPlaces, setNearbyPlaces] = useState([]);
 
-  // Vehicle price calculation
   const basePricePerKM = 5;
   const vehicleMultiplier = {
     Bike: 0.8,
     Car: 1.2,
-    Bus: 2.0,
-    "Mini Van": 1.5,
+    "Mini Car": 1.3,
+    "Tuk Tuk": 1.0,
     Van: 1.8,
   };
 
@@ -40,34 +39,37 @@ const RoutePlanner = () => {
       ? (distanceValue * basePricePerKM * (vehicleMultiplier[vehicle] || 1)).toFixed(2)
       : "N/A";
 
-  // 👉 Fetch route info from backend
-  useEffect(() => {
-    if (from && to) {
+  const handleConfirm = () => {
+    if (from && to && vehicle) {
       axios
         .get(`http://localhost/RoutePro/get_route_info.php?from=${from}&to=${to}`)
         .then((res) => {
           if (res.data.status === "success") {
             setRouteDetails({
-              ...routeDetails,
               distance: res.data.data.distance,
               duration: res.data.data.duration,
+              bounds: null,
             });
           } else {
-            setRouteDetails({ ...routeDetails, distance: "", duration: "" });
+            alert("Could not retrieve route information.");
+            setRouteDetails({ distance: "", duration: "", bounds: null });
           }
         })
         .catch((err) => {
-          console.error("Failed to fetch route info", err);
+          console.error("Fetch error:", err);
+          alert("Failed to connect to route service.");
         });
+    } else {
+      alert("Please complete all selections.");
     }
-  }, [from, to]);
+  };
 
   return (
     <div className="route-planner">
-      {/* Sidebar */}
       <div className="sidebar">
-        <div className="card">
-          <h3>Select Destinations</h3>
+        <div className="card combined-input">
+          <h3>Plan Your Route</h3>
+
           <label>From</label>
           <input
             type="text"
@@ -82,12 +84,10 @@ const RoutePlanner = () => {
             value={to}
             onChange={(e) => setTo(e.target.value)}
           />
-        </div>
 
-        <div className="card">
-          <h3>Select Vehicle</h3>
+          <label>Select Vehicle</label>
           <div className="vehicle-options">
-            {["Bike", "Car", "Bus", "Mini Van", "Van"].map((v) => (
+            {["Bike", "Car", "Mini Car", "Tuk Tuk", "Van"].map((v) => (
               <button
                 key={v}
                 className={`vehicle ${vehicle === v ? "active" : ""}`}
@@ -97,6 +97,10 @@ const RoutePlanner = () => {
               </button>
             ))}
           </div>
+
+          <button className="confirm-button" onClick={handleConfirm}>
+            Find The Best Root
+          </button>
         </div>
 
         <div className="card">
@@ -109,16 +113,12 @@ const RoutePlanner = () => {
         <div className="card">
           <h3>Need Assistance?</h3>
           <p>Book a professional driver and local guide for your journey.</p>
-          <button
-            className="book-button"
-            onClick={() => navigate("/bookdriver")}
-          >
+          <button className="book-button" onClick={() => navigate("/bookdriver")}>
             Book Driver & Guide
           </button>
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="main-content">
         <div className="map-placeholder">
           <MapComponent
@@ -146,9 +146,7 @@ const RoutePlanner = () => {
                   )}
                   <h4>{place.name}</h4>
                   <p>{place.types?.[0]}</p>
-                  <span className="rating">
-                    ⭐ {place.rating ? place.rating : "N/A"}
-                  </span>
+                  <span className="rating">⭐ {place.rating || "N/A"}</span>
                 </div>
               ))
             ) : (

@@ -14,7 +14,7 @@
 }
 
 .card {
-  background-color: #98b49e;
+  background-color: #a1dbae;
   border-radius: 10px;
   padding: 15px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
@@ -30,6 +30,11 @@
   margin: 5px 0 10px;
 }
 
+.combined-input label {
+  margin-top: 10px;
+  display: block;
+}
+
 .vehicle-options {
   display: flex;
   flex-wrap: wrap;
@@ -43,6 +48,23 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.vehicle.active {
+  background: #007bff;
+  color: white;
+}
+
+.confirm-button {
+  margin-top: 15px;
+  background-color: #007bff;
+  color: white;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  font-weight: bold;
 }
 
 .book-button {
@@ -91,17 +113,6 @@
   text-align: center;
 }
 
-.image-placeholder {
-  background-color: #ccc;
-  height: 100px;
-  margin-bottom: 10px;
-}
-
-.rating {
-  font-weight: bold;
-  color: #f39c12;
-}
-
 .attraction-image {
   width: 100%;
   height: 150px;
@@ -109,8 +120,18 @@
   border-radius: 8px;
   margin-bottom: 0.5rem;
 }
-.vehicle.active {
-  background: #007bff;
-  color: white;
+
+.no-photo {
+  height: 150px;
+  background-color: #ccc;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
 }
 
+.rating {
+  font-weight: bold;
+  color: #f39c12;
+}

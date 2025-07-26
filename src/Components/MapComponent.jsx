@@ -1,12 +1,5 @@
-// src/Components/MapComponent.jsx
-
 import React, { useState, useEffect, useRef } from "react";
-import {
-  GoogleMap,
-  LoadScript,
-  DirectionsService,
-  DirectionsRenderer,
-} from "@react-google-maps/api";
+import { GoogleMap, LoadScript, DirectionsRenderer } from "@react-google-maps/api";
 
 const containerStyle = {
   width: "100%",
@@ -15,8 +8,8 @@ const containerStyle = {
 };
 
 const center = {
-  lat: 6.9271, // Colombo
-  lng: 79.8612,
+  lat: 7.8731,  // Sri Lanka latitude
+  lng: 80.7718  // Sri Lanka longitude
 };
 
 const MapComponent = ({ origin, destination, setRouteDetails, setNearbyPlaces }) => {
@@ -25,76 +18,70 @@ const MapComponent = ({ origin, destination, setRouteDetails, setNearbyPlaces })
 
   useEffect(() => {
     if (origin && destination) {
-      setDirections(null);
-    }
-  }, [origin, destination]);
+      const directionsService = new window.google.maps.DirectionsService();
 
-  const directionsCallback = (result, status) => {
-    if (status === "OK") {
-      setDirections(result);
+      directionsService.route(
+        {
+          origin,
+          destination,
+          travelMode: window.google.maps.TravelMode.DRIVING
+        },
+        (result, status) => {
+          if (status === "OK") {
+            setDirections(result);
 
-      const route = result.routes[0].legs[0];
-      const bounds = result.routes[0].bounds;
+            const route = result.routes[0].legs[0];
+            const bounds = result.routes[0].bounds;
 
-      setRouteDetails({
-        distance: route.distance.text,
-        duration: route.duration.text,
-        bounds: bounds,
-      });
+            setRouteDetails({
+              distance: route.distance.text,
+              duration: route.duration.text,
+              bounds: bounds,
+            });
 
-      // Find the mid-point for Nearby Search
-      const midLat = (route.start_location.lat() + route.end_location.lat()) / 2;
-      const midLng = (route.start_location.lng() + route.end_location.lng()) / 2;
+            // Calculate midpoint for nearby places
+            const midLat = (route.start_location.lat() + route.end_location.lat()) / 2;
+            const midLng = (route.start_location.lng() + route.end_location.lng()) / 2;
 
-      const service = new window.google.maps.places.PlacesService(mapRef.current);
+            const service = new window.google.maps.places.PlacesService(mapRef.current);
 
-      const request = {
-        location: { lat: midLat, lng: midLng },
-        radius: 20000, // 20km radius
-        type: ["tourist_attraction"],
-      };
+            const request = {
+              location: { lat: midLat, lng: midLng },
+              radius: 20000, // 20km
+              type: ["tourist_attraction"],
+            };
 
-      service.nearbySearch(request, (results, placesStatus) => {
-        if (placesStatus === window.google.maps.places.PlacesServiceStatus.OK) {
-          setNearbyPlaces(results);
-        } else {
-          console.error("Places request failed: ", placesStatus);
-          setNearbyPlaces([]);
+            // Uncomment to fetch places
+            // try{
+            //   service.nearbySearch(request, (results, placesStatus) => {
+            //   if (placesStatus === window.google.maps.places.PlacesServiceStatus.OK) {
+            //     setNearbyPlaces(results);
+            //   } else {
+            //     console.error("Places request failed: ", placesStatus);
+            //     setNearbyPlaces([]);
+            //   }
+            // });
+            // }catch(err){
+            //   console.log(err);
+            // }
+          } else {
+            console.error("Directions request failed due to: " + status);
+            setRouteDetails({ distance: "", duration: "", bounds: null });
+            setNearbyPlaces([]);
+          }
         }
-      });
-
-    } else {
-      console.error("Directions request failed due to: " + status);
-      setRouteDetails({
-        distance: "",
-        duration: "",
-        bounds: null,
-      });
-      setNearbyPlaces([]);
+      );
     }
-  };
+  }, [origin, destination, setRouteDetails, setNearbyPlaces]);
 
   return (
-    <LoadScript
-      googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
-      libraries={["places"]}
-    >
+    <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY} libraries={["places"]}>
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
         zoom={7}
         onLoad={(map) => (mapRef.current = map)}
       >
-        {origin && destination && (
-          <DirectionsService
-            options={{
-              destination: destination,
-              origin: origin,
-              travelMode: "DRIVING",
-            }}
-            callback={directionsCallback}
-          />
-        )}
         {directions && <DirectionsRenderer directions={directions} />}
       </GoogleMap>
     </LoadScript>
