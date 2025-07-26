@@ -10,7 +10,7 @@ const AboutUs = () => {
       </header>
 
       <section className="aboutus-section">
-  <h2>🌍 Get to Know Us</h2>
+  <h2>Get to Know Us</h2>
   <p>
     <strong>RoutePro</strong> is an all-in-one digital trip planning platform designed to make exploring Sri Lanka seamless, scenic, and culturally immersive. Whether you're mapping out a road trip, booking trusted local services, or uncovering hidden gems across the island, RoutePro simplifies every step — from route planning and vehicle booking to food trails and festival highlights.
   </p>
@@ -18,14 +18,14 @@ const AboutUs = () => {
 
 
       <section className="aboutus-section">
-        <h2>🎯 Our Mission</h2>
+        <h2>Our Mission</h2>
         <p>
           To develop a unified, user-friendly travel planner that streamlines journey planning and promotes immersive cultural experiences across Sri Lanka.
         </p>
       </section>
 
       <section className="aboutus-section">
-        <h2>📌 Our Objectives</h2>
+        <h2>Our Objectives</h2>
         <ul>
           <li>Centralize route planning, vehicle booking, guide services, and sightseeing discovery</li>
           <li>Provide flexible, budget-conscious travel packages for different user preferences</li>

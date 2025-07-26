@@ -46,10 +46,11 @@
   margin-bottom: 0.75rem;
   padding-left: 1.5em;
   position: relative;
+   list-style-type: disc;
 }
 
 .aboutus-section ul li::before {
-  content: "🌟";
+
   position: absolute;
   left: 0;
 }
