@@ -19,10 +19,14 @@ import LoginPage from "./Components/LoginPage";
 import BookDriver from "./Components/BookDriver";
 
 // ✅ Import DriverDashboard
-import DriverDashboard from "./dashboard/driver/DriverDashboard/DriverDashboard";
-import GuideDashboard from "./dashboard/guide/GuideDashboard/GuideDashboard";
-import AdminDashboard from "./dashboard/admin/AdminDashboard";
-import TravelerDashboard from "./dashboard/traveler/TravelerDashboard";
+import DriverDashboard from "./Components/dashboard/driver/DriverDashboard/DriverDashboard";
+import GuideDashboard from "./Components/dashboard/guide/GuideDashboard/GuideDashboard";
+import AdminDashboard from "./Components/dashboard/admin/AdminDashboard";
+import TravelerDashboard from "./Components/dashboard/traveler/TravelerDashboard";
+import AboutUs from "./Components/AboutUs";
+import TermsCondition from "./Components/TermsConditions";
+import PrivacyPolicy from "./Components/PrivacyPolicy";
+import ContactUs from "./Components/ContactUs";
 
 // Homepage content extracted as a component so we can use hooks like useNavigate
 const HomePage = () => {
@@ -32,7 +36,7 @@ const HomePage = () => {
     <>
       <h1 className="highlight">Discover Sri Lanka Like Never Before</h1>
       <p>
-        Plan nawo perfect journey with optimized routes, discover hidden gems,
+        Plan  perfect journey with optimized routes, discover hidden gems,
         experience local culture, and create unforgettable memories in the Pearl
         of the Indian Ocean.
       </p>
@@ -65,13 +69,20 @@ function App() {
             <Route path="/route" element={<RoutePlanner />} />
             <Route path="/bookdriver" element={<BookDriver />} />
 
-            {/* ✅ Add driver dashboard route */}
+            {/* Add driver dashboard route */}
             <Route path="/driver-dashboard" element={<DriverDashboard />} />
             <Route path="/guider-dashboard" element={<GuideDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} /> 
             <Route path="/traveler-dashboard" element={<TravelerDashboard />} />   
 
-
+             { /*about us*/}
+               <Route path="/aboutus" element={<AboutUs />} />  
+               { /*termsconditions*/}
+               <Route path="/termsconditions" element={<TermsCondition/>} />  
+                { /*privacypolicty*/}
+                <Route path="/privacypolicy" element={<PrivacyPolicy/>} />  
+                { /*contactus*/}
+                <Route path="/contactus" element={<ContactUs/>} />  
           </Routes>
         </main>
 

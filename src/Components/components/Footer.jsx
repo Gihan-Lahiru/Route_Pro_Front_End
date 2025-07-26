@@ -49,6 +49,24 @@ const Footer = () => {
           </ul>
         </div>
 
+        <div className="footer-section info">
+          <h4>Information</h4>
+          <ul>
+            <li>
+              <a href="#">About Us</a>
+            </li>
+            <li>
+              <a href="#">Terms and Conditions</a>
+            </li>
+            <li>
+              <a href="#">Privacy Policy</a>
+            </li>
+            <li>
+              <a href="#">Contact Us</a>
+            </li>
+          </ul>
+        </div>
+
         <div className="footer-section contact">
           <h4>Contact</h4>
           <p>
@@ -58,9 +76,15 @@ const Footer = () => {
             <FaPhoneAlt className="icon" /> +94 11 234 567
           </p>
         </div>
+
+        <div className="footer-bottom">
+      <p>
+        © 2025 RoutePro All Rights Reserved.
+     </p>
+        </div>
       </div>
     </footer>
   );
 };
 
-export default Footer;
+export default Footer;

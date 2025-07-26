@@ -1,57 +1,54 @@
 import React from 'react';
 import './PopularDestinations.css';
-
-import { FaStar, FaMapMarkerAlt } from 'react-icons/fa';
-
+import { FaMapMarkerAlt } from 'react-icons/fa';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import { Navigation, Pagination } from 'swiper/modules';
 
 const destinations = [
   {
     name: "Sigiriya Rock Fortress",
     province: "Central Province",
-    rating: 4.9,
-    image: "/images/sigiriya.jpeg", 
+    image: "/images/sigiriya.jpeg",
     description: "Ancient palace built on a massive rock formation with stunning views and historical significance.",
     tags: ["UNESCO World Heritage", "Ancient Frescoes", "Lion's Gate"]
   },
   {
     name: "Ella Rock",
     province: "Uva Province",
-    rating: 4.8,
-    image: "/images/ella.jpeg", 
+    image: "/images/ella.jpeg",
     description: "Breathtaking hiking destination with panoramic views of tea plantations and valleys.",
     tags: ["Hiking Trails", "Tea Plantations", "Nine Arch Bridge"]
   },
   {
     name: "Yala National Park",
     province: "Southern Province",
-    rating: 4.9,
-    image: "/images/yala.jpeg", 
+    image: "/images/yala.jpeg",
     description: "Premier wildlife sanctuary famous for leopards, elephants, and diverse bird species.",
     tags: ["Wildlife Safari", "Leopard Spotting", "Bird Watching"]
   },
   {
-    name: "Temple of thr Tooth",
+    name: "Temple of the Tooth",
     province: "Central Province",
-    rating: 4.9,
     image: "/images/temple.jpeg",
     description: "Sacred Buddhist temple housing the relic of Buddha's tooth, a UNESCO World Heritage site.",
     tags: ["Buddhist Temple", "Cultural Heritage", "Sacred Relic"]
   },
   {
-    name: "Yala National Park",
+    name: "Mirissa Beach",
     province: "Southern Province",
-    rating: 4.9,
-    image: "/images/yala.jpeg", 
-    description: "Premier wildlife sanctuary famous for leopards, elephants, and diverse bird species.",
-    tags: ["Wildlife Safari", "Leopard Spotting", "Bird Watching"]
+    image: "/images/mirissa.jpeg",
+    description: "Stunning tropical beach ideal for surfing, whale watching, and relaxing under the sun.",
+    tags: ["Beach", "Surfing", "Whale Watching"]
   },
   {
-    name: "Temple of thr Tooth",
+    name: "Horton Plains",
     province: "Central Province",
-    rating: 4.9,
-    image: "/images/temple.jpeg",
-    description: "Sacred Buddhist temple housing the relic of Buddha's tooth, a UNESCO World Heritage site.",
-    tags: ["Buddhist Temple", "Cultural Heritage", "Sacred Relic"]
+    image: "/images/horton.jpeg",
+    description: "Scenic national park featuring montane grasslands and dramatic drop-offs like World's End.",
+    tags: ["Nature Trails", "World's End", "Baker's Falls"]
   }
 ];
 
@@ -65,37 +62,45 @@ const PopularDestinations = () => {
         Explore the most beloved destinations in Sri Lanka, carefully curated for unforgettable experiences and cultural immersion.
       </p>
 
-      <div className="cards-container">
+      <Swiper
+        modules={[Navigation, Pagination]}
+        slidesPerView={4}
+        spaceBetween={20}
+        navigation
+        pagination={{ clickable: true }}
+        breakpoints={{
+          1024: { slidesPerView: 4 },
+          768: { slidesPerView: 2 },
+          0: { slidesPerView: 1 },
+        }}
+      >
         {destinations.map((item, index) => (
-          <div className="destination-card" key={index}>
-            <div
-              className="destination-image"
-              style={{ backgroundImage: `url(${item.image})` }}
-            >
-              <div className="rating-badge">
-                <FaStar className="star" /> {item.rating}
+          <SwiperSlide key={index}>
+            <div className="destination-card">
+              <div
+                className="destination-image"
+                style={{ backgroundImage: `url(${item.image})` }}
+              >
+                <div className="destination-title">
+                  <h2>{item.name}</h2>
+                  <p>
+                    <FaMapMarkerAlt />{" "}
+                    <strong className="province-highlight">{item.province}</strong>
+                  </p>
+                </div>
               </div>
-              <div className="destination-title">
-                <h2>{item.name}</h2>
-                <p><FaMapMarkerAlt /> <strong className="province-highlight">{item.province}</strong></p>
-
+              <div className="destination-body">
+                <p>{item.description}</p>
+                <div className="tags">
+                  {item.tags.map((tag, idx) => (
+                    <span className="tag" key={idx}>{tag}</span>
+                  ))}
+                </div>
               </div>
             </div>
-            <div className="destination-body">
-              <p>{item.description}</p>
-              <div className="tags">
-                {item.tags.map((tag, idx) => (
-                  <span className="tag" key={idx}>{tag}</span>
-                ))}
-              </div>
-              <button className="learn-more-btn">Learn More →</button>
-            </div>
-          </div>
+          </SwiperSlide>
         ))}
-      </div>
-      <div>
-              <button className="learn-more-btn">Explore All Destinations →</button>
-            </div>
+      </Swiper>
     </div>
   );
 };

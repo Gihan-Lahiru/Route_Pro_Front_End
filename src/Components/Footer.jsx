@@ -8,7 +8,6 @@ import {
   FaEnvelope,
   FaPhoneAlt,
 } from "react-icons/fa";
-import { Link } from "react-router-dom"; // ✅ Import Link
 
 const Footer = () => {
   return (
@@ -36,16 +35,34 @@ const Footer = () => {
           <h4>Quick Links</h4>
           <ul>
             <li>
-              <Link to="/route">Route Planning</Link>
+              <a href="#">Route Planning</a>
             </li>
             <li>
-              <Link to="/attractions">Attractions</Link>
+              <a href="#">Attractions</a>
             </li>
             <li>
-              <Link to="/culture">Culture</Link> {/* ✅ Use React Router Link */}
+              <a href="#">Culture</a>
             </li>
             <li>
-              <Link to="/packages">Packages</Link>
+              <a href="#">Packages</a>
+            </li>
+          </ul>
+        </div>
+
+        <div className="footer-section info">
+          <h4>Information</h4>
+          <ul>
+            <li>
+              <a href="aboutus">About Us</a>
+            </li>
+            <li>
+              <a href="termsconditions">Terms and Conditions</a>
+            </li>
+            <li>
+              <a href="privacypolicy">Privacy Policy</a>
+            </li>
+            <li>
+              <a href="contactus">Contact Us</a>
             </li>
           </ul>
         </div>
@@ -59,9 +76,15 @@ const Footer = () => {
             <FaPhoneAlt className="icon" /> +94 11 234 567
           </p>
         </div>
+
+        <div className="footer-bottom">
+      <p>
+        © 2025 RoutePro All Rights Reserved.
+     </p>
+        </div>
       </div>
     </footer>
   );
 };
 
-export default Footer;
+export default Footer;
