@@ -4,15 +4,15 @@ import './DriverHeader.css';
 const DriverHeader = ({ status }) => {
   return (
     <div className="driver-header">
-      <img src="/pic.jpg" alt="Driver" className="driver-photo" />
+      <img src="images/guide1.jpg" alt="Driver" className="driver-photo" />
 
       <div className="driver-info">
-        <h2>Michael Rodriguez</h2>
+        <h2>Saman Kumara</h2>
         <p>⭐ 4.7 (1247 rides)</p>
-        <p><strong>Vehicle:</strong> Honda Civic 2022 — ABC-1234</p>
-        <p><strong>Location:</strong> Downtown Area</p>
-        <p><strong>Member Since:</strong> March 2022</p>
-        <p><strong>Contact:</strong> +1 (555) 123-4567 | michael.r@driver.com</p>
+        <p><strong>Vehicle:</strong> Honda Civic 2022</p>
+        <p><strong>Location:</strong> Galle</p>
+        <p><strong>Member Since:</strong> March 2025</p>
+        <p><strong>Contact:</strong> 077-5676123 | michael.r@driver.com</p>
         <div className="status-display">
           <span>Status: </span>
           <span className={`status-label ${status.toLowerCase()}`}>{status}</span>

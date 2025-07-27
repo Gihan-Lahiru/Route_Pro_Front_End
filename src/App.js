@@ -60,7 +60,7 @@ function App() {
 
         <main style={{ marginTop: "70px" }}>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+             <Route path="/homepage" element={<HomePage />} />
             <Route path="/guide-registration" element={<GuideRegistrationForm />} />
             <Route path="/traveler-register" element={<TravelerRegistrationForm />} />
             <Route path="/driver-registration" element={<DriverRegistrationForm />} />
@@ -71,7 +71,7 @@ function App() {
 
             {/* Add driver dashboard route */}
             <Route path="/driver-dashboard" element={<DriverDashboard />} />
-            <Route path="/guider-dashboard" element={<GuideDashboard />} />
+            <Route path="/guide-dashboard" element={<GuideDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} /> 
             <Route path="/traveler-dashboard" element={<TravelerDashboard />} />   
 
@@ -83,7 +83,9 @@ function App() {
                 <Route path="/privacypolicy" element={<PrivacyPolicy/>} />  
                 { /*contactus*/}
                 <Route path="/contactus" element={<ContactUs/>} />  
-          </Routes>
+
+                 </Routes>
+
         </main>
 
         <Footer />

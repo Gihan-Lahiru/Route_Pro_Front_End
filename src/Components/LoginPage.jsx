@@ -12,7 +12,7 @@ const LoginPage = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost/Routepro/login.php", {
+      const response = await axios.post("http://localhost/RoutePro-backend/login.php", {
         email,
         password,
       });

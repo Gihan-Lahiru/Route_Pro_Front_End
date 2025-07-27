@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import './GuideRegistrationForm.css';
 import axios from 'axios';
 
+
+const rootUrl = process.env.REACT_APP_API_URL;
+
 export default function GuideRegistrationForm() {
   const [form, setForm] = useState({
     fullName: '',
@@ -36,7 +39,9 @@ export default function GuideRegistrationForm() {
     }
 
     try {
-      const response = await axios.post('http://localhost/Routepro/signup_guide.php', form);
+      const response = await axios.post(
+        `${rootUrl}/signup_guide.php`,
+      );
 
       if (response.data.success) {
         alert('Guide registered successfully!');

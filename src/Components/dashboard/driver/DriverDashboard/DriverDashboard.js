@@ -1,23 +1,33 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';  // <-- Import useNavigate
 import TripDetails from '../TripDetails/TripDetails';
 import Availability from '../../admin/Availability/Availability';
 import ReviewsPanel from '../ReviewsPanel/ReviewsPanel';
 import './DriverDashboard.css';
 import DriverHeader from '../DriverHeader/DriverHeader';
 
-
-
 const DriverDashboard = () => {
   const [status, setStatus] = useState('Available');
   const [activeView, setActiveView] = useState('trip');
+  const navigate = useNavigate();  // <-- Initialize navigate
+
+  const handleLogout = () => {
+    // Add logout logic here if needed (e.g., clearing tokens)
+    navigate('/homepage');  // Redirect to /homepage on logout
+  };
 
   return (
     <div className="dashboard">
-      <h1>Welcome back, Michael!</h1>
-      <p className="subtitle">Manage your trips, availability and reviews.</p>
+      {/* Header with Welcome Text + Logout */}
+      <div className="dashboard-header">
+        <div className="welcome-section">
+          <h1>Welcome back, Saman!</h1>
+          <p className="subtitle">Manage your trips, availability and reviews.</p>
+        </div>
+        <button className="action-button" onClick={handleLogout}>Log Out</button>  {/* Updated here */}
+      </div>
 
-
-    <DriverHeader status={status} setStatus={setStatus} />
+      <DriverHeader status={status} setStatus={setStatus} />
 
       {/* Summary Row */}
       <div className="summary-row">
