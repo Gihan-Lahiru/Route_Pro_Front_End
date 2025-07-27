@@ -36,7 +36,7 @@ export default function GuideRegistrationForm() {
     }
 
     try {
-      const response = await axios.post('http://localhost/Routepro/signup_guide.php', form);
+      const response = await axios.post('http://localhost/RoutePro-backend/signup_guide.php', form);
 
       if (response.data.success) {
         alert('Guide registered successfully!');
