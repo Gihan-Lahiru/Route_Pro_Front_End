@@ -1,24 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import { Button } from "react-bootstrap";
-import "./Header.css";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import { FaUserCircle } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom"; // ✅ added useNavigate
+import { Link, useNavigate } from "react-router-dom";
+import "./Header.css";
 
 export default function Header() {
-  const navigate = useNavigate(); // ✅ initialize the hook
+  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
 
-  const handleJoinClick = () => {
-    navigate("/register"); // ✅ navigate to your registration route
+  const handleJoinClick = () => setShowModal(true);
+  const handleClose = () => setShowModal(false);
+
+  const handleJoinAs = (role) => {
+    if (role === "traveler") navigate("/traveler-register");
+    else if (role === "driver") navigate("/driver-registration");
+    else if (role === "guider") navigate("/guide-registration");
+    setShowModal(false); // close modal after navigation
   };
 
   return (
-    <div>
+    <>
       <Navbar collapseOnSelect expand="lg" fixed="top" className="header-navbar">
         <Container>
-          {/* ✅ Logo links to Home */}
           <Link to="/">
             <img src="new logo.png" alt="Logo" className="routeprologo" />
           </Link>
@@ -41,22 +48,59 @@ export default function Header() {
             </Nav>
 
             <Nav className="topnav-right">
-              <Button className="topnav-button" variant="outline-success"
+              <Button
+                className="topnav-button"
+                variant="outline-success"
                 onClick={() => navigate("/user-login")}
-                >Login
+              >
+                Login
               </Button>
-             <Button
-  className="topnav-button"
-  variant="outline-success"
-  onClick={() => navigate("/traveler-register")}
->
-  Join
-</Button>
+
+              <Button
+                className="topnav-button"
+                variant="outline-success"
+                onClick={handleJoinClick}
+              >
+                Join
+              </Button>
+
               <FaUserCircle className="user-icon" />
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
-    </div>
+
+      {/* Join Modal */}
+      <Modal show={showModal} onHide={handleClose} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Join as</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="join-options">
+            <Button
+              variant="dark"
+              className="w-100 my-2"
+              onClick={() => handleJoinAs("traveler")}
+            >
+              Traveler
+            </Button>
+            <Button
+              variant="dark"
+              className="w-100 my-2"
+              onClick={() => handleJoinAs("driver")}
+            >
+              Driver
+            </Button>
+            <Button
+              variant="dark"
+              className="w-100 my-2"
+              onClick={() => handleJoinAs("guider")}
+            >
+              Guide
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
+    </>
   );
 }
