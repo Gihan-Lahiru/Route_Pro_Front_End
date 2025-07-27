@@ -26,7 +26,7 @@ export default function Header() {
     <>
       <Navbar collapseOnSelect expand="lg" fixed="top" className="header-navbar">
         <Container>
-          <Link to="/">
+          <Link to="/homepage">
             <img src="new logo.png" alt="Logo" className="routeprologo" />
           </Link>
 
@@ -35,7 +35,7 @@ export default function Header() {
             <Nav className="me-auto"></Nav>
             <Nav>
               <img src="home.png" alt="Home Icon" className="topnav-logo" />
-              <Nav.Link as={Link} to="/">Home</Nav.Link>
+              <Nav.Link as={Link} to="/homepage">Home</Nav.Link>
 
               <img src="navigation.png" alt="Route Icon" className="topnav-logo" />
               <Nav.Link as={Link} to="/route">Route</Nav.Link>
