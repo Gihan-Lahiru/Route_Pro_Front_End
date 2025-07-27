@@ -36,7 +36,7 @@ export default function DriverRegistrationForm() {
     }
 
     try {
-      const response = await axios.post("http://localhost/Routepro/signup_driver.php", form);
+      const response = await axios.post("http://localhost/RoutePro-backend/signup_driver.php", form);
 
       console.log("Server Response:", response.data);
 
