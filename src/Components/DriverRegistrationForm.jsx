@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './DriverRegistrationForm.css';
 import axios from 'axios';
 
+
 export default function DriverRegistrationForm() {
   const [form, setForm] = useState({
     fullName: '',
@@ -35,7 +36,7 @@ export default function DriverRegistrationForm() {
     }
 
     try {
-      const response = await axios.post("http://localhost/Routepro/signup_driver.php", form);
+      const response = await axios.post("http://localhost/RoutePro-backend/signup_driver.php", form);
 
       console.log("Server Response:", response.data);
 

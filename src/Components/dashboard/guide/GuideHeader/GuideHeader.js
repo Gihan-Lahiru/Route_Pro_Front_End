@@ -4,7 +4,7 @@ import './GuideHeader.css';
 const GuideHeader = ({ status }) => {
   return (
     <div className="driver-header">
-      <img src="/pic.jpg" alt="Driver" className="driver-photo" />
+      <img src="images/guide2.jpg" alt="Driver" className="driver-photo" />
 <div className="guide-info">
   <h2>Chamari Perera</h2>
   <p>⭐ 4.9 (362 tours)</p>

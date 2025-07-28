@@ -139,3 +139,25 @@ ul {
   font-size: 0.85rem;
   color: #3c3f58;
 }
+/* This class aligns the welcome text and logout button in one row */
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/* Optional: style for the logout button (you can keep using .action-button from earlier) */
+.action-button {
+  padding: 8px 16px;
+  background-color: #ff5c5c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.action-button:hover {
+  background-color: #e64545;
+}

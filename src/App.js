@@ -9,6 +9,7 @@ import BecomeProviderSection from "./Components/BecomeProviderSection";
 import LocalEventsFoods from "./Components/LocalEventsFoods";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import Cultural from "./Components/Cultural";
+import BudgetSelection from "./Components/BudgetSelection";
 import RoutePlanner from "./Components/RoutePlanner";
 import ScrollToTop from "./Components/ScrollToTop";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -18,17 +19,18 @@ import TravelerRegistrationForm from "./Components/TravelerRegistrationForm";
 import LoginPage from "./Components/LoginPage";
 import BookDriver from "./Components/BookDriver";
 
-// ✅ Import DriverDashboard
+// ✅ Dashboards
 import DriverDashboard from "./Components/dashboard/driver/DriverDashboard/DriverDashboard";
 import GuideDashboard from "./Components/dashboard/guide/GuideDashboard/GuideDashboard";
 import AdminDashboard from "./Components/dashboard/admin/AdminDashboard";
 import TravelerDashboard from "./Components/dashboard/traveler/TravelerDashboard";
+
 import AboutUs from "./Components/AboutUs";
 import TermsCondition from "./Components/TermsConditions";
 import PrivacyPolicy from "./Components/PrivacyPolicy";
 import ContactUs from "./Components/ContactUs";
 
-// Homepage content extracted as a component so we can use hooks like useNavigate
+// ✅ Homepage content as a separate component
 const HomePage = () => {
   const navigate = useNavigate();
 
@@ -36,7 +38,7 @@ const HomePage = () => {
     <>
       <h1 className="highlight">Discover Sri Lanka Like Never Before</h1>
       <p>
-        Plan  perfect journey with optimized routes, discover hidden gems,
+        Plan your perfect journey with optimized routes, discover hidden gems,
         experience local culture, and create unforgettable memories in the Pearl
         of the Indian Ocean.
       </p>
@@ -54,35 +56,35 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
-
       <div className="App">
         <Header />
 
         <main style={{ marginTop: "70px" }}>
           <Routes>
+            {/* ✅ This makes the homepage show by default */}
             <Route path="/" element={<HomePage />} />
+
+            {/* Other pages */}
             <Route path="/guide-registration" element={<GuideRegistrationForm />} />
             <Route path="/traveler-register" element={<TravelerRegistrationForm />} />
             <Route path="/driver-registration" element={<DriverRegistrationForm />} />
             <Route path="/user-login" element={<LoginPage />} />
             <Route path="/culture" element={<Cultural />} />
+            <Route path="/budget" element={<BudgetSelection />} />
             <Route path="/route" element={<RoutePlanner />} />
             <Route path="/bookdriver" element={<BookDriver />} />
 
-            {/* Add driver dashboard route */}
+            {/* Dashboards */}
             <Route path="/driver-dashboard" element={<DriverDashboard />} />
-            <Route path="/guider-dashboard" element={<GuideDashboard />} />
-            <Route path="/admin-dashboard" element={<AdminDashboard />} /> 
-            <Route path="/traveler-dashboard" element={<TravelerDashboard />} />   
+            <Route path="/guide-dashboard" element={<GuideDashboard />} />
+            <Route path="/admin-dashboard" element={<AdminDashboard />} />
+            <Route path="/traveler-dashboard" element={<TravelerDashboard />} />
 
-             { /*about us*/}
-               <Route path="/aboutus" element={<AboutUs />} />  
-               { /*termsconditions*/}
-               <Route path="/termsconditions" element={<TermsCondition/>} />  
-                { /*privacypolicty*/}
-                <Route path="/privacypolicy" element={<PrivacyPolicy/>} />  
-                { /*contactus*/}
-                <Route path="/contactus" element={<ContactUs/>} />  
+            {/* Info pages */}
+            <Route path="/aboutus" element={<AboutUs />} />
+            <Route path="/termsconditions" element={<TermsCondition />} />
+            <Route path="/privacypolicy" element={<PrivacyPolicy />} />
+            <Route path="/contactus" element={<ContactUs />} />
           </Routes>
         </main>
 

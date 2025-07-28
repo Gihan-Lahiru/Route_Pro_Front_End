@@ -1,0 +1,34 @@
+import React, { useState } from "react";
+import StartingPoint from "./StartingPoint";
+import BudgetSelector from "./BudgetSelector";
+import NearbyAttractions from "./NearbyAttractions";
+import MapComponent from "./MapComponentb";
+import "./BudgetSelection.css";
+
+export default function BudgetSelection() {
+  const [location, setLocation] = useState("");
+  const [budget, setBudget] = useState(5000);
+  const [attractions, setAttractions] = useState([]); // ✅ add state for places
+
+  return (
+    <div className="budget-container">
+      <h1 className="budget-heading">Wander Budget Explorer</h1>
+      <p className="budget-subtitle">Discover Sri Lanka within your budget 🎒 🇱🇰</p>
+
+      <div className="budget-main">
+        <div className="budget-sidebar">
+          <StartingPoint location={location} setLocation={setLocation} />
+          <BudgetSelector budget={budget} setBudget={setBudget} />
+          <NearbyAttractions attractions={attractions} />
+        </div>
+        <div className="budget-map-area">
+          <MapComponent
+            location={location}
+            budget={budget}
+            setAttractions={setAttractions} // ✅ pass down
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
