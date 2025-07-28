@@ -20,7 +20,7 @@ const LoginPage = () => {
       const result = response.data;
 
       if (result.success) {
-        alert("Login successful!");
+      // alert("Login successful!");
 
         // Save user info
         localStorage.setItem("userId", result.userId);

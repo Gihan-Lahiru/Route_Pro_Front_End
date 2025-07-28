@@ -5,12 +5,11 @@ export default function MapComponent({ location, budget, setAttractions }) {
   const mapInstance = useRef(null);
   const markers = useRef([]);
   const circleRef = useRef(null);
-  const lastCenter = useRef(null); // ✅ keep last center for budget-only updates
 
   const budgetRadius = {
-    1000: 5000,   // 5 km
-    5000: 20000,  // 20 km
-    15000: 50000, // 50 km
+    1000: 5000,    // 5 km
+    5000: 20000,   // 20 km
+    15000: 50000,  // 50 km
   };
 
   useEffect(() => {
@@ -31,70 +30,71 @@ export default function MapComponent({ location, budget, setAttractions }) {
       geocoder.geocode({ address: location }, (results, status) => {
         if (status === "OK") {
           const center = results[0].geometry.location;
-          lastCenter.current = center; // ✅ save center for reuse
           mapInstance.current.setCenter(center);
           mapInstance.current.setZoom(12);
-          searchNearby(center);
+
+          // Scroll into view
+          if (mapRef.current) {
+            mapRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+
+          // Draw or update circle
+          if (circleRef.current) {
+            circleRef.current.setMap(null);
+          }
+          circleRef.current = new window.google.maps.Circle({
+            map: mapInstance.current,
+            center,
+            radius: budgetRadius[budget] || 20000,
+            fillColor: "#2196f3",
+            fillOpacity: 0.15,
+            strokeColor: "#1976d2",
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+          });
+
+          const service = new window.google.maps.places.PlacesService(mapInstance.current);
+          const types = ["hindu_temple", "buddhist_temple", "beach", "museum", "park"];
+          let allResults = [];
+
+          clearMarkers();
+
+          types.forEach((type) => {
+            const request = {
+              location: center,
+              radius: budgetRadius[budget] || 20000,
+              type: type,
+            };
+
+            service.nearbySearch(request, (results, status) => {
+              if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+                results.forEach((place) => {
+                  if (place.rating && place.rating >= 4.0) {
+                    createMarker(place);
+                    allResults.push({
+                      name: place.name,
+                      type: type,
+                      address: place.vicinity || "",
+                      rating: place.rating,
+                    });
+                  }
+                });
+                // Update parent list
+                setAttractions([...allResults]);
+              }
+            });
+          });
         } else {
           console.log("Geocoding failed:", status);
         }
       });
     }
-  }, [location]);
-
-  useEffect(() => {
-    if (mapInstance.current && lastCenter.current) {
-      searchNearby(lastCenter.current);
-    }
-  }, [budget]);
+  }, [location, budget, setAttractions]);
 
   const initMap = () => {
     mapInstance.current = new window.google.maps.Map(mapRef.current, {
       center: { lat: 7.8731, lng: 80.7718 }, // Sri Lanka default
       zoom: 7,
-    });
-  };
-
-  const searchNearby = (center) => {
-    // Clear old circle
-    if (circleRef.current) {
-      circleRef.current.setMap(null);
-    }
-
-    // Draw new circle
-    circleRef.current = new window.google.maps.Circle({
-      map: mapInstance.current,
-      center,
-      radius: budgetRadius[budget] || 20000,
-      fillColor: "#2196f3",
-      fillOpacity: 0.15,
-      strokeColor: "#1976d2",
-      strokeOpacity: 0.8,
-      strokeWeight: 2,
-    });
-
-    // Do nearby search
-    const service = new window.google.maps.places.PlacesService(mapInstance.current);
-    const request = {
-      location: center,
-      radius: budgetRadius[budget] || 20000,
-      type: ["tourist_attraction"],
-    };
-
-    service.nearbySearch(request, (results, status) => {
-      if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-        clearMarkers();
-        results.forEach((place) => createMarker(place));
-        setAttractions(
-          results.map((p) => ({
-            name: p.name,
-            type: p.types ? p.types.join(", ") : "N/A",
-            address: p.vicinity || "",
-          }))
-        );
-      } else {
-        console.log("Places search failed:", status);
-      }
     });
   };
 
@@ -106,7 +106,9 @@ export default function MapComponent({ location, budget, setAttractions }) {
     });
 
     const infowindow = new window.google.maps.InfoWindow({
-      content: `<strong>${place.name}</strong><br>${place.vicinity || ""}`,
+      content: `<strong>${place.name}</strong><br>
+                Rating: ${place.rating || "N/A"}<br>
+                ${place.vicinity || ""}`,
     });
 
     marker.addListener("click", () => {
@@ -117,9 +119,11 @@ export default function MapComponent({ location, budget, setAttractions }) {
   };
 
   const clearMarkers = () => {
-    markers.current.forEach((marker) => marker.setMap(null));
+    for (let marker of markers.current) {
+      marker.setMap(null);
+    }
     markers.current = [];
   };
 
-  return <div ref={mapRef} className="map"></div>;
+  return <div ref={mapRef} className="map" style={{ height: "500px", width: "100%" }}></div>;
 }

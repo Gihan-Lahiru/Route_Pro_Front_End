@@ -7,7 +7,7 @@ const DriverHeader = ({ status }) => {
       <img src="images/guide1.jpg" alt="Driver" className="driver-photo" />
 
       <div className="driver-info">
-        <h2>Saman Kumara</h2>
+        <h2>Saman lakmall</h2>
         <p>⭐ 4.7 (1247 rides)</p>
         <p><strong>Vehicle:</strong> Honda Civic 2022</p>
         <p><strong>Location:</strong> Galle</p>

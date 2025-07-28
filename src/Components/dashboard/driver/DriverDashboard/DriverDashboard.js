@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';  // <-- Import useNavigate
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import TripDetails from '../TripDetails/TripDetails';
 import Availability from '../../admin/Availability/Availability';
 import ReviewsPanel from '../ReviewsPanel/ReviewsPanel';
@@ -9,25 +9,50 @@ import DriverHeader from '../DriverHeader/DriverHeader';
 const DriverDashboard = () => {
   const [status, setStatus] = useState('Available');
   const [activeView, setActiveView] = useState('trip');
-  const navigate = useNavigate();  // <-- Initialize navigate
+  const [userName, setUserName] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+
+    if (!userId) {
+      console.error('User ID not found in localStorage');
+      return;
+    }
+
+    fetch(`http://localhost/RoutePro-backend/get_user_name.php?userId=${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.message) {
+          setUserName(data.message);
+        } else {
+          console.error('Error fetching name:', data.error);
+        }
+      })
+      .catch((err) => console.error('Fetch error:', err));
+  }, []);
 
   const handleLogout = () => {
-    // Add logout logic here if needed (e.g., clearing tokens)
-    navigate('/homepage');  // Redirect to /homepage on logout
+    // Optional: clear localStorage if needed
+    navigate('/homepage');
   };
+
+  const userId = localStorage.getItem('userId');
 
   return (
     <div className="dashboard">
       {/* Header with Welcome Text + Logout */}
       <div className="dashboard-header">
         <div className="welcome-section">
-          <h1>Welcome back, Saman!</h1>
+          <h1>Welcome back, {userName || 'Driver'}!</h1>
           <p className="subtitle">Manage your trips, availability and reviews.</p>
         </div>
-        <button className="action-button" onClick={handleLogout}>Log Out</button>  {/* Updated here */}
+        <button className="action-button" onClick={handleLogout}>
+          Log Out
+        </button>
       </div>
 
-      <DriverHeader status={status} setStatus={setStatus} />
+      <DriverHeader status={status} setStatus={setStatus} userId={userId} />
 
       {/* Summary Row */}
       <div className="summary-row">
@@ -42,7 +67,11 @@ const DriverDashboard = () => {
         <div className="summary-card status-card">
           <h2>Status</h2>
           <p className={`status ${status.toLowerCase()}`}>{status}</p>
-          <button onClick={() => setStatus(status === 'Available' ? 'Unavailable' : 'Available')}>
+          <button
+            onClick={() =>
+              setStatus(status === 'Available' ? 'Unavailable' : 'Available')
+            }
+          >
             {status === 'Available' ? 'Go Unavailable' : 'Go Available'}
           </button>
         </div>
@@ -50,15 +79,32 @@ const DriverDashboard = () => {
 
       {/* View Toggle Buttons */}
       <div className="view-buttons">
-        <button onClick={() => setActiveView('trip')} className={activeView === 'trip' ? 'active' : ''}>Trip Details</button>
-        <button onClick={() => setActiveView('availability')} className={activeView === 'availability' ? 'active' : ''}>Availability</button>
-        <button onClick={() => setActiveView('reviews')} className={activeView === 'reviews' ? 'active' : ''}>Reviews</button>
+        <button
+          onClick={() => setActiveView('trip')}
+          className={activeView === 'trip' ? 'active' : ''}
+        >
+          Trip Details
+        </button>
+        <button
+          onClick={() => setActiveView('availability')}
+          className={activeView === 'availability' ? 'active' : ''}
+        >
+          Availability
+        </button>
+        <button
+          onClick={() => setActiveView('reviews')}
+          className={activeView === 'reviews' ? 'active' : ''}
+        >
+          Reviews
+        </button>
       </div>
 
       {/* Selected Section */}
       <div className="view-container">
         {activeView === 'trip' && <TripDetails />}
-        {activeView === 'availability' && <Availability status={status} setStatus={setStatus} />}
+        {activeView === 'availability' && (
+          <Availability status={status} setStatus={setStatus} />
+        )}
         {activeView === 'reviews' && <ReviewsPanel />}
       </div>
     </div>

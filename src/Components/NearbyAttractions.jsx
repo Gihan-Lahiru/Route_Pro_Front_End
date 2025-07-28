@@ -17,6 +17,6 @@ export default function NearbyAttractions({ attractions }) {
           ))}
         </ul>
       )}
-    </div>
-  );
+    </div>
+  );
 }

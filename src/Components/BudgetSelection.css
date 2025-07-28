@@ -107,3 +107,15 @@ h1 {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+.budget-selector {
+  margin: 20px 0;
+}
+
+.budget-selector h3 {
+  margin-bottom: 10px;
+}
+
+.budget-selector label {
+  display: block;
+  margin: 5px 0;
+}
