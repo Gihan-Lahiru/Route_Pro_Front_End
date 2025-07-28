@@ -10,7 +10,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 // Common components
 import Header from "./Components/Header";
-import HeaderDashboard from "./Components/HeaderDashboard"; // ✅ Dashboard header
+import HeaderDashboard from "./Components/HeaderDashboard";
 import Footer from "./Components/Footer";
 import ScrollToTop from "./Components/ScrollToTop";
 
@@ -56,38 +56,30 @@ const HomePage = () => (
   </>
 );
 
-// Helper to check if the route is a dashboard
+// Helper to detect if path is dashboard
 const isDashboardRoute = (pathname) =>
   pathname.startsWith("/driver-dashboard") ||
   pathname.startsWith("/guide-dashboard") ||
   pathname.startsWith("/admin-dashboard") ||
   pathname.startsWith("/traveler-dashboard");
 
+// Component that renders layout based on current route
 const AppContent = () => {
   const location = useLocation();
   const isDashboard = isDashboardRoute(location.pathname);
 
   return (
     <div className="App">
-      {/* Conditionally render header */}
+      {/* Conditional header */}
       {isDashboard ? <HeaderDashboard /> : <Header />}
 
       <main style={{ marginTop: isDashboard ? "0" : "70px" }}>
         <Routes>
           {/* Core Pages */}
           <Route path="/homepage" element={<HomePage />} />
-          <Route
-            path="/guide-registration"
-            element={<GuideRegistrationForm />}
-          />
-          <Route
-            path="/traveler-register"
-            element={<TravelerRegistrationForm />}
-          />
-          <Route
-            path="/driver-registration"
-            element={<DriverRegistrationForm />}
-          />
+          <Route path="/guide-registration" element={<GuideRegistrationForm />} />
+          <Route path="/traveler-register" element={<TravelerRegistrationForm />} />
+          <Route path="/driver-registration" element={<DriverRegistrationForm />} />
           <Route path="/user-login" element={<LoginPage />} />
           <Route path="/budget" element={<BudgetSelection />} />
           <Route path="/culture" element={<Cultural />} />
@@ -100,7 +92,7 @@ const AppContent = () => {
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/traveler-dashboard" element={<TravelerDashboard />} />
 
-          {/* Info pages */}
+          {/* Info Pages */}
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/termsconditions" element={<TermsCondition />} />
           <Route path="/privacypolicy" element={<PrivacyPolicy />} />
@@ -108,7 +100,7 @@ const AppContent = () => {
         </Routes>
       </main>
 
-      {/* Footer hidden on dashboards */}
+      {/* Footer only if not a dashboard */}
       {!isDashboard && <Footer />}
     </div>
   );
@@ -118,49 +110,7 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
-      <div className="App">
-        <Header />
-
-        <main style={{ marginTop: "70px" }}>
-          <Routes>
-            {/* ✅ This makes the homepage show by default */}
-            <Route path="/homepage" element={<HomePage />} />
-
-            {/* Other pages */}
-            <Route
-              path="/guide-registration"
-              element={<GuideRegistrationForm />}
-            />
-            <Route
-              path="/traveler-register"
-              element={<TravelerRegistrationForm />}
-            />
-            <Route
-              path="/driver-registration"
-              element={<DriverRegistrationForm />}
-            />
-            <Route path="/user-login" element={<LoginPage />} />
-            <Route path="/culture" element={<Cultural />} />
-            <Route path="/budget" element={<BudgetSelection />} />
-            <Route path="/route" element={<RoutePlanner />} />
-            <Route path="/bookdriver" element={<BookDriver />} />
-
-            {/* Dashboards */}
-            <Route path="/driver-dashboard" element={<DriverDashboard />} />
-            <Route path="/guide-dashboard" element={<GuideDashboard />} />
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/traveler-dashboard" element={<TravelerDashboard />} />
-
-            {/* Info pages */}
-            <Route path="/aboutus" element={<AboutUs />} />
-            <Route path="/termsconditions" element={<TermsCondition />} />
-            <Route path="/privacypolicy" element={<PrivacyPolicy />} />
-            <Route path="/contactus" element={<ContactUs />} />
-          </Routes>
-        </main>
-
-        <Footer />
-      </div>
+      <AppContent />
     </Router>
   );
 }

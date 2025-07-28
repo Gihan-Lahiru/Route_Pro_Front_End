@@ -1,3 +1,4 @@
+// LoginPage.js
 import React, { useState } from "react";
 import "./LoginPage.css";
 import axios from "axios";
@@ -6,27 +7,30 @@ import { useNavigate, Link } from "react-router-dom";
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost/RoutePro-backend/login.php", {
+      const response = await axios.post("http://localhost/RoutePro-backend/app/controllers/Login.php", {
         email,
         password,
       });
 
       const result = response.data;
-
+      console.log(result)
       if (result.success) {
-      // alert("Login successful!");
-
-        // Save user info
+        // Store user data in localStorage
         localStorage.setItem("userId", result.userId);
         localStorage.setItem("role", result.role);
-
-        // Redirect based on role
+        
+        // Show success alert
+        // alert(`Login successful! Welcome ${result.role}!`);
+        
+        // Navigate based on role
         if (result.role === "driver") {
           navigate("/driver-dashboard");
         } else if (result.role === "guide") {
@@ -40,8 +44,16 @@ const LoginPage = () => {
         alert("Login failed: " + result.error);
       }
     } catch (error) {
-      alert("Server error. Please try again later.");
       console.error("Login error:", error);
+      if (error.response) {
+        alert("Login failed: " + (error.response.data.error || "Server error"));
+      } else if (error.request) {
+        alert("Network error. Please check your connection and try again.");
+      } else {
+        alert("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,7 +64,6 @@ const LoginPage = () => {
       </div>
       <div className="login-right">
         <img className="logo-image" src="new logo.png" alt="Logo" />
-
         <h2 className="welcome">Welcome</h2>
         <p className="login-subtitle">Login with Email</p>
 
@@ -64,6 +75,7 @@ const LoginPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={loading}
             />
           </div>
           <div className="form-group">
@@ -73,12 +85,15 @@ const LoginPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={loading}
             />
           </div>
-          <button type="submit" className="login-btn">
-            LOGIN
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? "LOGGING IN..." : "LOGIN"}
           </button>
-          <Link className="forgot-link" to="/forgot-password">Forgot your password?</Link>
+          <Link className="forgot-link" to="/forgot-password">
+            Forgot your password?
+          </Link>
         </form>
       </div>
     </div>
