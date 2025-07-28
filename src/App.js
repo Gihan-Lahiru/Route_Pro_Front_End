@@ -7,7 +7,12 @@ import PopularDestinations from "./Components/PopularDestinations";
 import Footer from "./Components/Footer";
 import BecomeProviderSection from "./Components/BecomeProviderSection";
 import LocalEventsFoods from "./Components/LocalEventsFoods";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 import Cultural from "./Components/Cultural";
 import BudgetSelection from "./Components/BudgetSelection";
 import RoutePlanner from "./Components/RoutePlanner";
@@ -62,12 +67,21 @@ function App() {
         <main style={{ marginTop: "70px" }}>
           <Routes>
             {/* ✅ This makes the homepage show by default */}
-            <Route path="/" element={<HomePage />} />
+            <Route path="/homepage" element={<HomePage />} />
 
             {/* Other pages */}
-            <Route path="/guide-registration" element={<GuideRegistrationForm />} />
-            <Route path="/traveler-register" element={<TravelerRegistrationForm />} />
-            <Route path="/driver-registration" element={<DriverRegistrationForm />} />
+            <Route
+              path="/guide-registration"
+              element={<GuideRegistrationForm />}
+            />
+            <Route
+              path="/traveler-register"
+              element={<TravelerRegistrationForm />}
+            />
+            <Route
+              path="/driver-registration"
+              element={<DriverRegistrationForm />}
+            />
             <Route path="/user-login" element={<LoginPage />} />
             <Route path="/culture" element={<Cultural />} />
             <Route path="/budget" element={<BudgetSelection />} />
