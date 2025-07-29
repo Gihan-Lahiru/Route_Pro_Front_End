@@ -50,7 +50,7 @@ const HomePage = () => (
     <HeroSection />
     <FeaturesSection />
     <PopularDestinations />
-    {/* <BecomeProviderSection /> */}
+     {/* <BecomeProviderSection />} */}
     <LocalEventsFoods />
   </>
 );
@@ -72,7 +72,7 @@ const AppContent = () => {
       {/* Conditional header */}
       {isDashboard ? <HeaderDashboard /> : <Header />}
 
-      <main style={{ marginTop: isDashboard ? "0" : "70px" }}>
+      <main style={{ marginTop: isDashboard ? "0" : "0px" }}>
         <Routes>
           {/* Core Pages */}
           <Route path="/homepage" element={<HomePage />} />

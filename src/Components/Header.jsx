@@ -6,6 +6,8 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FaUserCircle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+
+// ✅ Import your custom CSS
 import "./Header.css";
 
 export default function Header() {
@@ -19,7 +21,7 @@ export default function Header() {
     if (role === "traveler") navigate("/traveler-register");
     else if (role === "driver") navigate("/driver-registration");
     else if (role === "guider") navigate("/guide-registration");
-    setShowModal(false); // close modal after navigation
+    setShowModal(false);
   };
 
   return (
@@ -49,16 +51,14 @@ export default function Header() {
 
             <Nav className="topnav-right">
               <Button
-                className="topnav-button"
-                variant="outline-success"
+                className="topnav-button custom-login-button"
                 onClick={() => navigate("/user-login")}
               >
                 Login
               </Button>
 
               <Button
-                className="topnav-button"
-                variant="outline-success"
+                className="topnav-button custom-join-button"
                 onClick={handleJoinClick}
               >
                 Join
@@ -72,35 +72,33 @@ export default function Header() {
 
       {/* Join Modal */}
       <Modal show={showModal} onHide={handleClose} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Join as</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="join-options">
-            <Button
-              variant="dark"
-              className="w-100 my-2"
-              onClick={() => handleJoinAs("traveler")}
-            >
-              Traveler
-            </Button>
-            <Button
-              variant="dark"
-              className="w-100 my-2"
-              onClick={() => handleJoinAs("driver")}
-            >
-              Driver
-            </Button>
-            <Button
-              variant="dark"
-              className="w-100 my-2"
-              onClick={() => handleJoinAs("guider")}
-            >
-              Guide
-            </Button>
-          </div>
-        </Modal.Body>
-      </Modal>
+  <Modal.Header closeButton>
+    <Modal.Title>Join as</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <div className="join-options">
+      <Button
+        className="join-option-button traveler"
+        onClick={() => handleJoinAs("traveler")}
+      >
+        Traveler
+      </Button>
+      <Button
+        className="join-option-button driver"
+        onClick={() => handleJoinAs("driver")}
+      >
+        Driver
+      </Button>
+      <Button
+        className="join-option-button guider"
+        onClick={() => handleJoinAs("guider")}
+      >
+        Guide
+      </Button>
+    </div>
+  </Modal.Body>
+</Modal>
+
     </>
   );
 }

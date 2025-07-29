@@ -3,9 +3,8 @@ import { useNavigate } from "react-router-dom";
 import MapComponent from "./MapComponent";
 import axios from "axios";
 import "./RoutePlanner.css";
-import { Plus } from "lucide-react";
-import PlacesSelector from "./PlacesSelector";
 
+import PlacesSelector from "./PlacesSelector";
 
 const RoutePlanner = () => {
   const [from, setFrom] = useState("");
@@ -15,8 +14,27 @@ const RoutePlanner = () => {
   const [nearbyPlaces, setNearbyPlaces] = useState([]);
   const navigate = useNavigate();
   const [findAttractions, setFindAttractions] = useState(false);
+  const [selectedPlaces, setSelectedPlaces] = useState([]);
 
-  
+  // ✅ Your older pricing logic:
+  const basePricePerKM = 100;
+  const vehicleMultiplier = {
+    Bike: 0.8,
+    Car: 1.2,
+    "Mini Car": 1.1,  // Added since you have "Mini Car" now
+    Tuk: 1.0,         // Added since you have "Tuk" now
+    Van: 1.8,
+  };
+
+  let distanceValue = 300;
+  if (routeDetails.distance) {
+    distanceValue = parseFloat(routeDetails.distance) / 1; // meters to km
+  }
+
+  const estimatedPrice =
+    distanceValue && vehicle
+      ? (distanceValue * basePricePerKM * (vehicleMultiplier[vehicle] || 1)).toFixed(2)
+      : "N/A";
 
   const handleConfirm = async () => {
     if (!from || !to || !vehicle || !routeDetails.distance || !routeDetails.duration) {
@@ -25,7 +43,6 @@ const RoutePlanner = () => {
     }
 
     try {
-      // Store route
       const routeResponse = await axios.post("http://localhost/Routepro/save_route.php", {
         start_location: from,
         end_location: to,
@@ -34,9 +51,8 @@ const RoutePlanner = () => {
       });
 
       const route_id = routeResponse.data.route_id;
-      const traveler_id = 1; // Replace with dynamic user ID if needed
+      const traveler_id = 1;
 
-      // Store attractions
       for (const place of nearbyPlaces) {
         await axios.post("http://localhost/Routepro/save_attractions.php", {
           traveler_id,
@@ -53,19 +69,6 @@ const RoutePlanner = () => {
       alert("Error saving route and attractions");
     }
   };
-
-  const calculateEstimatedPrice = () => {
-    const baseRate = 0.2;
-    const distanceInKm = routeDetails.distance ? parseInt(routeDetails.distance) / 1000 : 0;
-    return (baseRate * distanceInKm).toFixed(2);
-  };
-
-  const estimatedPrice = calculateEstimatedPrice();
-
-  const [selectedPlaces, setSelectedPlaces] = useState([]);
-
-
-  
 
   return (
     <div className="route-planner">
@@ -106,17 +109,17 @@ const RoutePlanner = () => {
           </button>
         </div>
         <div>
-        <button
-  className="attractions-button"
-  onClick={() => setFindAttractions((prev) => !prev)}
->
-  Find Nearby Attractions
-</button>
-          </div>
+          <button
+            className="attractions-button"
+            onClick={() => setFindAttractions((prev) => !prev)}
+          >
+            Find Nearby Attractions
+          </button>
+        </div>
 
         <div className="card">
           <h3>Route Information</h3>
-          <p><strong>Distance:</strong> {routeDetails.distance || "N/A"}</p>
+          <p><strong>Distance:</strong> {routeDetails.distance ? `${(distanceValue).toFixed(2)} km` : "N/A"}</p>
           <p><strong>Duration:</strong> {routeDetails.duration || "N/A"}</p>
           <p><strong>Price:</strong> Rs.{estimatedPrice}</p>
         </div>
@@ -141,10 +144,9 @@ const RoutePlanner = () => {
           />
         </div>
         <PlacesSelector
-  nearbyPlaces={nearbyPlaces}
-  setNearbyPlaces={setNearbyPlaces}
-/>
-
+          nearbyPlaces={nearbyPlaces}
+          setNearbyPlaces={setNearbyPlaces}
+        />
       </div>
     </div>
   );
