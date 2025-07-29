@@ -29,46 +29,48 @@ import DriverRegistrationForm from "./Components/DriverRegistrationForm";
 import TravelerRegistrationForm from "./Components/TravelerRegistrationForm";
 import LoginPage from "./Components/LoginPage";
 import BookDriver from "./Components/BookDriver";
-
-// ✅ Import DriverDashboard
-import DriverDashboard from "./Components/dashboard/driver/DriverDashboard/DriverDashboard";
-import GuideDashboard from "./Components/dashboard/guide/GuideDashboard/GuideDashboard";
-import AdminDashboard from "./Components/dashboard/admin/AdminDashboard";
-import TravelerDashboard from "./Components/dashboard/traveler/TravelerDashboard";
 import AboutUs from "./Components/AboutUs";
 import TermsCondition from "./Components/TermsConditions";
 import PrivacyPolicy from "./Components/PrivacyPolicy";
 import ContactUs from "./Components/ContactUs";
 
-// Homepage content extracted as a component so we can use hooks like useNavigate
-const HomePage = () => {
-  const navigate = useNavigate();
+// Dashboards
+import DriverDashboard from "./Components/dashboard/driver/DriverDashboard/DriverDashboard";
+import GuideDashboard from "./Components/dashboard/guide/GuideDashboard/GuideDashboard";
+import AdminDashboard from "./Components/dashboard/admin/AdminDashboard";
+import TravelerDashboard from "./Components/dashboard/traveler/TravelerDashboard";
+import HeadSection from "./Components/headsection";
+
+
+
+const HomePage = () => (
+  <>
+    
+    <HeadSection/>
+    <HeroSection />
+    <FeaturesSection />
+    <PopularDestinations />
+     {/* <BecomeProviderSection />} */}
+    <LocalEventsFoods />
+  </>
+);
+
+// Helper to detect if path is dashboard
+const isDashboardRoute = (pathname) =>
+  pathname.startsWith("/driver-dashboard") ||
+  pathname.startsWith("/guide-dashboard") ||
+  pathname.startsWith("/admin-dashboard") ||
+  pathname.startsWith("/traveler-dashboard");
+
+// Component that renders layout based on current route
+const AppContent = () => {
+  const location = useLocation();
+  const isDashboard = isDashboardRoute(location.pathname);
 
   return (
-    <>
-      <h1 className="highlight">Discover Sri Lanka Like Never Before</h1>
-      <p>
-        Plan  perfect journey with optimized routes, discover hidden gems,
-        experience local culture, and create unforgettable memories in the Pearl
-        of the Indian Ocean.
-      </p>
-
-      <HeroSection />
-      <FeaturesSection />
-      <PopularDestinations />
-      <BecomeProviderSection />
-      <LocalEventsFoods />
-    </>
-  );
-};
-
-function App() {
-  return (
-    <Router>
-      <ScrollToTop />
-
-      <div className="App">
-        <Header />
+    <div className="App">
+      {/* Conditional header */}
+      {isDashboard ? <HeaderDashboard /> : <Header />}
 
       <main style={{ marginTop: isDashboard ? "0" : "0px" }}>
         <Routes>
@@ -83,25 +85,31 @@ function App() {
           <Route path="/route" element={<RoutePlanner />} />
           <Route path="/bookdriver" element={<BookDriver />} />
 
-            {/* Add driver dashboard route */}
-            <Route path="/driver-dashboard" element={<DriverDashboard />} />
-            <Route path="/guider-dashboard" element={<GuideDashboard />} />
-            <Route path="/admin-dashboard" element={<AdminDashboard />} /> 
-            <Route path="/traveler-dashboard" element={<TravelerDashboard />} />   
+          {/* Dashboards */}
+          <Route path="/driver-dashboard" element={<DriverDashboard />} />
+          <Route path="/guide-dashboard" element={<GuideDashboard />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/traveler-dashboard" element={<TravelerDashboard />} />
 
-             { /*about us*/}
-               <Route path="/aboutus" element={<AboutUs />} />  
-               { /*termsconditions*/}
-               <Route path="/termsconditions" element={<TermsCondition/>} />  
-                { /*privacypolicty*/}
-                <Route path="/privacypolicy" element={<PrivacyPolicy/>} />  
-                { /*contactus*/}
-                <Route path="/contactus" element={<ContactUs/>} />  
-          </Routes>
-        </main>
+          {/* Info Pages */}
+          <Route path="/aboutus" element={<AboutUs />} />
+          <Route path="/termsconditions" element={<TermsCondition />} />
+          <Route path="/privacypolicy" element={<PrivacyPolicy />} />
+          <Route path="/contactus" element={<ContactUs />} />
+        </Routes>
+      </main>
 
-        <Footer />
-      </div>
+      {/* Footer only if not a dashboard */}
+      {!isDashboard && <Footer />}
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <Router>
+      <ScrollToTop />
+      <AppContent />
     </Router>
   );
 }
