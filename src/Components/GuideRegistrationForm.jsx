@@ -39,9 +39,8 @@ export default function GuideRegistrationForm() {
     }
 
     try {
-      const response = await axios.post(
-        `${rootUrl}/signup_guide.php`,
-      );
+    const response = await axios.post(`${rootUrl}signup_guide.php`, {});
+
 
       if (response.data.success) {
         alert('Guide registered successfully!');
@@ -91,6 +90,6 @@ export default function GuideRegistrationForm() {
           Already have a guide account? <a href="/login">Sign in here</a>
         </p>
       </form>
-    </div>
-  );
+    </div>
+  );
 }

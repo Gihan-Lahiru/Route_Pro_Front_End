@@ -26,7 +26,7 @@ export default function TravelerRegistrationForm() {
 
     try {
       const response = await axios.post(
-        "http://localhost/Routepro/signup_traveler.php",
+        "http://localhost/RoutePro-backend/signup_traveler.php",
         {
           fullName: form.fullName,
           phone: form.phone,
@@ -118,6 +118,6 @@ export default function TravelerRegistrationForm() {
           <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
         </p>
       </form>
-    </div>
-  );
+    </div>
+  );
 }
