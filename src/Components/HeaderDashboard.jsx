@@ -59,36 +59,7 @@ export default function Header() {
       </Navbar>
 
       {/* Join Modal */}
-      <Modal show={showModal} onHide={handleClose} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Join as</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="join-options">
-            <Button
-              variant="dark"
-              className="w-100 my-2"
-              onClick={() => handleJoinAs("traveler")}
-            >
-              Traveler
-            </Button>
-            <Button
-              variant="dark"
-              className="w-100 my-2"
-              onClick={() => handleJoinAs("driver")}
-            >
-              Driver
-            </Button>
-            <Button
-              variant="dark"
-              className="w-100 my-2"
-              onClick={() => handleJoinAs("guider")}
-            >
-              Guide
-            </Button>
-          </div>
-        </Modal.Body>
-      </Modal>
+    
     </>
   );
 }

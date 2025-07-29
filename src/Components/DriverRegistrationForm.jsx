@@ -40,7 +40,7 @@ export default function DriverRegistrationForm() {
 
 const validatePassword = (password) => {
     // Minimum 6 characters, at least one letter, one number, one special char
-    return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/.test(password);
+    return /^(?=.[A-Za-z])(?=.\d)(?=.*[^A-Za-z\d]).{8,}$/.test(password);
   };
 
   const handleSubmit = async (e) => {

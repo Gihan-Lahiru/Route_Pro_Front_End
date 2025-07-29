@@ -118,6 +118,6 @@ export default function TravelerRegistrationForm() {
           <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
         </p>
       </form>
-    </div>
-  );
+    </div>
+  );
 }

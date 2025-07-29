@@ -27,16 +27,29 @@
   margin: auto;
 }
 
-.guide-form input,
+.guide-form input{
+   width: 80%;               /* ✅ Shrinks input width to 80% of form */
+  display: block;           /* ✅ Block makes margin auto work */
+  margin: 0 auto 15px auto; /* ✅ Centers input + spacing bottom */
+  padding: 12px 14px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+
 .guide-form select,
 .guide-form textarea {
-  width: 100%;
+  width: 80%;
   padding: 12px;
-  margin-bottom: 15px;
+  margin: 0 auto 15px auto;  /* ✅ top 0, sides auto, bottom 15px */
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 6px;
   resize: vertical;
+  display: block;            /* ✅ needed for margin auto to work */
 }
 
 .checkbox-container {
@@ -71,15 +84,19 @@
 }
 
 .submit-btn {
-  width: 100%;
+  width: 80%;
   padding: 12px;
-  background-color: #00bfa6;
+  margin: 10px auto 0 auto;  /* top, sides auto = center, bottom */
   border: none;
   border-radius: 6px;
+  background-color: #00bfa6;
   color: #fff;
   font-weight: bold;
   cursor: pointer;
+  font-size: 15px;
+  display: block;  /* ✅ needed for margin auto to center it */
 }
+
 
 .submit-btn:hover {
   background-color: #005f4a;
@@ -95,3 +112,5 @@
   color: #00bfa6;
   text-decoration: none;
 }
+ 
+

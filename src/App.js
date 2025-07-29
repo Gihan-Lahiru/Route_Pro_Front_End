@@ -39,25 +39,18 @@ import DriverDashboard from "./Components/dashboard/driver/DriverDashboard/Drive
 import GuideDashboard from "./Components/dashboard/guide/GuideDashboard/GuideDashboard";
 import AdminDashboard from "./Components/dashboard/admin/AdminDashboard";
 import TravelerDashboard from "./Components/dashboard/traveler/TravelerDashboard";
-<<<<<<< Updated upstream
 import HeadSection from "./Components/headsection";
-
-const HomePage = () => (
-  <>
-=======
-import HeadSection from "./Components/HeadSection";
 
 
 
 const HomePage = () => (
   <>
     
->>>>>>> Stashed changes
     <HeadSection/>
     <HeroSection />
     <FeaturesSection />
     <PopularDestinations />
-    {/* <BecomeProviderSection /> */}
+     {/* <BecomeProviderSection />} */}
     <LocalEventsFoods />
   </>
 );

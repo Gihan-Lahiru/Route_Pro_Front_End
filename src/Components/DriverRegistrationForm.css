@@ -29,12 +29,13 @@
 
 .driver-form input,
 .driver-form select {
-  width: 100%;
+  width: 80%;
   padding: 12px;
-  margin-bottom: 15px;
+  margin: 0 auto 15px auto;   /* ✅ top 0, sides auto = center, bottom 15px */
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 6px;
+  display: block;             /* ✅ needed for margin auto to work */
 }
 
 .driver-form select {
@@ -74,7 +75,7 @@
   margin-right: 4px; /* Or 0 if you want no gap */
 }
 .submit-btn {
-  width: 100%;
+  width: 80%;
   padding: 12px;
   background-color: #00bfa6;
   border: none;
