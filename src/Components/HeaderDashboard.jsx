@@ -6,9 +6,7 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FaUserCircle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-
-// ✅ Import your custom CSS
-import "./Header.css";
+import "./HeaderDashboard.css";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -21,7 +19,7 @@ export default function Header() {
     if (role === "traveler") navigate("/traveler-register");
     else if (role === "driver") navigate("/driver-registration");
     else if (role === "guider") navigate("/guide-registration");
-    setShowModal(false);
+    setShowModal(false); // close modal after navigation
   };
 
   return (
@@ -50,55 +48,18 @@ export default function Header() {
             </Nav>
 
             <Nav className="topnav-right">
-              <Button
-                className="topnav-button custom-login-button"
-                onClick={() => navigate("/user-login")}
-              >
-                Login
-              </Button>
+              
 
-              <Button
-                className="topnav-button custom-join-button"
-                onClick={handleJoinClick}
-              >
-                Join
-              </Button>
+              
 
-              <FaUserCircle className="user-icon" />
+              
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
 
       {/* Join Modal */}
-      <Modal show={showModal} onHide={handleClose} centered>
-  <Modal.Header closeButton>
-    <Modal.Title>Join as</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    <div className="join-options">
-      <Button
-        className="join-option-button traveler"
-        onClick={() => handleJoinAs("traveler")}
-      >
-        Traveler
-      </Button>
-      <Button
-        className="join-option-button driver"
-        onClick={() => handleJoinAs("driver")}
-      >
-        Driver
-      </Button>
-      <Button
-        className="join-option-button guider"
-        onClick={() => handleJoinAs("guider")}
-      >
-        Guide
-      </Button>
-    </div>
-  </Modal.Body>
-</Modal>
-
+    
     </>
   );
 }

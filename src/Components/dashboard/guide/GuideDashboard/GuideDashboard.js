@@ -1,23 +1,36 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // 👈 Add this
 import TripDetails from '../TripDetails/TripDetails';
 import Availability from '../../admin/Availability/Availability';
 import ReviewsPanel from '../ReviewsPanel/ReviewsPanel';
 import './GuideDashboard.css';
 import GuideHeader from '../GuideHeader/GuideHeader';
 
-
-
 const GuideDashboard = () => {
   const [status, setStatus] = useState('Available');
   const [activeView, setActiveView] = useState('trip');
+  const navigate = useNavigate(); // 👈 Initialize useNavigate
+
+  // 👇 Logout function
+  const handleLogout = () => {
+    // Optional: clear user session data here
+    console.log("Logging out...");
+    navigate('/'); // Redirect to login page
+  };
 
   return (
     <div className="dashboard">
-      <h1>Welcome back, Chamari!</h1>
-      <p className="subtitle">Manage your trips, availability and reviews.</p>
+      {/* Header with Welcome Text + Logout */}
+      <div className="dashboard-header">
+        <div className="welcome-section">
+          <h1>Welcome back, Saman!</h1>
+          <p className="subtitle">Manage your trips, availability and reviews.</p>
+        </div>
+        <button className="action-button" onClick={handleLogout}>Log Out</button>
+      </div>
 
-
-    <GuideHeader status={status} setStatus={setStatus} />
+      {/* Status toggle header */}
+      <GuideHeader status={status} setStatus={setStatus} />
 
       {/* Summary Row */}
       <div className="summary-row">

@@ -3,7 +3,7 @@ import { GoogleMap, LoadScript, DirectionsRenderer } from "@react-google-maps/ap
 
 const containerStyle = {
   width: "100%",
-  height: "400px",
+  height: "550px",
   borderRadius: "10px",
 };
 
@@ -73,9 +73,11 @@ const MapComponent = ({ origin, destination, setRouteDetails, setNearbyPlaces })
       );
     }
   }, [origin, destination, setRouteDetails, setNearbyPlaces]);
+   const libraries = ["places"];
+
 
   return (
-    <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY} libraries={["places"]}>
+    <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY} libraries={libraries}>
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
