@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './DriverRegistrationForm.css';
 import axios from 'axios';
+import DriverDashboard from './dashboard/driver/DriverDashboard/DriverDashboard';
 
 export default function DriverRegistrationForm() {
   const [form, setForm] = useState({
@@ -44,8 +45,10 @@ export default function DriverRegistrationForm() {
 
     setLoading(true);
 
+
     // Prepare data to send (exclude confirmPassword and agree)
     const { confirmPassword, agree, ...submitData } = form;
+
 
     try {
       const response = await axios.post(
@@ -190,9 +193,8 @@ export default function DriverRegistrationForm() {
           </label>
         </div>
 
-        <button type="submit" disabled={loading} className="submit-btn">
-          {loading ? 'Registering...' : 'Create Driver Account'}
-        </button>
+
+        
 
         <p className="signin-link">
           Already have an account? <a href="/login">Sign in here</a>

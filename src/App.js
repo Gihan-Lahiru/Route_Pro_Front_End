@@ -18,7 +18,7 @@ import ScrollToTop from "./Components/ScrollToTop";
 import HeroSection from "./Components/HeroSection";
 import FeaturesSection from "./Components/FeaturesSection";
 import PopularDestinations from "./Components/PopularDestinations";
-import BecomeProviderSection from "./Components/BecomeProviderSection";
+// import BecomeProviderSection from "./Components/BecomeProviderSection";
 import LocalEventsFoods from "./Components/LocalEventsFoods";
 
 import Cultural from "./Components/Cultural";
@@ -39,19 +39,15 @@ import DriverDashboard from "./Components/dashboard/driver/DriverDashboard/Drive
 import GuideDashboard from "./Components/dashboard/guide/GuideDashboard/GuideDashboard";
 import AdminDashboard from "./Components/dashboard/admin/AdminDashboard";
 import TravelerDashboard from "./Components/dashboard/traveler/TravelerDashboard";
+import HeadSection from "./Components/headsection";
 
 const HomePage = () => (
   <>
-    <h1 className="highlight">Discover Sri Lanka Like Never Before</h1>
-    <p>
-      Plan your perfect journey with optimized routes, discover hidden gems,
-      experience local culture, and create unforgettable memories in the Pearl
-      of the Indian Ocean.
-    </p>
+    <HeadSection/>
     <HeroSection />
     <FeaturesSection />
     <PopularDestinations />
-    <BecomeProviderSection />
+    {/* <BecomeProviderSection /> */}
     <LocalEventsFoods />
   </>
 );
