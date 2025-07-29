@@ -1,5 +1,5 @@
 import React from "react";
-import "./HeadSection.css"; // Optional CSS file for custom styling
+import "./headsection.css"; // Optional CSS file for custom styling
 
 const HeadSection = () => (
   <div className="head-section">
