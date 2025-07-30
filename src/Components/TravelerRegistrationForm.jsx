@@ -4,52 +4,96 @@ import axios from "axios";
 
 export default function TravelerRegistrationForm() {
   const [form, setForm] = useState({
-    fullName: "",
+    name: "",
     phone: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
 
+  const [loading, setLoading] = useState(false); // FIXED: Added loading state
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
 
+  const validateName = (name) => {
+    return /^[a-zA-Z\s]+$/.test(name);
+  };
+
+  const validatePhone = (phone) => {
+    const cleaned = phone.replace(/[\s-]/g, "");
+    return /^0\d{9}$/.test(cleaned) || /^7\d{8}$/.test(cleaned);
+  };
+
+  const validatePassword = (password) => {
+    return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/.test(password);
+  };
+
+  const validateEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match!");
+    if (!validateName(form.name)) {
+      alert("Name can only contain letters and spaces.");
       return;
     }
 
+    if (!validateEmail(form.email)) {
+      alert("Invalid email format.");
+      return;
+    }
+
+    if (!validatePhone(form.phone)) {
+      alert(
+        "Phone number must be either 10 digits starting with 0 or 9 digits starting with 7."
+      );
+      return;
+    }
+
+    if (!validatePassword(form.password)) {
+      alert(
+        "Password must be at least 8 characters and include letters, numbers, and a special character."
+      );
+      return;
+    }
+
+    if (form.password !== form.confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    const { confirmPassword, ...submitData } = form;
+
+    setLoading(true);
+
     try {
       const response = await axios.post(
-        "http://localhost/RoutePro-backend/signup_traveler.php",
-        {
-          fullName: form.fullName,
-          phone: form.phone,
-          email: form.email,
-          password: form.password,
-        }
+        "http://localhost/RoutePro-backend/app/controllers/TravellerController.php",
+        submitData
       );
 
       if (response.data.success) {
-        alert("Registration successful!");
+        alert("Traveler registered successfully!");
         setForm({
-          fullName: "",
-          phone: "",
+          name: "",
           email: "",
+          phone: "",
           password: "",
           confirmPassword: "",
         });
       } else {
-        alert("Error: " + response.data.error);
+        alert("Error: " + (response.data.error || "Unknown server error"));
       }
     } catch (error) {
-      alert("An error occurred. Please try again.");
-      console.error(error);
+      console.error("Axios error:", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,16 +101,16 @@ export default function TravelerRegistrationForm() {
     <div className="traveler-form-container">
       <div className="form-header">
         <div className="icon-circle">👥</div>
-        <h2>Welcome Back</h2>
+        <h2>Welcome</h2>
         <p>Sign in to your traveller account</p>
       </div>
 
       <form onSubmit={handleSubmit} className="traveler-form">
         <input
-          name="fullName"
+          name="name"
           type="text"
           placeholder="Full name"
-          value={form.fullName}
+          value={form.name}
           onChange={handleChange}
           required
         />
@@ -85,8 +129,12 @@ export default function TravelerRegistrationForm() {
           value={form.email}
           onChange={handleChange}
           required
-          onInvalid={(e) => e.target.setCustomValidity('Please enter a valid email (e.g., user@example.com)')}
-          onInput={(e) => e.target.setCustomValidity('')}
+          onInvalid={(e) =>
+            e.target.setCustomValidity(
+              "Please enter a valid email (e.g., user@example.com)"
+            )
+          }
+          onInput={(e) => e.target.setCustomValidity("")}
         />
         <input
           name="password"
@@ -105,17 +153,22 @@ export default function TravelerRegistrationForm() {
           required
         />
 
-        <button type="submit" className="submit-btn">
-          Create Account
+        <button type="submit" className="submit-btn" disabled={loading}>
+          {loading ? "Creating..." : "Create Account"}
         </button>
 
         <p className="signin-text">
-          Already have an account? <a href="/login">Sign in</a>
+          Already have an account? <a href="/user-login">Sign in</a>
         </p>
         <p className="terms-text">
           By continuing, you agree to our{" "}
-          <a href="/terms" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> and{" "}
-          <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+          <a href="/termsconditions" target="_blank" rel="noopener noreferrer">
+            Terms and Conditions
+          </a>{" "}
+          and{" "}
+          <a href="/privacypolicy" target="_blank" rel="noopener noreferrer">
+            Privacy Policy
+          </a>
         </p>
       </form>
     </div>

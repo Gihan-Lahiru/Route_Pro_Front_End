@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import { useNavigate } from 'react-router-dom'; // 👈 Add this
 import TripDetails from '../TripDetails/TripDetails';
-import Availability from '../../admin/Availability/Availability';
+import Availability from '../Availability/Availability';
 import ReviewsPanel from '../ReviewsPanel/ReviewsPanel';
 import './GuideDashboard.css';
 import GuideHeader from '../GuideHeader/GuideHeader';
@@ -9,28 +9,48 @@ import GuideHeader from '../GuideHeader/GuideHeader';
 const GuideDashboard = () => {
   const [status, setStatus] = useState('Available');
   const [activeView, setActiveView] = useState('trip');
+  const [userName, setUserName] = useState('');
   const navigate = useNavigate(); // 👈 Initialize useNavigate
 
-  // 👇 Logout function
-  const handleLogout = () => {
-    // Optional: clear user session data here
-    console.log("Logging out...");
-    navigate('/'); // Redirect to login page
-  };
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
 
+    if (!userId) {
+      console.error('User ID not found in localStorage');
+      return;
+    }
+     fetch(`http://localhost/RoutePro-backend/get_user_nameGuide.php?userId=${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.message) {
+          setUserName(data.message);
+        } else {
+          console.error('Error fetching name:', data.error);
+        }
+      })
+      .catch((err) => console.error('Fetch error:', err));
+  }, []);
+
+ const handleLogout = () => {
+    // Optional: clear localStorage if needed
+    navigate('/homepage');
+  };
+ const userId = localStorage.getItem('userId');
+
+  
   return (
     <div className="dashboard">
       {/* Header with Welcome Text + Logout */}
       <div className="dashboard-header">
         <div className="welcome-section">
-          <h1>Welcome back, Saman!</h1>
+          <h1>Welcome back, {userName || 'Guide'}!</h1>
           <p className="subtitle">Manage your trips, availability and reviews.</p>
         </div>
         <button className="action-button" onClick={handleLogout}>Log Out</button>
       </div>
 
       {/* Status toggle header */}
-      <GuideHeader status={status} setStatus={setStatus} />
+      <GuideHeader status={status} setStatus={setStatus} userId={userId} />
 
       {/* Summary Row */}
       <div className="summary-row">
@@ -43,11 +63,16 @@ const GuideDashboard = () => {
           <p>⭐ 4.8 (Based on 127 reviews)</p>
         </div>
         <div className="summary-card status-card">
-          <h2>Status</h2>
+         
           <p className={`status ${status.toLowerCase()}`}>{status}</p>
-          <button onClick={() => setStatus(status === 'Available' ? 'Unavailable' : 'Available')}>
-            {status === 'Available' ? 'Go Unavailable' : 'Go Available'}
-          </button>
+<button
+  className={`status-toggle ${status.toLowerCase()}`}
+  onClick={() =>
+    setStatus(status === 'Available' ? 'Unavailable' : 'Available')
+  }
+>
+  {status === 'Available' ? 'Go Unavailable' : 'Go Available'}
+</button>
         </div>
       </div>
 

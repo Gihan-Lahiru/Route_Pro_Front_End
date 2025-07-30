@@ -58,7 +58,7 @@
   background-color: #ffffff;
   border-radius: 10px;
   padding: 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   box-sizing: border-box;
   min-width: 250px;
 }
@@ -78,18 +78,32 @@
   color: red;
 }
 
-.status-card button {
-  background-color: rgb(40, 206, 40);
-  color: white;
+/* Dynamic Toggle Button Based on Status */
+.status-toggle {
+  padding: 10px 16px;
   border: none;
-  padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
+  color: white;
   font-size: 14px;
+  transition: background-color 0.3s ease;
+  margin-bottom: 10px;
 }
 
-.status-card button:hover {
-  background-color: rgb(40, 206, 40);
+.status-toggle.available {
+  background-color: #28a745;
+}
+
+.status-toggle.available:hover {
+  background-color: #218838;
+}
+
+.status-toggle.unavailable {
+  background-color: #dc3545;
+}
+
+.status-toggle.unavailable:hover {
+  background-color: #c82333;
 }
 
 /* View Toggle Buttons */
@@ -102,7 +116,7 @@
   overflow: hidden;
   border: 1px solid #ccc;
   background-color: #fff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   max-width: 100%;
 }
 
@@ -171,4 +185,30 @@
     margin-top: 12px;
     width: fit-content;
   }
+}
+.status-toggle {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+  margin-bottom: 10px;
+}
+
+.status-toggle.available {
+  background-color: #c82333;
+}
+
+.status-toggle.available:hover {
+  background-color: #dc3545;
+}
+
+.status-toggle.unavailable {
+  background-color: #218838;
+}
+
+.status-toggle.unavailable:hover {
+  background-color: #28a745;
 }
