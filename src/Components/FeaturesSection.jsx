@@ -7,8 +7,8 @@ import { FaRoute, FaMapMarkedAlt, FaLeaf, FaTheaterMasks, FaMoneyBillWave, FaUse
 const FeaturesSection = () => {
   return (
     <section className="features-section">
-      <h1><span>Everything You Need</span> for the <span className="green-text">Perfect Trip</span></h1>
-      <p className="subtitle">RoutePro combines intelligent planning with local expertise to create unforgettable travel experiences across Sri Lanka.</p>
+      <h1> <span className="green-text">Everything You Need for the Perfect Trip</span></h1>
+      <p className="description">RoutePro combines intelligent planning with local expertise to create unforgettable travel experiences across Sri Lanka.</p>
 
       <div className="features-grid">
   <FeatureCard

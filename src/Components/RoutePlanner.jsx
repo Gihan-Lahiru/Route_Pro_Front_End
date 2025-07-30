@@ -19,10 +19,10 @@ const RoutePlanner = () => {
   // ✅ Your older pricing logic:
   const basePricePerKM = 100;
   const vehicleMultiplier = {
-    Bike: 0.8,
-    Car: 1.2,
+    Bike: 0.6,
+    Car: 1.3,
     "Mini Car": 1.1,  // Added since you have "Mini Car" now
-    Tuk: 1.0,         // Added since you have "Tuk" now
+    Tuk: 0.8,         // Added since you have "Tuk" now
     Van: 1.8,
   };
 
@@ -74,7 +74,7 @@ const RoutePlanner = () => {
     <div className="route-planner">
       <div className="sidebar">
         <div className="card combined-input">
-          <h3>Plan Your Route</h3>
+          <h2 className="highlight-m1">Plan Your Route</h2>
 
           <label>From</label>
           <input
@@ -93,7 +93,7 @@ const RoutePlanner = () => {
 
           <label>Select Vehicle</label>
           <div className="vehicle-options">
-            {["Bike", "Car", "Mini Car", "Tuk", "Van"].map((v) => (
+            {["Bike", "Tuk-Tuk", "Mini Car", "Car", "Van"].map((v) => (
               <button
                 key={v}
                 className={`vehicle ${vehicle === v ? "active" : ""}`}
@@ -108,14 +108,14 @@ const RoutePlanner = () => {
             Find The Best Route
           </button>
         </div>
-        <div>
+        {/* <div>
           <button
             className="attractions-button"
             onClick={() => setFindAttractions((prev) => !prev)}
           >
             Find Nearby Attractions
           </button>
-        </div>
+        </div> */}
 
         <div className="card">
           <h3>Route Information</h3>

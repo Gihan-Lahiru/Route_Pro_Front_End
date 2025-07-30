@@ -80,15 +80,15 @@ export default function GuideRegistrationForm() {
         <div className="checkbox-container">
           <label className="checkbox-label">
             <input type="checkbox" name="agree" checked={form.agree} onChange={handleChange} />
-            I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> and{" "}
-          <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+            I agree to the <a href="/termsconditions" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> and{" "}
+          <a href="/privacypolicy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
           </label>
         </div>
 
         <button type="submit" className="submit-btn">Create Guide Account</button>
 
         <p className="signin-link">
-          Already have a guide account? <a href="/login">Sign in here</a>
+          Already have a guide account? <a href="/user-login">Sign in here</a>
         </p>
       </form>
     </div>

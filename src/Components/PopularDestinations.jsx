@@ -3,50 +3,50 @@ import './PopularDestinations.css';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
-import 'swiper/css/navigation';
+
 import 'swiper/css/pagination';
-import { Navigation, Pagination } from 'swiper/modules';
+import { Pagination } from 'swiper/modules';
 
 const destinations = [
   {
     name: "Sigiriya Rock Fortress",
     province: "Central Province",
-    image: "/images/sigiriya.jpeg",
+    image: "/images/sigiriya.jpg",
     description: "Ancient palace built on a massive rock formation with stunning views and historical significance.",
     tags: ["UNESCO World Heritage", "Ancient Frescoes", "Lion's Gate"]
   },
   {
     name: "Ella Rock",
     province: "Uva Province",
-    image: "/images/ella.jpeg",
+    image: "/images/ellarock.jpg",
     description: "Breathtaking hiking destination with panoramic views of tea plantations and valleys.",
     tags: ["Hiking Trails", "Tea Plantations", "Nine Arch Bridge"]
   },
   {
     name: "Yala National Park",
     province: "Southern Province",
-    image: "/images/yala.jpeg",
+    image: "/images/yala.jpg",
     description: "Premier wildlife sanctuary famous for leopards, elephants, and diverse bird species.",
-    tags: ["Wildlife Safari", "Leopard Spotting", "Bird Watching"]
+    tags: ["Safari", "Leopard Spotting", "Bird Watching"]
   },
   {
     name: "Temple of the Tooth",
     province: "Central Province",
-    image: "/images/temple.jpeg",
+    image: "/images/daladamaligawa.jpg",
     description: "Sacred Buddhist temple housing the relic of Buddha's tooth, a UNESCO World Heritage site.",
-    tags: ["Buddhist Temple", "Cultural Heritage", "Sacred Relic"]
+    tags: ["Buddhist Temple", "world Heritage", "Sacred Relic"]
   },
   {
     name: "Mirissa Beach",
     province: "Southern Province",
-    image: "/images/mirissa.jpeg",
+    image: "/images/mirissa.jpg",
     description: "Stunning tropical beach ideal for surfing, whale watching, and relaxing under the sun.",
     tags: ["Beach", "Surfing", "Whale Watching"]
   },
   {
     name: "Horton Plains",
     province: "Central Province",
-    image: "/images/horton.jpeg",
+    image: "/images/hortonplains.jpg",
     description: "Scenic national park featuring montane grasslands and dramatic drop-offs like World's End.",
     tags: ["Nature Trails", "World's End", "Baker's Falls"]
   }
@@ -55,18 +55,18 @@ const destinations = [
 const PopularDestinations = () => {
   return (
     <div className="destinations-section">
-      <h1>
-        Popular <span className="highlight">Destinations</span>
+      <h1 >
+        <span className="highlight">Populer Destinations</span>
       </h1>
       <p>
         Explore the most beloved destinations in Sri Lanka, carefully curated for unforgettable experiences and cultural immersion.
       </p>
 
       <Swiper
-        modules={[Navigation, Pagination]}
+        modules={[ Pagination]}
         slidesPerView={4}
         spaceBetween={20}
-        navigation
+        
         pagination={{ clickable: true }}
         breakpoints={{
           1024: { slidesPerView: 4 },

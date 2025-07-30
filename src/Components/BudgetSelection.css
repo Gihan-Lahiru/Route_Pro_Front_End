@@ -103,7 +103,7 @@ h1 {
   margin-bottom: 5px;
   font-size: 2.5rem;
   font-weight: bold;
-  background: linear-gradient(90deg, #00b894, #ffeaa7); /* Green to Yellow */
+  background: linear-gradient(90deg, #FFD700, #2a7f62);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

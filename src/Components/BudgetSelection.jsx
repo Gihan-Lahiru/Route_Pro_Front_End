@@ -12,8 +12,8 @@ export default function BudgetSelection() {
 
   return (
     <div className="budget-container">
-      <h1 className="budget-heading">Wander Budget Explorer</h1>
-      <p className="budget-subtitle">Discover Sri Lanka within your budget 🎒 🇱🇰</p>
+      <h1 className="budget-heading">Pro Budget Explorer</h1>
+      <p className="budget-subtitle">Discover Sri Lanka within your budget</p>
 
       <div className="budget-main">
         <div className="budget-sidebar">

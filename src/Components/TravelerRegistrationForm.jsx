@@ -110,12 +110,12 @@ export default function TravelerRegistrationForm() {
         </button>
 
         <p className="signin-text">
-          Already have an account? <a href="/login">Sign in</a>
+          Already have an account? <a href="/user-login">Sign in</a>
         </p>
         <p className="terms-text">
           By continuing, you agree to our{" "}
-          <a href="/terms" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> and{" "}
-          <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+          <a href="/termsconditions" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> and{" "}
+          <a href="/privacypolicy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
         </p>
       </form>
     </div>

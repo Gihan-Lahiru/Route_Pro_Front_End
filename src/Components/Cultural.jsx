@@ -128,7 +128,7 @@ export default function Cultural() {
 
   return (
     <div className="cultural-container">
-      <h1>Discover Sri Lanka</h1>
+      <h1>Discover Sri Lankan foods and festivals</h1>
       <p>Explore the rich cultural heritage and delicious cuisine of the Pearl of the Indian Ocean</p>
 
       <select value={selectedDistrict} onChange={handleDistrictChange}>
