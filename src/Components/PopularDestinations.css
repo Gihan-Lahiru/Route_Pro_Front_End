@@ -13,11 +13,14 @@
 }
 
 .destinations-section .highlight {
-  color: #00b894;
+ background: linear-gradient(90deg, #2a7f62, #FFD700);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
+
 .destinations-section p {
-  color: #0ae618;
+  color: #003c04;
   border-radius: 20px;
   max-width: 800px;
   margin: 0 auto 3rem auto;
@@ -104,6 +107,7 @@
 }
 
 .province-highlight {
-  color: #f4f4f4;
+  color: #ffffff;
   font-weight: 600;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9); /* X, Y, blur, color */
 }

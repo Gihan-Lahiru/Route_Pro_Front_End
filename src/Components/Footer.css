@@ -83,13 +83,17 @@
   display: flex;
   gap: 15px;
   font-size: 20px;
+
 }
 
 .social-icons svg {
   color: #fff;
   transition: color 0.3s;
   cursor: pointer;
+  
 }
+
+
 
 .social-icons svg:hover {
   color: #f5c518;

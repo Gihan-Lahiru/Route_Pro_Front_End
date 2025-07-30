@@ -1,12 +1,14 @@
 .cultural-container {
   text-align: center;
   padding: 2rem;
-  font-family: Arial, sans-serif;
+  font-family: 'Poppins', sans-serif;
   background: #f9f9f9;
 }
 
 .cultural-container h1 {
   font-size: 2.5rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: bold;
   margin-bottom: 0.5rem;
   background: linear-gradient(90deg, #fdd835, #43a047); /* yellow to green */
   -webkit-background-clip: text;
@@ -16,6 +18,7 @@
 .cultural-container p {
   margin-bottom: rem;
   color: #555;
+   font-family: 'Poppins', sans-serif;
 }
 
 .cultural-container select {
@@ -77,14 +80,17 @@
 
 .card-content h3 {
   margin: 0 0 0.5rem;
+   font-family: 'Poppins', sans-serif;
 }
 
 .card-content p {
   margin: 0.3rem 0;
   color: #333;
+   font-family: 'Poppins', sans-serif;
 }
 .selected-district-text {
   margin-top: 2rem;
   font-size: 1.1rem;
   color: #333;
+   font-family: 'Poppins', sans-serif;
 }

@@ -34,25 +34,24 @@
   height: 40px;
   padding: 1px;
 
-  background-color: transparent;      /* Transparent background */
-  color: #28a745;                     /* Green text (#28a745 = Bootstrap green) */
-  border: 1px solid #28a745;          /* Green border */
-  border-radius: 30px;                /* Round pill shape */
+  background-color: transparent;      
+  color: #28a745;                     
+  border: 1px solid #28a745;          
+  border-radius: 30px;                
 
   font-weight: bold;
   cursor: pointer;
   font-size: 15px;
 
-  transition: all 0.3s ease;          /* Smooth hover */
+  transition: all 0.3s ease;          
 }
 
 .topnav-button:hover {
   
-  background-color: #00c10a;   /* Yellow background */
-  color: #fff;                 /* White text */
-  border: 1px solid #28a745;   /* Force border stays green */
-}                     /* White text when hovered */
-
+  background-color: #00bfa6;   
+  color: #fff;                 
+  border: 1px solid #28a745;   
+}                     
 
 .user-icon {
   font-size: 40px;
@@ -65,7 +64,7 @@
 }
 
 .user-icon:hover {
-  color: black;
+  color: rgb(0, 0, 0);
 }
 
 .header-navbar {
@@ -78,4 +77,26 @@
 .routeprologo {
   height: 50px;
   width: auto;
+}
+/* Make Nav links modern with underline on hover */
+.nav-link-underline {
+  position: relative;
+  color: #000000; /* or your nav link color */
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+.nav-link-underline::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 1.5px; /* thickness of underline */
+  bottom: 3px; /* distance below text */
+  left: 0;
+  background-color: #fff; /* underline color */
+  transition: width 0.3s ease-in-out;
+}
+
+.nav-link-underline:hover::after {
+  width: 100%;
 }

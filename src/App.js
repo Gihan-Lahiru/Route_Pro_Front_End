@@ -76,6 +76,7 @@ const AppContent = () => {
 
       <main style={{ marginTop: isDashboard ? "0" : "0px" }}>
         <Routes>
+          <Route path="/" element={<HomePage />} />
           {/* Core Pages */}
           <Route path="/homepage" element={<HomePage />} />
           <Route path="/guide-registration" element={<GuideRegistrationForm />} />

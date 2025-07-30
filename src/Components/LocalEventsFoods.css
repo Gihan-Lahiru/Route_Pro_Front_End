@@ -9,7 +9,7 @@
 
 
 .overlay {
-  background-color: rgba(0, 0, 0, 0.6); /* adjust opacity as needed */
+  background-color: rgba(0, 0, 0, 0.7); /* adjust opacity as needed */
   padding: 3rem 2rem;
   border-radius: 10px;
 }
@@ -28,8 +28,10 @@ h1 {
 }
 
 .highlight-teal {
-  color: #00e0c6;
-  font-weight: 700;
+     background: linear-gradient(90deg, #2a7f62, #FFD700);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
 }
 
 .highlight-white {
@@ -45,7 +47,7 @@ h1 {
 .description {
   color: #ddd;
   font-size: 1rem;
-  max-width: 600px;
+  max-width: 800px;
   margin-bottom: 1.5rem;
 }
 

@@ -37,16 +37,16 @@ export default function Header() {
             <Nav className="me-auto"></Nav>
             <Nav>
               <img src="home.png" alt="Home Icon" className="topnav-logo" />
-              <Nav.Link as={Link} to="/homepage">Home</Nav.Link>
+              <Nav.Link as={Link} to="/homepage" className="nav-link-underline">Home</Nav.Link>
 
               <img src="navigation.png" alt="Route Icon" className="topnav-logo" />
-              <Nav.Link as={Link} to="/route">Route</Nav.Link>
+              <Nav.Link as={Link} to="/route" className="nav-link-underline">Route</Nav.Link>
 
               <img src="budget.png" alt="Budget Icon" className="topnav-logo" />
-              <Nav.Link as={Link} to="/budget">Budget</Nav.Link>
+              <Nav.Link as={Link} to="/budget" className="nav-link-underline">Budget</Nav.Link>
 
               <img src="culture.png" alt="Culture Icon" className="topnav-logo" />
-              <Nav.Link as={Link} to="/culture">Culture</Nav.Link>
+              <Nav.Link as={Link} to="/culture" className="nav-link-underline">Culture</Nav.Link>
             </Nav>
 
             <Nav className="topnav-right">

@@ -272,7 +272,7 @@ if (form.password !== form.confirmPassword) {
         </button>
 
         <p className="signin-link">
-          Already have a guide account? <a href="/login">Sign in here</a>
+          Already have a guide account? <a href="/user-login">Sign in here</a>
         </p>
       </form>
     </div>

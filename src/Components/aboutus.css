@@ -1,63 +1,61 @@
-.aboutus-container {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-family: 'Segoe UI', sans-serif;
-  color: #2d3436;
-  line-height: 1.7;
+.about-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 50px;
+  padding: 50px;
+  font-family: 'Poppins', sans-serif;
+  background: #f7f9fb;
 }
 
-.aboutus-header {
-  text-align: center;
-  margin-bottom: 2rem;
+.about-left {
+  flex: 1 1 40%;
 }
 
-.aboutus-header h1 {
-  font-size: 2.8rem;
-  color: #0c2461;
+.about-image {
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
 }
 
-.aboutus-header p {
-  font-size: 1.2rem;
-  color: #636e72;
+.about-right {
+  flex: 1 1 55%;
 }
 
-.aboutus-section {
-  margin-top: 2rem;
+.about-right h1 {
+  font-size: 36px;
+  color: #2a7f62;
+  margin-bottom: 10px;
+  font-weight: bold;
 }
 
-.aboutus-section h2 {
-  font-size: 1.6rem;
-  color: #0984e3;
-  margin-bottom: 0.8rem;
+.about-right h2 {
+  font-size: 20px;
+  color: #555;
+  margin-bottom: 30px;
 }
 
-.aboutus-section p {
-  font-size: 1rem;
-  color: #2d3436;
+.about-right h3 {
+  font-size: 22px;
+  color: #2a7f62;
+  margin-top: 20px;
 }
 
-.aboutus-section ul {
-  list-style-type: none;
-  padding: 0;
+.about-right p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
 }
 
-.aboutus-section ul li {
-  margin-bottom: 0.75rem;
-  padding-left: 1.5em;
-  position: relative;
-   list-style-type: disc;
+.about-right ul {
+  margin-top: 15px;
+  padding-left: 20px;
 }
 
-.aboutus-section ul li::before {
-
-  position: absolute;
-  left: 0;
-}
-
-.aboutus-footer {
-  text-align: center;
-  margin-top: 3rem;
-  font-size: 0.9rem;
-  color: #636e72;
+.about-right ul li {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 10px;
 }
