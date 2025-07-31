@@ -39,9 +39,10 @@ export default function DriverRegistrationForm() {
   };
 
 const validatePassword = (password) => {
-    // Minimum 6 characters, at least one letter, one number, one special char
-    return /^(?=.[A-Za-z])(?=.\d)(?=.*[^A-Za-z\d]).{8,}$/.test(password);
-  };
+  // At least 8 characters, one letter, one number, and one special character
+  return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/.test(password);
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -170,9 +171,9 @@ const validatePassword = (password) => {
           <label className="checkbox-label">
             <input type="checkbox" name="agree" checked={form.agree} onChange={handleChange} />
             I agree to the{' '}
-            <a href="/terms" target="_blank" rel="noopener noreferrer">Terms and Conditions</a>{' '}
+            <a href="/termsconditions" target="_blank" rel="noopener noreferrer">Terms and Conditions</a>{' '}
             and{' '}
-            <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+            <a href="/privacypolicy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
           </label>
         </div>
 
@@ -181,7 +182,7 @@ const validatePassword = (password) => {
         </button>
 
         <p className="signin-link">
-          Already have an account? <a href="/login">Sign in here</a>
+          Already have an account? <a href="/user-login">Sign in here</a>
         </p>
       </form>
     </div>

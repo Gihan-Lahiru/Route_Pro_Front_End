@@ -9,16 +9,25 @@
   border-radius: 10px;
   padding: 16px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  text-align: center; /* ✅ Center the text and buttons */
+}
+
+.trip-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center; /* ✅ Center horizontally */
+  gap: 10px; /* ✅ Adds space between buttons */
+  flex-wrap: wrap; /* ✅ Optional: make responsive on small screens */
 }
 
 .trip-actions button {
-  margin-right: 10px;
   padding: 8px 14px;
   background-color: #28a745;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  min-width: 130px; /* ✅ Optional: makes all buttons same width */
 }
 
 .trip-actions button:hover {

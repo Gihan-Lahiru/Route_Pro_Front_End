@@ -10,15 +10,17 @@
   justify-content: space-between;
   align-items: flex-start;
   box-sizing: border-box;
+ 
 }
 
 /* 🖼️ Driver Photo */
 .driver-photo {
-  width: 350px;
-  height: 350px;
+  width: 330px;
+  height: 330px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
+  margin-left: 30px;
 }
 
 /* 👤 Driver Info */
@@ -37,6 +39,7 @@
   margin-top: 7px;
   font-weight: bold;
   font-size: 15px;
+  margin-left:px;
 }
 
 .status-label.available {

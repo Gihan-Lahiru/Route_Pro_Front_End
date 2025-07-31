@@ -9,20 +9,20 @@ export default function BudgetSelector({ budget, setBudget }) {
       <label>
         <input
           type="radio"
-          value="1000"
-          checked={budget === 1000}
-          onChange={() => setBudget(1000)}
-        />
-        Rs. 1,000
-      </label>
-      <label>
-        <input
-          type="radio"
           value="5000"
           checked={budget === 5000}
           onChange={() => setBudget(5000)}
         />
         Rs. 5,000
+      </label>
+      <label>
+        <input
+          type="radio"
+          value="10000"
+          checked={budget === 10000}
+          onChange={() => setBudget(10000)}
+        />
+        Rs. 10,000
       </label>
       <label>
         <input

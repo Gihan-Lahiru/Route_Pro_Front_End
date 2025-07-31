@@ -67,3 +67,25 @@
   background-color: #019e8d;
 }
 
+/* Make Nav links modern with underline on hover */
+.nav-link-underline {
+  position: relative;
+  color: #000000; /* or your nav link color */
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+.nav-link-underline::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 1.5px; /* thickness of underline */
+  bottom: 3px; /* distance below text */
+  left: 0;
+  background-color: #fff; /* underline color */
+  transition: width 0.3s ease-in-out;
+}
+
+.nav-link-underline:hover::after {
+  width: 100%;
+}

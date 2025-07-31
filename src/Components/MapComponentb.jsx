@@ -6,11 +6,11 @@ export default function MapComponent({ location, budget, setAttractions }) {
   const markers = useRef([]);
   const circleRef = useRef(null);
 
-  const budgetRadius = {
-    1000: 5000,    // 5 km
-    5000: 20000,   // 20 km
-    15000: 50000,  // 50 km
-  };
+ const budgetRadius = {
+  1000: 2000,  // 2 km
+  3000: 3000,  // 3 km
+  5000: 5000,  // 5 km
+};
 
   useEffect(() => {
     if (!window.google) {

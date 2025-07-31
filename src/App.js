@@ -65,15 +65,18 @@ const isDashboardRoute = (pathname) =>
 // Component that renders layout based on current route
 const AppContent = () => {
   const location = useLocation();
-  const isDashboard = isDashboardRoute(location.pathname);
+  const isDashboard = isDashboardRoute(location.pathname) 
+  
 
   return (
+
     <div className="App">
       {/* Conditional header */}
       {isDashboard ? <HeaderDashboard /> : <Header />}
 
       <main style={{ marginTop: isDashboard ? "0" : "0px" }}>
         <Routes>
+          <Route path="/" element={<HomePage />} />
           {/* Core Pages */}
           <Route path="/homepage" element={<HomePage />} />
           <Route path="/guide-registration" element={<GuideRegistrationForm />} />

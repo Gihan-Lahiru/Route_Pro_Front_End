@@ -8,6 +8,7 @@ import {
   FaEnvelope,
   FaPhoneAlt,
 } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -31,20 +32,20 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="footer-section links">
+       <div className="footer-section links">
           <h4>Quick Links</h4>
           <ul>
             <li>
-              <a href="#">Route Planning</a>
+              <Link to="/route">Route Planning</Link>
             </li>
             <li>
-              <a href="#">Attractions</a>
+              <Link to="/homepage">Attractions</Link>
             </li>
             <li>
-              <a href="#">Culture</a>
+              <Link to="/culture">Culture</Link> {/* ✅ Use React Router Link */}
             </li>
             <li>
-              <a href="#">Packages</a>
+              <Link to="/budget">Packages</Link>
             </li>
           </ul>
         </div>
@@ -57,6 +58,7 @@ const Footer = () => {
             </li>
             <li>
               <a href="termsconditions">Terms and Conditions</a>
+              
             </li>
             <li>
               <a href="privacypolicy">Privacy Policy</a>

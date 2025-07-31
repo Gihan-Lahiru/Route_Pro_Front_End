@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TripDetails from '../TripDetails/TripDetails';
-import Availability from '../../admin/Availability/Availability';
+import Availability from '../Availability/Availability';
 import ReviewsPanel from '../ReviewsPanel/ReviewsPanel';
 import './DriverDashboard.css';
 import DriverHeader from '../DriverHeader/DriverHeader';
@@ -65,15 +65,17 @@ const DriverDashboard = () => {
           <p>⭐ 4.8 (Based on 127 reviews)</p>
         </div>
         <div className="summary-card status-card">
-          <h2>Status</h2>
-          <p className={`status ${status.toLowerCase()}`}>{status}</p>
-          <button
-            onClick={() =>
-              setStatus(status === 'Available' ? 'Unavailable' : 'Available')
-            }
-          >
-            {status === 'Available' ? 'Go Unavailable' : 'Go Available'}
-          </button>
+         <h2>Status</h2>
+<p className={`status ${status.toLowerCase()}`}>{status}</p>
+<button
+  className={`status-toggle ${status.toLowerCase()}`}
+  onClick={() =>
+    setStatus(status === 'Available' ? 'Unavailable' : 'Available')
+  }
+>
+  {status === 'Available' ? 'Go Unavailable' : 'Go Available'}
+</button>
+
         </div>
       </div>
 
