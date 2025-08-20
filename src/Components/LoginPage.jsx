@@ -15,10 +15,12 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost/RoutePro-backend/app/controllers/Login.php", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+  "http://localhost/RoutePro-backend/app/controllers/Login.php",
+  { email, password },
+  { withCredentials: true } // << allow cookies (session ID)
+);
+
 
       const result = response.data;
       console.log(result)
