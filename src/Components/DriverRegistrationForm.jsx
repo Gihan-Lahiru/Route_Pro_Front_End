@@ -2,6 +2,14 @@ import React, { useState } from 'react';
 import './DriverRegistrationForm.css';
 import axios from 'axios';
 
+// Create axios instance with default config
+const api = axios.create({
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+
 export default function DriverRegistrationForm() {
   const [form, setForm] = useState({
     name: '',
@@ -23,8 +31,7 @@ export default function DriverRegistrationForm() {
     setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
   };
 
- const validateName = (name) => {
-    // Only letters (uppercase/lowercase) and spaces allowed
+  const validateName = (name) => {
     return /^[a-zA-Z\s]+$/.test(name);
   };
 
@@ -38,11 +45,9 @@ export default function DriverRegistrationForm() {
     return /^0\d{9}$/.test(cleaned) || /^7\d{8}$/.test(cleaned);
   };
 
-const validatePassword = (password) => {
-  // At least 8 characters, one letter, one number, and one special character
-  return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/.test(password);
-};
-
+  const validatePassword = (password) => {
+    return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/.test(password);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,11 +73,11 @@ const validatePassword = (password) => {
       alert('Phone number must be either 10 digits starting with 0 or 9 digits starting with 7.');
       return;
     }
-    if (!validateLicense(form.license_no)) {
-  alert('License number must not contain symbols or spaces.');
-  return;
-}
 
+    if (!validateLicense(form.license_no)) {
+      alert('License number must not contain symbols or spaces.');
+      return;
+    }
 
     if (!form.license_no) {
       alert('License number is required.');
@@ -106,11 +111,14 @@ const validatePassword = (password) => {
 
     // Prepare data
     const { confirmPassword, agree, ...submitData } = form;
+    
+    // Add role to the payload
+    submitData.role = 'driver';
 
     setLoading(true);
     try {
-      const response = await axios.post(
-        'http://localhost/RoutePro-backend/app/controllers/DriverController.php',
+      const response = await api.post(
+        'http://localhost/RoutePro-backend(02)/public/auth/register',
         submitData
       );
 
@@ -129,11 +137,15 @@ const validatePassword = (password) => {
           agree: false,
         });
       } else {
-        alert('Error: ' + (response.data.error || 'Unknown server error'));
+        alert('Error: ' + (response.data.message || 'Unknown server error'));
       }
     } catch (error) {
       console.error('Axios error:', error);
-      alert('Something went wrong. Please try again.');
+      if (error.response) {
+        alert('Error: ' + (error.response.data.message || 'Unknown server error'));
+      } else {
+        alert('Network error. Please check your connection and try again.');
+      }
     } finally {
       setLoading(false);
     }
