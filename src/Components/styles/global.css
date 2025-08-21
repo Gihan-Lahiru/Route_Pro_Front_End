@@ -1,0 +1,41 @@
+/* Mobile-first base styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+}
+
+/* Responsive images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Layout that adapts */
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 1rem;
+}
+
+.item {
+  flex: 1 1 300px; /* grow/shrink with min size */
+  margin: 10px;
+  background: #f3f3f3;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  body {
+    font-size: 18px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  body {
+    font-size: 20px;
+  }
+}

@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./Components/styles/global.css";
 
 // Common components
 import Header from "./Components/Header";
@@ -41,16 +42,13 @@ import AdminDashboard from "./Components/dashboard/admin/AdminDashboard";
 import TravelerDashboard from "./Components/dashboard/traveler/TravelerDashboard";
 import HeadSection from "./Components/headsection";
 
-
-
 const HomePage = () => (
   <>
-    
-    <HeadSection/>
+    <HeadSection />
     <HeroSection />
     <FeaturesSection />
     <PopularDestinations />
-     {/* <BecomeProviderSection />} */}
+    {/* <BecomeProviderSection />} */}
     <LocalEventsFoods />
   </>
 );
@@ -65,11 +63,9 @@ const isDashboardRoute = (pathname) =>
 // Component that renders layout based on current route
 const AppContent = () => {
   const location = useLocation();
-  const isDashboard = isDashboardRoute(location.pathname) 
-  
+  const isDashboard = isDashboardRoute(location.pathname);
 
   return (
-
     <div className="App">
       {/* Conditional header */}
       {isDashboard ? <HeaderDashboard /> : <Header />}
@@ -79,9 +75,18 @@ const AppContent = () => {
           <Route path="/" element={<HomePage />} />
           {/* Core Pages */}
           <Route path="/homepage" element={<HomePage />} />
-          <Route path="/guide-registration" element={<GuideRegistrationForm />} />
-          <Route path="/traveler-register" element={<TravelerRegistrationForm />} />
-          <Route path="/driver-registration" element={<DriverRegistrationForm />} />
+          <Route
+            path="/guide-registration"
+            element={<GuideRegistrationForm />}
+          />
+          <Route
+            path="/traveler-register"
+            element={<TravelerRegistrationForm />}
+          />
+          <Route
+            path="/driver-registration"
+            element={<DriverRegistrationForm />}
+          />
           <Route path="/user-login" element={<LoginPage />} />
           <Route path="/budget" element={<BudgetSelection />} />
           <Route path="/culture" element={<Cultural />} />

@@ -59,7 +59,6 @@ const validatePassword = (password) =>
 
 
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -156,11 +155,16 @@ if (form.password !== form.confirmPassword) {
     }
   };
 
-
   return (
+    <div className="guide-page-container">
+      {/* LEFT SECTION: IMAGE */}
+      <div className="guide-image-section">
+        <img src="/guide.jpg" alt="Guide illustration" />
+      </div>
+      <div className="guide-form-section">
     <div className="guide-form-container">
-      <div className="form-header">
-        <div className="icon-circle">🎒</div>
+      <div className="guide-form-header">
+        <img className="guide-logo-image" src="new logo.png" alt="Logo" />
         <h2>Join as a Tour Guide</h2>
         <p>Create your tour guide account</p>
       </div>
@@ -170,7 +174,7 @@ if (form.password !== form.confirmPassword) {
           name="name"
           type="text"
           placeholder="Enter your full name"
-          value={form.fullName}
+          value={form.name}
           onChange={handleChange}
           required
         />
@@ -248,33 +252,26 @@ if (form.password !== form.confirmPassword) {
           required
         />
 
-        <div className="checkbox-container">
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              name="agree"
-              checked={form.agree}
-              onChange={handleChange}
-            />
-            I agree to the{' '}
-            <a href="/terms" target="_blank" rel="noopener noreferrer">
-              Terms and Conditions
-            </a>{' '}
-            and{' '}
-            <a href="/privacy" target="_blank" rel="noopener noreferrer">
-              Privacy Policy
-            </a>
-          </label>
-        </div>
+        <button type="submit" className="guide-submit-btn" disabled={loading}>
+              {loading ? "Creating..." : "Create Account"}
+            </button>
 
-        <button type="submit" className="submit-btn">
-          Create Guide Account
-        </button>
-
-        <p className="signin-link">
-          Already have a guide account? <a href="/user-login">Sign in here</a>
-        </p>
+            <p className="guide-signin-text">
+              Already have an account? <a href="/user-login">Sign in</a>
+            </p>
+            <p className="guide-terms-text">
+              By continuing, you agree to our{" "}
+              <a href="/termsconditions" target="_blank" rel="noopener noreferrer">
+                Terms and Conditions
+              </a>{" "}
+              and{" "}
+              <a href="/privacypolicy" target="_blank" rel="noopener noreferrer">
+                Privacy Policy
+              </a>
+            </p>
       </form>
+    </div>
+    </div>
     </div>
   );
 }
