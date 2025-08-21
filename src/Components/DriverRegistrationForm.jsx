@@ -152,11 +152,17 @@ export default function DriverRegistrationForm() {
   };
 
   return (
+     <div className="driver-page-container">
+      {/* LEFT SECTION: IMAGE */}
+      <div className="driver-image-section">
+        <img src="/driver-reg.jpg" alt="Driver illustration" />
+      </div>
+      <div className="driver-form-section">
     <div className="driver-form-container">
-      <div className="form-header">
-        <div className="icon-circle">🚗</div>
-        <h2>Become a Driver</h2>
-        <p>Create your Driver account</p>
+      <div className="driver-form-header">
+        <img className="driver-logo-image" src="new logo.png" alt="Logo" />
+        <h2>Join as a Driver</h2>
+        <p>Create your driver account</p>
       </div>
 
       <form onSubmit={handleSubmit} className="driver-form">
@@ -179,24 +185,26 @@ export default function DriverRegistrationForm() {
         <input name="password" type="password" placeholder="Password (min 8 chars)" value={form.password} onChange={handleChange} required />
         <input name="confirmPassword" type="password" placeholder="Confirm Password" value={form.confirmPassword} onChange={handleChange} required />
 
-        <div className="checkbox-container">
-          <label className="checkbox-label">
-            <input type="checkbox" name="agree" checked={form.agree} onChange={handleChange} />
-            I agree to the{' '}
-            <a href="/termsconditions" target="_blank" rel="noopener noreferrer">Terms and Conditions</a>{' '}
-            and{' '}
-            <a href="/privacypolicy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
-          </label>
-        </div>
+        <button type="submit" className="driver-submit-btn" disabled={loading}>
+              {loading ? "Creating..." : "Create Account"}
+            </button>
 
-        <button type="submit" disabled={loading} className="submit-btn">
-          {loading ? 'Registering...' : 'Create Driver Account'}
-        </button>
-
-        <p className="signin-link">
-          Already have an account? <a href="/user-login">Sign in here</a>
-        </p>
+            <p className="driver-signin-text">
+              Already have an account? <a href="/user-login">Sign in</a>
+            </p>
+            <p className="driver-terms-text">
+              By continuing, you agree to our{" "}
+              <a href="/termsconditions" target="_blank" rel="noopener noreferrer">
+                Terms and Conditions
+              </a>{" "}
+              and{" "}
+              <a href="/privacypolicy" target="_blank" rel="noopener noreferrer">
+                Privacy Policy
+              </a>
+            </p>
       </form>
     </div>
+  </div>
+  </div>
   );
 }
