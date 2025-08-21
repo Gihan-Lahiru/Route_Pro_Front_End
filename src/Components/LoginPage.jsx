@@ -15,43 +15,105 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost/RoutePro-backend/app/controllers/Login.php", {
-        email,
-        password,
-      });
+      console.log("Attempting login with:", { email });
+
+      // Try the new MVC API endpoint first, then fallback to legacy
+      let response;
+      try {
+        response = await axios.post(
+          "http://localhost/RoutePro-backend(02)/public/index.php/auth/login", 
+          {
+            email,
+            password,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            timeout: 10000,
+          }
+        );
+      } catch (newApiError) {
+        console.log("New API failed, trying legacy endpoint...", newApiError.message);
+        
+        // Fallback to legacy endpoint
+        response = await axios.post(
+          "http://localhost/RoutePro-backend(02)/app/controllers/Login.php", 
+          {
+            email,
+            password,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            timeout: 10000,
+          }
+        );
+      }
 
       const result = response.data;
-      console.log(result)
+      console.log("Login response:", result);
+
       if (result.success) {
-        // Store user data in localStorage
+        // Store comprehensive user data in localStorage
         localStorage.setItem("userId", result.userId);
         localStorage.setItem("role", result.role);
+        localStorage.setItem("userName", result.name);
+        localStorage.setItem("userEmail", result.email);
+        localStorage.setItem("userRating", result.rating || "0");
         
-        // Show success alert
-        // alert(`Login successful! Welcome ${result.role}!`);
+        // Store additional profile data if available
+        if (result.user && result.user.profile) {
+          localStorage.setItem("userProfile", JSON.stringify(result.user.profile));
+        }
+
+        console.log(`Login successful for ${result.role}: ${result.name}`);
         
-        // Navigate based on role
+        // Navigate based on role using the inheritance-based system
         if (result.role === "driver") {
           navigate("/driver-dashboard");
         } else if (result.role === "guide") {
           navigate("/guide-dashboard");
+        } else if (result.role === "traveller") {
+          navigate("/traveller-dashboard");
         } else if (result.role === "admin") {
           navigate("/admin-dashboard");
         } else {
           navigate("/");
         }
+        
       } else {
-        alert("Login failed: " + result.error);
+        // Handle login failure
+        const errorMessage = result.error || result.message || "Login failed";
+        console.error("Login failed:", errorMessage);
+        alert("Login failed: " + errorMessage);
       }
     } catch (error) {
       console.error("Login error:", error);
+      
+      // Enhanced error handling
+      let errorMessage = "An unexpected error occurred. Please try again.";
+      
       if (error.response) {
-        alert("Login failed: " + (error.response.data.error || "Server error"));
+        // Server responded with error status
+        const serverError = error.response.data;
+        if (serverError && serverError.error) {
+          errorMessage = serverError.error;
+        } else if (serverError && serverError.message) {
+          errorMessage = serverError.message;
+        } else {
+          errorMessage = `Server error (${error.response.status})`;
+        }
       } else if (error.request) {
-        alert("Network error. Please check your connection and try again.");
-      } else {
-        alert("An unexpected error occurred. Please try again.");
+        // Network error
+        errorMessage = "Network error. Please check your connection and try again.";
+      } else if (error.code === 'ECONNABORTED') {
+        // Timeout error
+        errorMessage = "Request timeout. Please try again.";
       }
+      
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -95,6 +157,7 @@ const LoginPage = () => {
             Forgot your password?
           </Link>
         </form>
+
       </div>
     </div>
   );
