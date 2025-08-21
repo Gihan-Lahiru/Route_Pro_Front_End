@@ -13,6 +13,7 @@ const DriverHeader = () => {
   const [driverInfo, setDriverInfo] = useState({
   name: '',
   phone: '',
+  email: '',
   status: '',
   license_no: '',
   vehicle_type: '',
@@ -23,35 +24,52 @@ const DriverHeader = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId');
+    // Get the logged-in user's email from localStorage (set during login)
+    const userEmail = localStorage.getItem('userEmail') || 
+                     localStorage.getItem('email') ||
+                     'admin@gmail.com'; // Fallback for testing
 
-    if (!userId) {
-      console.error('User ID not found in localStorage');
-      return;
-    }
+    console.log('🚀 Fetching driver data for logged-in user:', userEmail);
 
-    fetch(`http://localhost/RoutePro-backend/get_driver_info.php?userId=${userId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data.error) {
-  setDriverInfo({
-    name: data.name,
-    phone: data.phone,
-    status: data.status,
-    license_no: data.license_no,
-    vehicle_type: data.vehicle_type,
-    experience: data.experience,
-    location: data.location,
-  });
-  setStatus(data.status); // Also update the status display
-} else {
-  console.error('Error fetching driver info:', data.error);
-}
-
-      
+    // Use proper DriverController endpoint with email parameter
+    fetch(`http://localhost/RoutePro-backend(02)/public/driver/profile?email=${encodeURIComponent(userEmail)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
       })
-      .catch((err) => console.error('Fetch error:', err));
-  }, []);
+      .then((data) => {
+        if (data.success && data.data) {
+          setDriverInfo({
+            name: data.data.name || '',
+            phone: data.data.phone || '',
+            email: data.data.email || '',
+            status: data.data.status || 'Available',
+            license_no: data.data.license_no || '',
+            vehicle_type: data.data.vehicle_type || '',
+            experience: data.data.experience || '',
+            location: data.data.location || '',
+          });
+          setStatus(data.data.status || 'Available'); // Update status display
+        } else {
+          console.error('Error fetching driver info:', data.message || 'Unknown error');
+          // You might want to handle this more gracefully
+        }
+      })
+      .catch((err) => {
+        console.error('Fetch error:', err);
+        // Handle network errors or authentication failures
+        if (err.message.includes('401') || err.message.includes('403')) {
+          navigate('/login'); // Redirect to login if unauthorized
+        }
+      });
+  }, [navigate]);
 
   const handleLogout = () => {
     // Optional: clear localStorage if needed
@@ -62,6 +80,7 @@ const DriverHeader = () => {
 
   return (
     <div className="driver-header">
+      {/* Main Header Content */}
       <img src="images/guide1.jpg" alt="Driver" className="driver-photo" />
 
       <div className="driver-info">
@@ -72,10 +91,11 @@ const DriverHeader = () => {
 <p><strong>Experience:</strong> {driverInfo.experience} years</p>
 <p><strong>Location:</strong> {driverInfo.location || 'Unknown'}</p>
 <p><strong>Contact:</strong> {driverInfo.phone || 'N/A'}</p>
-{/* <div className="status-display">
+<p><strong>Email:</strong> {driverInfo.email || 'N/A'}</p>
+<div className="status-display">
           <span>Status: </span>
           <span className={`status-label ${status.toLowerCase()}`}>{status}</span>
-        </div> */}
+        </div>
       </div>
 
       {/* 📊 Earnings Summary Panel */}

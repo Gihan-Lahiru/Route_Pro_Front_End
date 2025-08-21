@@ -9,8 +9,10 @@ const GuideHeader = () => {
   const [guiderInfo, setGuiderInfo] = useState({
   name: '',
   phone: '',
+  email: '',
   status: '',
   license_no: '',
+  nic: '',
   languages: '',
   experience: '',
   location: '',
@@ -19,34 +21,52 @@ const GuideHeader = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId');
+    // Get the logged-in user's email from localStorage (set during login)
+    const userEmail = localStorage.getItem('userEmail') || 
+                     localStorage.getItem('email') ||
+                     'priya@guide.com'; // Fallback for testing
 
-    if (!userId) {
-      console.error('User ID not found in localStorage');
-      return;
-    }
+    console.log('🚀 Fetching guide data for logged-in user:', userEmail);
 
-    fetch(`http://localhost/RoutePro-backend/get_guider_info.php?userId=${userId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data.error) {
-  setGuiderInfo({
-    name: data.name,
-    phone: data.phone,
-    status: data.status,
-    license_no: data.license_no,
-    experience: data.experience,
-    location: data.location,
-  });
-  setStatus(data.status); // Also update the status display
-} else {
-  console.error('Error fetching guider info:', data.error);
-}
-
-      
+    // Use proper GuideController endpoint with email parameter
+    fetch(`http://localhost/RoutePro-backend(02)/public/guide/profile?email=${encodeURIComponent(userEmail)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
       })
-      .catch((err) => console.error('Fetch error:', err));
-  }, []);
+      .then((data) => {
+        if (data.success && data.data) {
+          setGuiderInfo({
+            name: data.data.name || '',
+            phone: data.data.phone || '',
+            email: data.data.email || '',
+            status: data.data.status || 'Available',
+            license_no: data.data.license_no || '',
+            nic: data.data.nic || '',
+            languages: data.data.languages || '',
+            experience: data.data.experience || '',
+            location: data.data.location || '',
+          });
+          setStatus(data.data.status || 'Available'); // Update status display
+        } else {
+          console.error('Error fetching guide info:', data.message || 'Unknown error');
+        }
+      })
+      .catch((err) => {
+        console.error('Fetch error:', err);
+        // Handle network errors or authentication failures
+        if (err.message.includes('401') || err.message.includes('403')) {
+          navigate('/login'); // Redirect to login if unauthorized
+        }
+      });
+  }, [navigate]);
 
   const handleLogout = () => {
     // Optional: clear localStorage if needed

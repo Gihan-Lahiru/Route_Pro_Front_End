@@ -4,7 +4,7 @@ import axios from 'axios';
 
 // Create axios instance with default config
 const api = axios.create({
-  withCredentials: true,
+  withCredentials: false,
   headers: {
     'Content-Type': 'application/json'
   }
@@ -136,15 +136,32 @@ export default function DriverRegistrationForm() {
           confirmPassword: '',
           agree: false,
         });
+         // Redirect to login page after user clicks OK on alert
+        window.location.href = '/user-login';
       } else {
         alert('Error: ' + (response.data.message || 'Unknown server error'));
       }
     } catch (error) {
-      console.error('Axios error:', error);
+      console.error('Registration error:', error);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        statusText: error.response?.statusText
+      });
+      
       if (error.response) {
-        alert('Error: ' + (error.response.data.message || 'Unknown server error'));
+        // Server responded with error status
+        const errorMessage = error.response.data?.message || 
+                           error.response.data?.error || 
+                           `Server error: ${error.response.status}`;
+        alert('Registration failed: ' + errorMessage);
+      } else if (error.request) {
+        // Request was made but no response received
+        alert('Network error: Unable to connect to server. Please check if the backend is running.');
       } else {
-        alert('Network error. Please check your connection and try again.');
+        // Something else happened
+        alert('Registration failed: ' + error.message);
       }
     } finally {
       setLoading(false);
