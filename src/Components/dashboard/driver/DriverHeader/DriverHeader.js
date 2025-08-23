@@ -95,8 +95,10 @@ const DriverHeader = () => {
 <div className="status-display">
           <span>Status: </span>
           <span className={`status-label ${status.toLowerCase()}`}>{status}</span>
+          
         </div>
       </div>
+
 
       {/* 📊 Earnings Summary Panel */}
       <div className="earnings-column">
