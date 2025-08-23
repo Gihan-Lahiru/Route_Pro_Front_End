@@ -22,7 +22,7 @@ export const apiMethods = {
   // Login method
   login: async (email, password) => {
     try {
-      console.log(Attempting login to: ${BACKEND_URL}/auth/login.php);
+      console.log(`Attempting login to: ${BACKEND_URL}/auth/login.php`);
       const response = await api.post('/auth/login.php', { email, password });
       return response;
     } catch (error) {
@@ -34,7 +34,7 @@ export const apiMethods = {
   // Register method
   register: async (userData) => {
     try {
-      console.log(Attempting registration to: ${BACKEND_URL}/auth/register.php);
+      console.log(`Attempting registration to: ${BACKEND_URL}/auth/register.php`);
       const response = await api.post('/auth/register.php', userData);
       return response;
     } catch (error) {
@@ -49,7 +49,7 @@ export const apiMethods = {
     const config = {
       headers: {
         ...api.defaults.headers,
-        'Authorization': token ? Bearer ${token} : ''
+        'Authorization': token ? `Bearer ${token}` : ''
       }
     };
 
@@ -138,7 +138,7 @@ export const sessionUtils = {
 // Add request interceptor for debugging
 api.interceptors.request.use(
   (config) => {
-    console.log(🚀 API Request: ${config.method?.toUpperCase()} ${config.baseURL}${config.url});
+    console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
     return config;
   },
   (error) => {
@@ -150,11 +150,11 @@ api.interceptors.request.use(
 // Add response interceptor for debugging
 api.interceptors.response.use(
   (response) => {
-    console.log(✅ API Response: ${response.status} ${response.config.url});
+    console.log(`✅ API Response: ${response.status} ${response.config.url}`);
     return response;
   },
   (error) => {
-    console.error(❌ API Response Error: ${error.response?.status} ${error.config?.url});
+    console.error(`❌ API Response Error: ${error.response?.status} ${error.config?.url}`);
     return Promise.reject(error);
   }
 );

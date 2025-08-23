@@ -58,7 +58,7 @@ const isDashboardRoute = (pathname) =>
   pathname.startsWith("/driver-dashboard") ||
   pathname.startsWith("/guide-dashboard") ||
   pathname.startsWith("/admin-dashboard") ||
-  pathname.startsWith("/traveler-dashboard");
+  pathname.startsWith("/traveller-dashboard");
 
 // Component that renders layout based on current route
 const AppContent = () => {
@@ -97,7 +97,7 @@ const AppContent = () => {
           <Route path="/driver-dashboard" element={<DriverDashboard />} />
           <Route path="/guide-dashboard" element={<GuideDashboard />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
-          <Route path="/traveler-dashboard" element={<TravelerDashboard />} />
+          <Route path="/traveller-dashboard" element={<TravelerDashboard />} />
 
           {/* Info Pages */}
           <Route path="/aboutus" element={<AboutUs />} />

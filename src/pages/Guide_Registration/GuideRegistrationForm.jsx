@@ -2,6 +2,14 @@ import React, { useState } from 'react';
 import './GuideRegistrationForm.css';
 import axios from 'axios';
 
+// Create axios instance with default config
+const api = axios.create({
+  withCredentials: false,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+
 export default function GuideRegistrationForm() {
   const [form, setForm] = useState({
     name: '',
@@ -121,14 +129,18 @@ if (form.password !== form.confirmPassword) {
 
 // Prepare data
     const { confirmPassword, agree, ...submitData } = form;
+    
+    // Add role to the payload
+    submitData.role = 'guide';
 
     setLoading(true);
     try {
-      const response = await axios.post(
-        'http://localhost/RoutePro-backend/app/controllers/GuideController.php',
+      const response = await api.post(
+        'http://localhost/RoutePro-backend(02)/public/auth/register',
         submitData
       );
-  if (response.data.success) {
+
+      if (response.data.success) {
         alert('Guide registered successfully!');
         setForm({
           name: '',
@@ -143,14 +155,34 @@ if (form.password !== form.confirmPassword) {
           confirmPassword: '',
           agree: false,
         });
+        // Redirect to login page after user clicks OK on alert
+        window.location.href = '/user-login';
       } else {
-        alert('Error: ' + response.data.error);
+        alert('Error: ' + (response.data.message || 'Unknown server error'));
       }
     } catch (error) {
-      console.error(error);
-      alert('Something went wrong. Please try again.');
-    }
-    finally {
+      console.error('Registration error:', error);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        statusText: error.response?.statusText
+      });
+      
+      if (error.response) {
+        // Server responded with error status
+        const errorMessage = error.response.data?.message || 
+                           error.response.data?.error || 
+                           `Server error: ${error.response.status}`;
+        alert('Registration failed: ' + errorMessage);
+      } else if (error.request) {
+        // Request was made but no response received
+        alert('Network error: Unable to connect to server. Please check if the backend is running.');
+      } else {
+        // Something else happened
+        alert('Registration failed: ' + error.message);
+      }
+    } finally {
       setLoading(false);
     }
   };
@@ -226,14 +258,14 @@ if (form.password !== form.confirmPassword) {
           onChange={handleChange}
           required
         />
-        <textarea
+        <input
           name="languages"
+          type="text"
           placeholder="Languages spoken (e.g., English, Sinhala, Tamil)"
           value={form.languages}
           onChange={handleChange}
-          rows="3"
           required
-        ></textarea>
+        />
 
         <input
           name="password"
@@ -252,23 +284,35 @@ if (form.password !== form.confirmPassword) {
           required
         />
 
-        <button type="submit" className="guide-submit-btn" disabled={loading}>
-              {loading ? "Creating..." : "Create Account"}
-            </button>
+        {/* Terms and Conditions Checkbox */}
+            <div className="driver-checkbox-container">
+              <label className="driver-checkbox-label">
+                <input
+                  type="checkbox"
+                  name="agree"
+                  checked={form.agree}
+                  onChange={handleChange}
+                  required
+                />
+                I agree to the{" "}
+                <a href="/termsconditions" target="_blank" rel="noopener noreferrer">
+                  Terms and Conditions
+                </a>{" "}
+                and{" "}
+                <a href="/privacypolicy" target="_blank" rel="noopener noreferrer">
+                  Privacy Policy
+                </a>
+              </label>
+            </div>
 
-            <p className="guide-signin-text">
-              Already have an account? <a href="/user-login">Sign in</a>
-            </p>
-            <p className="guide-terms-text">
-              By continuing, you agree to our{" "}
-              <a href="/termsconditions" target="_blank" rel="noopener noreferrer">
-                Terms and Conditions
-              </a>{" "}
-              and{" "}
-              <a href="/privacypolicy" target="_blank" rel="noopener noreferrer">
-                Privacy Policy
-              </a>
-            </p>
+
+        <button type="submit" disabled={loading} className="submit-btn">
+          {loading ? 'Registering...' : 'Create Guide Account'}
+        </button>
+
+        <p className="signin-link">
+          Already have a guide account? <a href="/user-login">Sign in here</a>
+        </p>
       </form>
     </div>
     </div>
