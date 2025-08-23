@@ -185,22 +185,18 @@ export default function DriverRegistrationForm() {
         <input name="password" type="password" placeholder="Password (min 8 chars)" value={form.password} onChange={handleChange} required />
         <input name="confirmPassword" type="password" placeholder="Confirm Password" value={form.confirmPassword} onChange={handleChange} required />
 
+        <div className="driver-checkbox-container">
+          <label className="driver-checkbox-label">
+            <input type="checkbox" name="agree" checked={form.agree} onChange={handleChange} />
+            I agree to the <a href="\TermsCondition.html">Terms and Conditions</a> and <a href="#">Privacy Policy</a>
+          </label>
+        </div>
         <button type="submit" className="driver-submit-btn" disabled={loading}>
               {loading ? "Creating..." : "Create Account"}
             </button>
 
             <p className="driver-signin-text">
               Already have an account? <a href="/user-login">Sign in</a>
-            </p>
-            <p className="driver-terms-text">
-              By continuing, you agree to our{" "}
-              <a href="/termsconditions" target="_blank" rel="noopener noreferrer">
-                Terms and Conditions
-              </a>{" "}
-              and{" "}
-              <a href="/privacypolicy" target="_blank" rel="noopener noreferrer">
-                Privacy Policy
-              </a>
             </p>
       </form>
     </div>
