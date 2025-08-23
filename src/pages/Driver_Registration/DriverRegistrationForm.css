@@ -1,0 +1,147 @@
+.driver-page-container {
+  display: flex;
+  min-height: 100vh;
+  padding-bottom: 60px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.driver-image-section {
+  width: 50%;
+  overflow: hidden;
+}
+
+.driver-image-section img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.driver-form-section {
+  width: 50%;
+  height: auto;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  background: #f9f9f9;
+}
+
+.driver-logo-image {
+  width: 350px;
+  height: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.driver-form-header {
+  margin-bottom: 30px;
+}
+
+.driver-form input,
+.driver-form select {
+  width: 80%;
+  display: block;
+  margin: 0 auto 15px auto;
+  padding: 12px 14px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.driver-form select {
+  background-color: #fff;
+}
+
+.driver-form input[type="password"],
+.driver-form input[type="email"] {
+  width: 80%;
+  padding: 12px;
+  margin: 0 auto 15px auto;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  display: block;
+  box-sizing: border-box;
+}
+
+.driver-checkbox-container {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  gap: 2px;
+  white-space: nowrap;
+  margin-bottom: 20px;
+}
+
+.driver-checkbox-container input[type="checkbox"] {
+  margin: 0;
+}
+
+.driver-checkbox-container label {
+  margin: 0;
+  cursor: pointer;
+}
+
+.driver-checkbox-container a {
+  color: #00bfa6;
+  text-decoration: none;
+}
+
+.driver-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 4px; /* Adjust as needed */
+}
+
+.driver-checkbox-label input[type="checkbox"] {
+  margin-right: 4px; /* Or 0 if you want no gap */
+}
+.driver-submit-btn {
+  width: 80%;
+  padding: 12px;
+  margin: 10px auto 0 auto;
+  border: none;
+  border-radius: 6px;
+  background-color: #00bfa6;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.2s;
+  display: block;
+}
+
+.driver-submit-btn:hover {
+  background-color: #005f4a;
+}
+
+.driver-signin-text,
+.driver-terms-text {
+  font-size: 13px;
+  color: #555;
+  margin-top: 20px;
+}
+
+.driver-signin-text a,
+.driver-terms-text a {
+  color: #00bfa6;
+  text-decoration: none;
+}
+
+@media (max-width: 900px) {
+  .driver-page-container {
+    flex-direction: column;
+  }
+
+  /* Reset padding and height for mobile */
+  .driver-image-section {
+    padding-top: 20px;
+  }
+
+  .driver-image-section img {
+    height: auto;
+    max-height: 300px;
+  }
+}
