@@ -67,7 +67,6 @@ const validatePassword = (password) =>
 
 
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -188,13 +187,18 @@ if (form.password !== form.confirmPassword) {
     }
   };
 
-
   return (
+    <div className="guide-page-container">
+      {/* LEFT SECTION: IMAGE */}
+      <div className="guide-image-section">
+                 <img src="/images/guide.jpg" alt="Guide illustration" />
+      </div>
+      <div className="guide-form-section">
     <div className="guide-form-container">
-      <div className="form-header">
-        <div className="icon-circle">🗺️</div>
-        <h2>Become a Guide</h2>
-        <p>Create your Guide account</p>
+      <div className="guide-form-header">
+                 <img className="guide-logo-image" src="/images/new logo.png" alt="Logo" />
+        <h2>Join as a Tour Guide</h2>
+        <p>Create your tour guide account</p>
       </div>
 
       <form onSubmit={handleSubmit} className="guide-form">
@@ -202,7 +206,7 @@ if (form.password !== form.confirmPassword) {
           name="name"
           type="text"
           placeholder="Enter your full name"
-          value={form.fullName}
+          value={form.name}
           onChange={handleChange}
           required
         />
@@ -280,24 +284,27 @@ if (form.password !== form.confirmPassword) {
           required
         />
 
-        <div className="checkbox-container">
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              name="agree"
-              checked={form.agree}
-              onChange={handleChange}
-            />
-            I agree to the{' '}
-            <a href="/termsconditions" target="_blank" rel="noopener noreferrer">
-              Terms and Conditions
-            </a>{' '}
-            and{' '}
-            <a href="/privacypolicy" target="_blank" rel="noopener noreferrer">
-              Privacy Policy
-            </a>
-          </label>
-        </div>
+        {/* Terms and Conditions Checkbox */}
+            <div className="driver-checkbox-container">
+              <label className="driver-checkbox-label">
+                <input
+                  type="checkbox"
+                  name="agree"
+                  checked={form.agree}
+                  onChange={handleChange}
+                  required
+                />
+                I agree to the{" "}
+                <a href="/termsconditions" target="_blank" rel="noopener noreferrer">
+                  Terms and Conditions
+                </a>{" "}
+                and{" "}
+                <a href="/privacypolicy" target="_blank" rel="noopener noreferrer">
+                  Privacy Policy
+                </a>
+              </label>
+            </div>
+
 
         <button type="submit" disabled={loading} className="submit-btn">
           {loading ? 'Registering...' : 'Create Guide Account'}
@@ -307,6 +314,8 @@ if (form.password !== form.confirmPassword) {
           Already have a guide account? <a href="/user-login">Sign in here</a>
         </p>
       </form>
+    </div>
+    </div>
     </div>
   );
 }

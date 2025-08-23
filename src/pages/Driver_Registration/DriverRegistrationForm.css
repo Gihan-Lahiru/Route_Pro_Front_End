@@ -31,10 +31,12 @@
   display: block;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 20px; /* Added margin bottom */
 }
 
 .driver-form-header {
   margin-bottom: 30px;
+  text-align: center; /* Center align header */
 }
 
 .driver-form input,
@@ -48,35 +50,29 @@
   border-radius: 6px;
   outline: none;
   transition: border-color 0.2s;
+  box-sizing: border-box; /* Added box-sizing */
 }
 
 .driver-form select {
   background-color: #fff;
+  cursor: pointer; /* Added cursor for select */
 }
 
-.driver-form input[type="password"],
-.driver-form input[type="email"] {
-  width: 80%;
-  padding: 12px;
-  margin: 0 auto 15px auto;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  display: block;
-  box-sizing: border-box;
-}
+/* Removed duplicate input styling - consolidated above */
 
 .driver-checkbox-container {
   display: flex;
   align-items: center;
+  justify-content: center; /* Center the checkbox */
   font-size: 14px;
-  gap: 2px;
-  white-space: nowrap;
+  gap: 8px; /* Increased gap for better spacing */
   margin-bottom: 20px;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
 }
 
 .driver-checkbox-container input[type="checkbox"] {
   margin: 0;
+  width: auto; /* Override the 80% width */
 }
 
 .driver-checkbox-container label {
@@ -89,15 +85,21 @@
   text-decoration: none;
 }
 
+.driver-checkbox-container a:hover {
+  text-decoration: underline; /* Added hover effect */
+}
+
 .driver-checkbox-label {
   display: flex;
   align-items: center;
-  gap: 4px; /* Adjust as needed */
+  gap: 8px; /* Consistent gap */
 }
 
 .driver-checkbox-label input[type="checkbox"] {
-  margin-right: 4px; /* Or 0 if you want no gap */
+  margin-right: 8px;
+  width: auto; /* Override the 80% width */
 }
+
 .driver-submit-btn {
   width: 80%;
   padding: 12px;
@@ -111,10 +113,16 @@
   font-size: 15px;
   transition: background-color 0.2s;
   display: block;
+  box-sizing: border-box; /* Added box-sizing */
 }
 
 .driver-submit-btn:hover {
   background-color: #005f4a;
+}
+
+.driver-submit-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .driver-signin-text,
@@ -122,6 +130,7 @@
   font-size: 13px;
   color: #555;
   margin-top: 20px;
+  text-align: center; /* Center align text */
 }
 
 .driver-signin-text a,
@@ -130,18 +139,58 @@
   text-decoration: none;
 }
 
+.driver-signin-text a:hover,
+.driver-terms-text a:hover {
+  text-decoration: underline; /* Added hover effect */
+}
+
+/* Improved mobile responsiveness */
 @media (max-width: 900px) {
   .driver-page-container {
     flex-direction: column;
   }
 
-  /* Reset padding and height for mobile */
+  .driver-image-section,
+  .driver-form-section {
+    width: 100%; /* Full width on mobile */
+  }
+
   .driver-image-section {
     padding-top: 20px;
+    height: 250px; /* Fixed height for mobile */
   }
 
   .driver-image-section img {
-    height: auto;
-    max-height: 300px;
+    height: 100%;
+    max-height: 250px;
+  }
+
+  .driver-form-section {
+    padding: 30px 20px; /* Reduced padding on mobile */
+  }
+
+  .driver-logo-image {
+    width: 250px; /* Smaller logo on mobile */
+  }
+
+  .driver-checkbox-container {
+    font-size: 12px; /* Smaller text on mobile */
+    gap: 4px;
+  }
+}
+
+@media (max-width: 600px) {
+  .driver-form-section {
+    padding: 20px 15px; /* Even less padding on very small screens */
+  }
+
+  .driver-form input,
+  .driver-form select,
+  .driver-submit-btn {
+    width: 90%; /* Wider inputs on small screens */
+  }
+
+  .driver-logo-image {
+    width: 200px; /* Even smaller logo */
   }
 }
