@@ -5,7 +5,7 @@ const ProfileInfo = () => (
     <div className={styles.profileContainer}>
       {/* Left: Avatar */}
       <img
-        src="images/driver1.jpg"
+                 src="/images/driver1.jpg"
         alt="Sarah Johnson"
         className={styles.profileImage}
       />
