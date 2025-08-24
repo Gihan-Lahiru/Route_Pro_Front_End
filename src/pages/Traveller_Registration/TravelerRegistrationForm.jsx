@@ -2,19 +2,19 @@ import React, { useState } from "react";
 import "./TravelerRegistrationForm.css";
 import axios from "axios";
 
-// Updated API configuration for PHP backend
-const API_CONFIG = {
-  BASE_URL: 'http://localhost/RoutePro-backend(02)', // Your PHP backend path
-  ENDPOINTS: {
-    REGISTER: '/app/controllers/TravellerController.php' // Direct path to PHP controller
+// Create axios instance with default config (same as Driver form)
+const api = axios.create({
+  withCredentials: false,
+  headers: {
+    'Content-Type': 'application/json'
   }
-};
+});
 
 export default function TravelerRegistrationForm() {
   const [form, setForm] = useState({
     name: "",
-    phone: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
     agree: false,
@@ -27,71 +27,137 @@ export default function TravelerRegistrationForm() {
     setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
   };
 
+  // 1. Full Name: Only letters and spaces allowed
   const validateName = (name) => /^[a-zA-Z\s]+$/.test(name);
+
+  // 2. Email: Standard email format
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  // 3. Phone: Either 10 digits starting with 0 or 9 digits starting with 7
   const validatePhone = (phone) => {
     const cleaned = phone.replace(/[\s-]/g, "");
     return /^0\d{9}$/.test(cleaned) || /^7\d{8}$/.test(cleaned);
   };
+
+  // 4. Password: Minimum 8 characters, at least 1 letter, 1 number, 1 special character
   const validatePassword = (password) =>
     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/.test(password);
-  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Step 1: Check if terms are agreed
+    console.log('Form submission started');
+    console.log('Current form state:', form);
+
+    // Step 1: Terms agreement must be ticked
     if (!form.agree) {
       alert('You must agree to the Terms and Conditions and Privacy Policy.');
       return;
     }
 
-    if (!validateName(form.name)) {
-      alert("Name can only contain letters and spaces.");
+    // Step 2: Validate each field in order (trim before validation)
+    const trimmedName = form.name.trim();
+    const trimmedEmail = form.email.trim();
+    const trimmedPhone = form.phone.trim();
+    
+    if (!validateName(trimmedName)) {
+      alert("Full name can only contain letters and spaces.");
       return;
     }
-    if (!validateEmail(form.email)) {
+
+    if (!validateEmail(trimmedEmail)) {
       alert("Invalid email format.");
       return;
     }
-    if (!validatePhone(form.phone)) {
-      alert("Phone number must be either 10 digits starting with 0 or 9 digits starting with 7.");
+
+    if (!validatePhone(trimmedPhone)) {
+      alert("Phone number must be 10 digits starting with 0 or 9 digits starting with 7.");
       return;
     }
+
     if (!validatePassword(form.password)) {
-      alert("Password must be at least 8 characters and include letters, numbers, and a special character.");
+      alert("Password must be at least 8 characters and include a letter, a number, and a special character.");
       return;
     }
+
     if (form.password !== form.confirmPassword) {
       alert("Passwords do not match.");
       return;
     }
 
+    // Prepare data
     const { confirmPassword, agree, ...submitData } = form;
     
-    // Add role to the payload
-    submitData.role = 'traveller';
-    // Add action for PHP controller
-    submitData.action = 'register';
+    // Trim all string fields to remove extra spaces
+    submitData.name = submitData.name.trim();
+    submitData.email = submitData.email.trim();
+    submitData.phone = submitData.phone.trim();
+    submitData.password = submitData.password.trim();
     
+    // Add role to the payload - use 'traveller' to match backend
+    submitData.role = 'traveller';
+    
+    console.log('Submitting data:', submitData);
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.REGISTER}`,
-        submitData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          timeout: 10000 // 10 second timeout
+      // Try with fetch API first as it's more reliable
+      console.log('Making fetch request...');
+      
+      const response = await fetch('http://localhost/RoutePro-backend(02)/public/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Origin': window.location.origin
+        },
+        body: JSON.stringify(submitData)
+      });
+
+      console.log('Response received:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+
+      if (!response.ok) {
+        // For 400 errors, try to get the server's error message
+        const errorText = await response.text();
+        console.log('Error response text:', errorText);
+        
+        let errorMessage = `HTTP error! status: ${response.status} - ${response.statusText}`;
+        
+        try {
+          const errorData = JSON.parse(errorText);
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch (parseError) {
+          console.log('Could not parse error response as JSON');
         }
-      );
+        
+        throw new Error(errorMessage);
+      }
 
-      // Handle different response formats from PHP
-      const responseData = typeof response.data === 'string' ? 
-        JSON.parse(response.data) : response.data;
+      const responseText = await response.text();
+      console.log('Response text length:', responseText.length);
+      console.log('Response text:', responseText);
 
-      if (responseData.success) {
+      if (!responseText || responseText.trim() === '') {
+        throw new Error('Empty response from server');
+      }
+
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log('Successfully parsed JSON:', data);
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError);
+        console.error('Raw response that failed to parse:', responseText);
+        throw new Error(`Invalid JSON response: ${parseError.message}`);
+      }
+
+      if (data.success) {
         alert("Traveler registered successfully!");
         setForm({
           name: "",
@@ -104,28 +170,23 @@ export default function TravelerRegistrationForm() {
         // Redirect to login page after successful registration
         window.location.href = '/user-login';
       } else {
-        alert("Error: " + (responseData.error || responseData.message || "Unknown server error"));
+        alert("Error: " + (data.message || data.error || "Unknown server error"));
       }
     } catch (error) {
       console.error("Registration error:", error);
       console.error('Error details:', {
         message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-        statusText: error.response?.statusText
+        name: error.name,
+        stack: error.stack
       });
       
-      if (error.response) {
-        // Server responded with error status
-        const errorMessage = error.response.data?.message || 
-                           error.response.data?.error || 
-                           `Server error: ${error.response.status}`;
-        alert('Registration failed: ' + errorMessage);
-      } else if (error.request) {
-        // Request was made but no response received
-        alert('Network error: Unable to connect to server. Please check if the backend is running and CORS is configured.');
+      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError') || error.message.includes('ERR_NETWORK')) {
+        alert('Network error: Unable to connect to server. Please check if:\n1. Your backend server is running\n2. You are on the correct port\n3. There are no firewall issues');
+      } else if (error.message.includes('JSON') || error.message.includes('Unexpected end') || error.message.includes('Invalid JSON')) {
+        alert('Server returned invalid data. This might be a server error. Please check the browser console for more details and try again.');
+      } else if (error.message.includes('HTTP error')) {
+        alert('Server error: ' + error.message);
       } else {
-        // Something else happened
         alert('Registration failed: ' + error.message);
       }
     } finally {
@@ -145,7 +206,7 @@ export default function TravelerRegistrationForm() {
         <div className="traveler-form-container">
           <div className="form-header">
             <img className="logo-image" src="/images/new logo.png" alt="Logo" />
-            <h2>Welcome</h2>
+            <h2>Join as a Traveler</h2>
             <p>Create your traveler account</p>
           </div>
 
@@ -155,14 +216,6 @@ export default function TravelerRegistrationForm() {
               type="text" 
               placeholder="Enter your full name" 
               value={form.name} 
-              onChange={handleChange} 
-              required 
-            />
-            <input 
-              name="phone" 
-              type="tel" 
-              placeholder="Enter your phone number" 
-              value={form.phone} 
               onChange={handleChange} 
               required 
             />
@@ -177,6 +230,14 @@ export default function TravelerRegistrationForm() {
                 e.target.setCustomValidity("Please enter a valid email (e.g., user@example.com)")
               }
               onInput={(e) => e.target.setCustomValidity("")}
+            />
+            <input 
+              name="phone" 
+              type="tel" 
+              placeholder="Enter your phone number" 
+              value={form.phone} 
+              onChange={handleChange} 
+              required 
             />
             <input
               name="password"
@@ -195,7 +256,7 @@ export default function TravelerRegistrationForm() {
               required
             />
 
-           {/* Terms and Conditions Checkbox */}
+            {/* Terms and Conditions Checkbox */}
             <div className="driver-checkbox-container">
               <label className="driver-checkbox-label">
                 <input
@@ -221,11 +282,11 @@ export default function TravelerRegistrationForm() {
               className="submit-btn" 
               disabled={loading || !form.agree}
             >
-              {loading ? "Creating..." : "Create Traveler Account"}
+              {loading ? "Registering..." : "Create Traveler Account"}
             </button>
 
             <p className="signin-text">
-              Already have an account? <a href="/user-login">Sign in</a>
+              Already have a traveler account? <a href="/user-login">Sign in here</a>
             </p>
           </form>
         </div>
