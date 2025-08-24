@@ -13,23 +13,38 @@ const DriverDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId');
+    // Get the logged-in user's email from localStorage (set during login)
+    const userEmail = localStorage.getItem('userEmail') || 
+                     localStorage.getItem('email') ||
+                     'admin@gmail.com'; // Fallback for testing
 
-    if (!userId) {
-      console.error('User ID not found in localStorage');
-      return;
-    }
+    console.log('🚀 Fetching driver data for dashboard:', userEmail);
 
-    fetch(`http://localhost/RoutePro-backend/get_user_name.php?userId=${userId}`)
-      .then((res) => res.json())
+    // Use proper DriverController endpoint with email parameter
+    fetch(`http://localhost/RoutePro-backend(02)/public/driver/profile?email=${encodeURIComponent(userEmail)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => {
-        if (data.message) {
-          setUserName(data.message);
+        if (data.success && data.data) {
+          setUserName(data.data.name || 'Driver');
         } else {
-          console.error('Error fetching name:', data.error);
+          console.error('Error fetching driver info:', data.message || 'Unknown error');
+          setUserName('Driver'); // Fallback
         }
       })
-      .catch((err) => console.error('Fetch error:', err));
+      .catch((err) => {
+        console.error('Fetch error:', err);
+        setUserName('Driver'); // Fallback
+      });
   }, []);
 
   const handleLogout = () => {

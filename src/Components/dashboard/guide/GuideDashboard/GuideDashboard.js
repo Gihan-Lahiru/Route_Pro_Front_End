@@ -13,22 +13,38 @@ const GuideDashboard = () => {
   const navigate = useNavigate(); // 👈 Initialize useNavigate
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId');
+    // Get the logged-in user's email from localStorage (set during login)
+    const userEmail = localStorage.getItem('userEmail') || 
+                     localStorage.getItem('email') ||
+                     'priya@guide.com'; // Fallback for testing
 
-    if (!userId) {
-      console.error('User ID not found in localStorage');
-      return;
-    }
-     fetch(`http://localhost/RoutePro-backend/get_user_nameGuide.php?userId=${userId}`)
-      .then((res) => res.json())
+    console.log('🚀 Fetching guide data for dashboard:', userEmail);
+
+    // Use proper GuideController endpoint with email parameter
+    fetch(`http://localhost/RoutePro-backend(02)/public/guide/profile?email=${encodeURIComponent(userEmail)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => {
-        if (data.message) {
-          setUserName(data.message);
+        if (data.success && data.data) {
+          setUserName(data.data.name || 'Guide');
         } else {
-          console.error('Error fetching name:', data.error);
+          console.error('Error fetching guide info:', data.message || 'Unknown error');
+          setUserName('Guide'); // Fallback
         }
       })
-      .catch((err) => console.error('Fetch error:', err));
+      .catch((err) => {
+        console.error('Fetch error:', err);
+        setUserName('Guide'); // Fallback
+      });
   }, []);
 
  const handleLogout = () => {
