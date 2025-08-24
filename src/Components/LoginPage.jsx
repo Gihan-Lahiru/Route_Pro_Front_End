@@ -21,7 +21,7 @@ const LoginPage = () => {
       let response;
       try {
         response = await axios.post(
-          "http://localhost/RoutePro-backend(02)/public/index.php/auth/login", 
+          "http://localhost/RoutePro-backend/public/index.php/auth/login", 
           {
             email,
             password,
@@ -38,7 +38,7 @@ const LoginPage = () => {
         
         // Fallback to legacy endpoint
         response = await axios.post(
-          "http://localhost/RoutePro-backend(02)/app/controllers/Login.php", 
+          "http://localhost/RoutePro-backend/app/controllers/Login.php", 
           {
             email,
             password,
