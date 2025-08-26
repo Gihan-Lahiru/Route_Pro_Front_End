@@ -119,42 +119,73 @@ const eventsData = {
 
 export default function Cultural() {
   const [selectedDistrict, setSelectedDistrict] = useState("Most Favorites");
+  const [selectedType, setSelectedType] = useState("All");
 
   const handleDistrictChange = (e) => {
     setSelectedDistrict(e.target.value);
   };
 
-  const selectedData = eventsData[selectedDistrict] || eventsData["Most Favorites"];
+  const handleTypeChange = (e) => {
+    setSelectedType(e.target.value);
+  };
+
+  // Helper to classify items
+  const getType = (item) => {
+    const title = item.title.toLowerCase();
+    const desc = item.description.toLowerCase();
+    if (title.includes("festival") || title.includes("perahera") || desc.includes("festival") || desc.includes("perahera")) {
+      return "Festival";
+    }
+    if (title.includes("food") || title.includes("curry") || title.includes("snack") || title.includes("rice") || title.includes("seafood") || desc.includes("food") || desc.includes("curry") || desc.includes("snack") || desc.includes("rice") || desc.includes("seafood")) {
+      return "Food";
+    }
+    return "Other";
+  };
+
+  const selectedData = (eventsData[selectedDistrict] || eventsData["Most Favorites"]).filter((item) => {
+    if (selectedType === "All") return true;
+    return getType(item) === selectedType;
+  });
 
   return (
     <div className="cultural-container">
       <h1>Discover Sri Lankan foods and festivals</h1>
       <p>Explore the rich cultural heritage and delicious cuisine of the Pearl of the Indian Ocean</p>
 
-      <select value={selectedDistrict} onChange={handleDistrictChange}>
-        <option value="Most Favorites">All Districts (Most Favorites)</option>
-        {allDistricts.map((district) => (
-          <option key={district} value={district}>{district}</option>
-        ))}
-      </select>
+      <div className="dropdown-container">
+        <select value={selectedDistrict} onChange={handleDistrictChange}>
+          <option value="Most Favorites">All Districts (Most Favorites)</option>
+          {allDistricts.map((district) => (
+            <option key={district} value={district}>{district}</option>
+          ))}
+        </select>
+        <select value={selectedType} onChange={handleTypeChange}>
+          <option value="All">All</option>
+          <option value="Food">Food</option>
+          <option value="Festival">Festival</option>
+        </select>
+      </div>
 
       <div className="cards-grid">
-        {selectedData.map((item) => (
-          <div className="card" key={item.id}>
-            <img src={item.image} alt={item.title} />
-            <div className="card-content">
-              <h3>{item.title}</h3>
-              <p><strong>Month:</strong> {item.month}</p>
-              <p><strong>Location:</strong> {item.location}</p>
-              <p>{item.description}</p>
+        {selectedData.length === 0 ? (
+          <p>No results found for this filter.</p>
+        ) : (
+          selectedData.map((item) => (
+            <div className="card" key={item.id}>
+              <img src={item.image} alt={item.title} />
+              <div className="card-content">
+                <h3>{item.title}</h3>
+                <p><strong>Month:</strong> {item.month}</p>
+                <p><strong>Location:</strong> {item.location}</p>
+                <p>{item.description}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
       <p className="selected-district-text">
-  Showing the most popular cultural events and foods across  <strong>{selectedDistrict}</strong>
-</p>
-
+        Showing the most popular cultural events and foods across <strong>{selectedDistrict}</strong> filtered by <strong>{selectedType}</strong>
+      </p>
     </div>
   );
 }
