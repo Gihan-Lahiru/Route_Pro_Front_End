@@ -89,3 +89,89 @@
 .nav-link-underline:hover::after {
   width: 100%;
 }
+
+/* User Profile Section Styles */
+.user-profile-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.user-profile-section:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.user-name {
+  color: #333;
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+.user-profile-section:hover .user-name {
+  color: #007bff;
+}
+
+.user-avatar-container {
+  position: relative;
+  width: 35px;
+  height: 35px;
+}
+
+.user-avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #007bff;
+  cursor: pointer;
+  transition: border-color 0.3s ease, transform 0.2s ease;
+}
+
+.user-avatar:hover {
+  border-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.user-icon {
+  font-size: 35px;
+  color: #007bff;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.user-icon:hover {
+  color: #0056b3;
+  transform: scale(1.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .user-profile-section {
+    gap: 8px;
+    padding: 6px 8px;
+  }
+  
+  .user-name {
+    font-size: 13px;
+  }
+  
+  .user-avatar-container {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .user-avatar {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .user-icon {
+    font-size: 30px;
+  }
+}
