@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import MapComponent from "./MapComponent";
 import axios from "axios";
 import "./RoutePlanner.css";
+import TripDateSelector from "./TripDateSelector";
 
 import PlacesSelector from "./PlacesSelector";
 
@@ -15,6 +16,7 @@ const RoutePlanner = () => {
   const navigate = useNavigate();
   const [findAttractions, setFindAttractions] = useState(false);
   const [selectedPlaces, setSelectedPlaces] = useState([]);
+  const [showDateSelector, setShowDateSelector] = useState(false);
 
   // ✅ Your older pricing logic:
   const basePricePerKM = 100;
@@ -35,6 +37,21 @@ const RoutePlanner = () => {
     distanceValue && vehicle
       ? (distanceValue * basePricePerKM * (vehicleMultiplier[vehicle] || 1)).toFixed(2)
       : "N/A";
+
+  const handleBookDriverGuide = () => {
+    setShowDateSelector(true);
+  };
+
+  const handleDateConfirm = (dates) => {
+    setShowDateSelector(false);
+    // Store dates in localStorage or pass them to the booking page
+    localStorage.setItem('tripDates', JSON.stringify(dates));
+    navigate("/bookdriver");
+  };
+
+  const handleDateCancel = () => {
+    setShowDateSelector(false);
+  };
 
   const handleConfirm = async () => {
     if (!from || !to || !vehicle || !routeDetails.distance || !routeDetails.duration) {
@@ -127,7 +144,7 @@ const RoutePlanner = () => {
         <div className="card">
           <h3>Need Assistance?</h3>
           <p>Book a professional driver and local guide for your journey.</p>
-          <button className="book-button" onClick={() => navigate("/bookdriver")}>
+          <button className="book-button" onClick={handleBookDriverGuide}>
             Book Driver & Guide
           </button>
         </div>
@@ -148,6 +165,13 @@ const RoutePlanner = () => {
           setNearbyPlaces={setNearbyPlaces}
         />
       </div>
+      
+      {showDateSelector && (
+        <TripDateSelector
+          onClose={handleDateCancel}
+          onConfirm={handleDateConfirm}
+        />
+      )}
     </div>
   );
 };

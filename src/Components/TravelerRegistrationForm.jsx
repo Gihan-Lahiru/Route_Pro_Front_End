@@ -11,29 +11,21 @@ export default function TravelerRegistrationForm() {
     confirmPassword: "",
   });
 
-  const [loading, setLoading] = useState(false); // FIXED: Added loading state
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
 
-  const validateName = (name) => {
-    return /^[a-zA-Z\s]+$/.test(name);
-  };
-
+  const validateName = (name) => /^[a-zA-Z\s]+$/.test(name);
   const validatePhone = (phone) => {
     const cleaned = phone.replace(/[\s-]/g, "");
     return /^0\d{9}$/.test(cleaned) || /^7\d{8}$/.test(cleaned);
   };
-
-  const validatePassword = (password) => {
-    return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/.test(password);
-  };
-
-  const validateEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validatePassword = (password) =>
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/.test(password);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,26 +34,22 @@ export default function TravelerRegistrationForm() {
       alert("Name can only contain letters and spaces.");
       return;
     }
-
     if (!validateEmail(form.email)) {
       alert("Invalid email format.");
       return;
     }
-
     if (!validatePhone(form.phone)) {
       alert(
         "Phone number must be either 10 digits starting with 0 or 9 digits starting with 7."
       );
       return;
     }
-
     if (!validatePassword(form.password)) {
       alert(
         "Password must be at least 8 characters and include letters, numbers, and a special character."
       );
       return;
     }
-
     if (form.password !== form.confirmPassword) {
       alert("Passwords do not match.");
       return;
@@ -70,10 +58,9 @@ export default function TravelerRegistrationForm() {
     const { confirmPassword, ...submitData } = form;
 
     setLoading(true);
-
     try {
       const response = await axios.post(
-        "http://localhost/RoutePro-backend/app/controllers/TravellerController.php",
+        "http://localhost/RoutePro-backend/app/controllers/signup_traveler.php",
         submitData
       );
 
@@ -91,7 +78,7 @@ export default function TravelerRegistrationForm() {
       }
     } catch (error) {
       console.error("Axios error:", error);
-      alert("Something went wrong. Please try again.");
+      alert("Network error. Please check your backend server and try again.");
     } finally {
       setLoading(false);
     }
@@ -101,8 +88,8 @@ export default function TravelerRegistrationForm() {
     <div className="traveler-form-container">
       <div className="form-header">
         <div className="icon-circle">👥</div>
-        <h2>Welcome</h2>
-        <p>Sign in to your traveller account</p>
+        <h2>Create Traveler Account</h2>
+        <p>Sign up to explore routes</p>
       </div>
 
       <form onSubmit={handleSubmit} className="traveler-form">
@@ -129,12 +116,6 @@ export default function TravelerRegistrationForm() {
           value={form.email}
           onChange={handleChange}
           required
-          onInvalid={(e) =>
-            e.target.setCustomValidity(
-              "Please enter a valid email (e.g., user@example.com)"
-            )
-          }
-          onInput={(e) => e.target.setCustomValidity("")}
         />
         <input
           name="password"

@@ -1,122 +1,8 @@
 // DriversSection.jsx
-import React, { useState } from "react";
+import React from "react";
 import "./DriversSection.css";
-
-const drivers = [
-  {
-    name: "Cabral 422",
-    image: "/images/driver1.jpg",
-    reviews: 4,
-    rating: 5,
-    location: "Negombo",
-    vehicle: "Car (2 Pax)",
-    license: "Private Chauffeur Guide",
-    verified: true,
-    recommended: false,
-    availability: "Available",
-    email: "cabral422@email.com",
-    mobile: "+94 71 123 4567",
-  },
-  {
-    name: "Silva 012",
-    image: "/images/driver2.jpg",
-    reviews: 5,
-    rating: 5,
-    location: "Colombo",
-    vehicle: "Car (2 Pax)",
-    license: "Private Chauffeur Guide",
-    verified: true,
-    recommended: true,
-    availability: "Not Available",
-    email: "silva012@email.com",
-    mobile: "+94 77 222 3333",
-  },
-  {
-    name: "Silva 012",
-    image: "/images/driver2.jpg",
-    reviews: 5,
-    rating: 5,
-    location: "Colombo",
-    vehicle: "Car (2 Pax)",
-    license: "Private Chauffeur Guide",
-    verified: true,
-    recommended: true,
-    availability: "Available",
-    email: "silva012@email.com",
-    mobile: "+94 77 222 3333",
-  },
-  {
-    name: "Silva 012",
-    image: "/images/driver2.jpg",
-    reviews: 5,
-    rating: 5,
-    location: "Colombo",
-    vehicle: "Car (2 Pax)",
-    license: "Private Chauffeur Guide",
-    verified: true,
-    recommended: true,
-    availability: "Available",
-    email: "silva012@email.com",
-    mobile: "+94 77 222 3333",
-  },
-  {
-    name: "Silva 012",
-    image: "/images/driver2.jpg",
-    reviews: 5,
-    rating: 5,
-    location: "Colombo",
-    vehicle: "Car (2 Pax)",
-    license: "Private Chauffeur Guide",
-    verified: true,
-    recommended: true,
-    availability: "Available",
-    email: "silva012@email.com",
-    mobile: "+94 77 222 3333",
-  },
-  {
-    name: "Silva 012",
-    image: "/images/driver2.jpg",
-    reviews: 5,
-    rating: 5,
-    location: "Colombo",
-    vehicle: "Car (2 Pax)",
-    license: "Private Chauffeur Guide",
-    verified: true,
-    recommended: true,
-    availability: "Not Available",
-    email: "silva012@email.com",
-    mobile: "+94 77 222 3333",
-  },
-  {
-    name: "Silva 012",
-    image: "/images/driver2.jpg",
-    reviews: 5,
-    rating: 5,
-    location: "Colombo",
-    vehicle: "Car (2 Pax)",
-    license: "Private Chauffeur Guide",
-    verified: true,
-    recommended: true,
-    availability: "Not Available",
-    email: "silva012@email.com",
-    mobile: "+94 77 222 3333",
-  },
-  {
-    name: "Silva 012",
-    image: "/images/driver2.jpg",
-    reviews: 5,
-    rating: 5,
-    location: "Colombo",
-    vehicle: "Car (2 Pax)",
-    license: "Private Chauffeur Guide",
-    verified: true,
-    recommended: true,
-    availability: "Available",
-    email: "silva012@email.com",
-    mobile: "+94 77 222 3333",
-  },
-  // ➜ Add more drivers with email & mobile too!
-];
+import { useNavigate } from "react-router-dom";
+import drivers from "./driversData";
 
 const renderStars = (rating) => {
   return Array.from({ length: 5 }, (_, i) => (
@@ -127,90 +13,82 @@ const renderStars = (rating) => {
 };
 
 export default function DriversSection() {
-  const [selectedDriver, setSelectedDriver] = useState(null);
-  const [bookedMessage, setBookedMessage] = useState("");
-
-  const handleDriverClick = (driver) => {
-    setSelectedDriver(driver);
-    setBookedMessage("");
+  const navigate = useNavigate();
+  
+  // Get trip dates from localStorage
+  const tripDatesStr = localStorage.getItem('tripDates');
+  let tripDates = null;
+  
+  if (tripDatesStr) {
+    try {
+      tripDates = JSON.parse(tripDatesStr);
+    } catch (error) {
+      console.log('Error parsing trip dates');
+    }
+  }
+  
+  // Helper function to check if a driver is available for selected dates
+  const isDriverAvailable = (driver) => {
+    // If already marked as booked entirely, not available
+    if (driver.booked && driver.availability !== "Available") {
+      return false;
+    }
+    
+    // If no trip dates selected or invalid, show all "Available" drivers
+    if (!tripDates || !tripDates.fromDate || !tripDates.toDate) {
+      return driver.availability === "Available";
+    }
+    
+    // Selected trip dates
+    const requestStart = new Date(tripDates.fromDate);
+    const requestEnd = new Date(tripDates.toDate);
+    
+    // Check if any of the driver's bookings overlap with requested dates
+    const hasOverlappingBooking = driver.bookings.some(booking => {
+      const bookingStart = new Date(booking.startDate);
+      const bookingEnd = new Date(booking.endDate);
+      
+      // Check for overlap
+      return (bookingStart <= requestEnd && bookingEnd >= requestStart);
+    });
+    
+    // Driver is available if there's no overlap with existing bookings
+    return !hasOverlappingBooking && driver.availability === "Available";
   };
-
-  const handleCloseModal = () => {
-    setSelectedDriver(null);
-    setBookedMessage("");
-  };
-
-  const handleBookNow = () => {
-    setBookedMessage("✅ Booking confirmed! Thank you.");
-  };
-
+  
+  // Filter drivers based on availability during selected trip dates
+  const availableDrivers = drivers.filter(isDriverAvailable);
+  
   return (
     <section className="drivers-section">
       <h2>MEET YOUR LOCAL DRIVERS</h2>
-      <p className="subtitle">Over 200+ drivers with 800+ amazing reviews!</p>
+      <p className="subtitle">
+        {tripDates && tripDates.fromDate && tripDates.toDate ? 
+          `Professional, verified drivers available from ${new Date(tripDates.fromDate).toLocaleDateString()} to ${new Date(tripDates.toDate).toLocaleDateString()}!` : 
+          "Professional, verified drivers ready to make your journey memorable!"}
+      </p>
       <div className="cards">
-        {drivers.map((driver, index) => (
-          <article
-            key={index}
-            className="driver-card"
-            onClick={() => handleDriverClick(driver)}
-          >
+        {availableDrivers.map((driver) => (
+          <article key={driver.id} className="driver-card">
             <div className="image-container">
-              <img
-                src={driver.image}
-                alt={driver.name}
-                className="driver-image"
-              />
+              <img src={driver.image} alt={driver.name} className="driver-image" />
               <span className="price-badge">{driver.availability}</span>
-              {driver.verified && (
-                <span className="badge verified">Verified</span>
-              )}
-              {driver.recommended && (
-                <span className="badge recommended">Recommended</span>
-              )}
+              {driver.verified && <span className="badge verified">Verified</span>}
+              {driver.recommended && <span className="badge recommended">Recommended</span>}
             </div>
             <div className="card-body">
-              <div className="rating">{renderStars(driver.rating)}</div>
               <h3>{driver.name}</h3>
               <ul className="driver-info">
                 <li>🚗 {driver.vehicle}</li>
-                <li>🌐 English</li>
                 <li>📍 {driver.location}</li>
                 <li>✅ {driver.license}</li>
               </ul>
+              <button className="view-details-btn" onClick={() => navigate(`/driver/${driver.id}`)}>View Details</button>
             </div>
           </article>
         ))}
       </div>
-
-      {selectedDriver && (
-        <div className="modal-overlay" onClick={handleCloseModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={handleCloseModal}>
-              &times;
-            </button>
-            <img
-              src={selectedDriver.image}
-              alt={selectedDriver.name}
-              className="driver-image"
-            />
-            <h3>{selectedDriver.name}</h3>
-            <p>📍 {selectedDriver.location}</p>
-            <p>📧 {selectedDriver.email}</p>
-            <p>📞 {selectedDriver.mobile}</p>
-            <div className="rating">{renderStars(selectedDriver.rating)}</div>
-            <p>Reviews: {selectedDriver.reviews}</p>
-            {!bookedMessage && (
-              <button className="book-now" onClick={handleBookNow}>
-                Book Now
-              </button>
-            )}
-            {bookedMessage && (
-              <p className="booking-message">{bookedMessage}</p>
-            )}
-          </div>
-        </div>
-      )}
     </section>
   );
 }
+
