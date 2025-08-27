@@ -1,6 +1,4 @@
 import React from "react";
-import DriverDetails from "./Components/DriverDetailsSimple";
-import GuideDetails from "./Components/GuideDetails";
 import {
   BrowserRouter as Router,
   Routes,
@@ -94,11 +92,6 @@ const AppContent = () => {
           <Route path="/culture" element={<Cultural />} />
           <Route path="/route" element={<RoutePlanner />} />
           <Route path="/bookdriver" element={<BookDriver />} />
-
-          {/* Driver Details Page */}
-          <Route path="/driver/:id" element={<DriverDetails />} />
-          {/* Guide Details Page */}
-          <Route path="/guide/:id" element={<GuideDetails />} />
 
           {/* Dashboards */}
           <Route path="/driver-dashboard" element={<DriverDashboard />} />

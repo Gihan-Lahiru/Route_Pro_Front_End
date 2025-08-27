@@ -34,16 +34,12 @@ export default function TravelerRegistrationForm() {
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   // 3. Phone: Either 10 digits starting with 0 or 9 digits starting with 7
-  const validateName = (name) => /^[a-zA-Z\s]+$/.test(name);
   const validatePhone = (phone) => {
     const cleaned = phone.replace(/[\s-]/g, "");
     return /^0\d{9}$/.test(cleaned) || /^7\d{8}$/.test(cleaned);
   };
 
   // 4. Password: Minimum 8 characters, at least 1 letter, 1 number, 1 special character
-  const validatePassword = (password) =>
-    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/.test(password);
-  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const validatePassword = (password) =>
     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/.test(password);
 
@@ -61,18 +57,22 @@ export default function TravelerRegistrationForm() {
       alert("Full name can only contain letters and spaces.");
       return;
     }
+
     if (!validateEmail(form.email)) {
       alert("Invalid email format.");
       return;
     }
+
     if (!validatePhone(form.phone)) {
       alert("Phone number must be 10 digits starting with 0 or 9 digits starting with 7.");
       return;
     }
+
     if (!validatePassword(form.password)) {
       alert("Password must be at least 8 characters and include a letter, a number, and a special character.");
       return;
     }
+
     if (form.password !== form.confirmPassword) {
       alert("Passwords do not match.");
       return;
@@ -85,11 +85,10 @@ export default function TravelerRegistrationForm() {
     submitData.role = 'traveller';
     
     setLoading(true);
+
     try {
       const response = await api.post(
         'http://localhost/RoutePro-backend(02)/public/auth/register',
-      const response = await axios.post(
-        "http://localhost/RoutePro-backend/app/controllers/signup_traveler.php",
         submitData
       );
 
@@ -130,81 +129,108 @@ export default function TravelerRegistrationForm() {
         // Something else happened
         alert('Registration failed: ' + error.message);
       }
-      console.error("Axios error:", error);
-      alert("Network error. Please check your backend server and try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="traveler-form-container">
-      <div className="form-header">
-        <div className="icon-circle">👥</div>
-        <h2>Create Traveler Account</h2>
-        <p>Sign up to explore routes</p>
+    <div className="page-container">
+      {/* Left Section - Image */}
+      <div className="image-section">
+        <img src="/images/traverller-reg.png" alt="Traveler" />
       </div>
 
-      <form onSubmit={handleSubmit} className="traveler-form">
-        <input
-          name="name"
-          type="text"
-          placeholder="Full name"
-          value={form.name}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="phone"
-          type="tel"
-          placeholder="Phone number"
-          value={form.phone}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="email"
-          type="email"
-          placeholder="Email address"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="password"
-          type="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="confirmPassword"
-          type="password"
-          placeholder="Confirm password"
-          value={form.confirmPassword}
-          onChange={handleChange}
-          required
-        />
+      {/* Right Section - Form */}
+      <div className="form-section">
+        <div className="traveler-form-container">
+          <div className="form-header">
+            <img className="logo-image" src="/images/new logo.png" alt="Logo" />
+            <h2>Join as a Traveler</h2>
+            <p>Create your traveler account</p>
+          </div>
 
-        <button type="submit" className="submit-btn" disabled={loading}>
-          {loading ? "Creating..." : "Create Account"}
-        </button>
+          <form onSubmit={handleSubmit} className="traveler-form">
+            <input 
+              name="name" 
+              type="text" 
+              placeholder="Enter your full name" 
+              value={form.name} 
+              onChange={handleChange} 
+              required 
+            />
+            <input
+              name="email"
+              type="email"
+              placeholder="Enter your email address"
+              value={form.email}
+              onChange={handleChange}
+              required
+              onInvalid={(e) =>
+                e.target.setCustomValidity("Please enter a valid email (e.g., user@example.com)")
+              }
+              onInput={(e) => e.target.setCustomValidity("")}
+            />
+            <input 
+              name="phone" 
+              type="tel" 
+              placeholder="Enter your phone number" 
+              value={form.phone} 
+              onChange={handleChange} 
+              required 
+            />
+            <input
+              name="password"
+              type="password"
+              placeholder="Create a strong password"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+            <input
+              name="confirmPassword"
+              type="password"
+              placeholder="Confirm your password"
+              value={form.confirmPassword}
+              onChange={handleChange}
+              required
+            />
 
-        <p className="signin-text">
-          Already have an account? <a href="/user-login">Sign in</a>
-        </p>
-        <p className="terms-text">
-          By continuing, you agree to our{" "}
-          <a href="/termsconditions" target="_blank" rel="noopener noreferrer">
-            Terms and Conditions
-          </a>{" "}
-          and{" "}
-          <a href="/privacypolicy" target="_blank" rel="noopener noreferrer">
-            Privacy Policy
-          </a>
-        </p>
-      </form>
+            {/* Terms and Conditions Checkbox */}
+            <div className="traveler-checkbox-container">
+              <label className="traveler-checkbox-label">
+                <input
+                  type="checkbox"
+                  name="agree"
+                  checked={form.agree}
+                  onChange={handleChange}
+                  required
+                />
+                I agree to the{" "}
+                <a href="/termsconditions" target="_blank" rel="noopener noreferrer">
+                  Terms and Conditions
+                </a>{" "}
+                and{" "}
+                <a href="/privacypolicy" target="_blank" rel="noopener noreferrer">
+                  Privacy Policy
+                </a>
+              </label>
+            </div>
+
+            <button 
+              type="submit" 
+              className="submit-btn" 
+              disabled={loading || !form.agree}
+            >
+              {loading ? "Registering..." : "Create Traveler Account"}
+            </button>
+
+            <p className="signin-text">
+              Already have a traveler account? <a href="/user-login">Sign in here</a>
+            </p>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }
