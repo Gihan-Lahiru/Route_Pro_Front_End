@@ -55,12 +55,18 @@
 
 .summary-card {
   flex: 1 1 30%;
-  background-color: #ffffff;
-  border-radius: 10px;
-  padding: 16px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(180deg, #ffffff 0%, #f9fbfd 100%);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 10px 25px rgba(13, 38, 76, 0.08);
   box-sizing: border-box;
   min-width: 250px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(13, 38, 76, 0.12);
 }
 
 /* Status Styles */
@@ -82,11 +88,11 @@
 .status-toggle {
   padding: 10px 16px;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
   color: white;
   font-size: 14px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s ease, transform 0.1s ease;
   margin-bottom: 10px;
 }
 

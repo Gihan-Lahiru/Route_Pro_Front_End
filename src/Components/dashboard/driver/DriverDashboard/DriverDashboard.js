@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import TripDetails from "../TripDetails/TripDetails";
-import Availability from "../Availability/Availability";
 import ReviewsPanel from "../ReviewsPanel/ReviewsPanel";
 import "./DriverDashboard.css";
 import DriverHeader from "../DriverHeader/DriverHeader";
 
 const DriverDashboard = () => {
-  const [status, setStatus] = useState("Available");
+  const [status, setStatus] = useState("available");
   const [activeView, setActiveView] = useState("trip");
   const [userName, setUserName] = useState("");
   const navigate = useNavigate();
@@ -46,6 +45,7 @@ const DriverDashboard = () => {
       .then((data) => {
         if (data.success && data.data) {
           setUserName(data.data.name || "Driver");
+          setStatus(data.data.status || "available"); // Update status from backend
         } else {
           console.error(
             "Error fetching driver info:",
@@ -61,11 +61,66 @@ const DriverDashboard = () => {
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.clear(); // clear session/localStorage
-    navigate("/homepage"); // redirect
+    // Clear all localStorage data
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("email");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("role");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("name");
+    localStorage.removeItem("userRating");
+    localStorage.removeItem("userProfile");
+
+    // Dispatch custom event to notify Header component
+    window.dispatchEvent(new Event("localStorageCleared"));
+
+    // Navigate to homepage
+    navigate("/homepage");
   };
 
-  const userId = localStorage.getItem("userId") || "";
+  const updateStatusInBackend = async (newStatus) => {
+    try {
+      const userEmail =
+        localStorage.getItem("userEmail") || localStorage.getItem("email");
+
+      if (!userEmail) {
+        console.error("No user email found for status update");
+        return;
+      }
+
+      console.log("🔄 Updating driver status to:", newStatus);
+
+      const response = await fetch(
+        "http://localhost/RoutePro-backend(02)/public/driver/status",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: userEmail,
+            status: newStatus,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        console.log("✅ Status updated successfully in backend");
+        setStatus(newStatus); // Update local state only after successful backend update
+      } else {
+        console.error("❌ Failed to update status in backend:", result.message);
+        alert(`Failed to update status: ${result.message || "Unknown error"}`);
+      }
+    } catch (error) {
+      console.error("❌ Error updating status:", error);
+      alert("Network error while updating status. Please try again.");
+    }
+  };
+
+  const userId = localStorage.getItem("userId");
 
   return (
     <div className="dashboard">
@@ -73,16 +128,19 @@ const DriverDashboard = () => {
       <div className="dashboard-header">
         <div className="welcome-section">
           <h1>Welcome back, {userName || "Driver"}!</h1>
-          <p className="subtitle">
-            Manage your trips, availability and reviews.
-          </p>
+          <p className="subtitle">Manage your trips and reviews.</p>
         </div>
         <button className="action-button" onClick={handleLogout}>
           Log Out
         </button>
       </div>
 
-      <DriverHeader status={status} setStatus={setStatus} userId={userId} />
+      <DriverHeader
+        status={status}
+        setStatus={setStatus}
+        userId={userId}
+        setUserName={setUserName}
+      />
 
       {/* Summary Row */}
       <div className="summary-row">
@@ -96,14 +154,18 @@ const DriverDashboard = () => {
         </div>
         <div className="summary-card status-card">
           <h2>Status</h2>
-          <p className={`status ${status.toLowerCase()}`}>{status}</p>
+          <p className={`status ${status.toLowerCase()}`}>
+            {status === "available" ? "Available" : "Unavailable"}
+          </p>
           <button
             className={`status-toggle ${status.toLowerCase()}`}
             onClick={() =>
-              setStatus(status === "Available" ? "Unavailable" : "Available")
+              updateStatusInBackend(
+                status === "available" ? "nonavailable" : "available"
+              )
             }
           >
-            {status === "Available" ? "Go Unavailable" : "Go Available"}
+            {status === "available" ? "Go Unavailable" : "Go Available"}
           </button>
         </div>
       </div>
@@ -117,12 +179,6 @@ const DriverDashboard = () => {
           Trip Details
         </button>
         <button
-          onClick={() => setActiveView("availability")}
-          className={activeView === "availability" ? "active" : ""}
-        >
-          Availability
-        </button>
-        <button
           onClick={() => setActiveView("reviews")}
           className={activeView === "reviews" ? "active" : ""}
         >
@@ -133,9 +189,6 @@ const DriverDashboard = () => {
       {/* Selected Section */}
       <div className="view-container">
         {activeView === "trip" && <TripDetails />}
-        {activeView === "availability" && (
-          <Availability status={status} setStatus={setStatus} />
-        )}
         {activeView === "reviews" && <ReviewsPanel />}
       </div>
     </div>
