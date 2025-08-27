@@ -30,6 +30,7 @@ const LoginPage = () => {
             headers: {
               'Content-Type': 'application/json',
             },
+            withCredentials: true, // Important: include cookies for session
             timeout: 10000,
           }
         );
@@ -47,6 +48,7 @@ const LoginPage = () => {
             headers: {
               'Content-Type': 'application/json',
             },
+            withCredentials: true, // Important: include cookies for session
             timeout: 10000,
           }
         );
@@ -56,7 +58,7 @@ const LoginPage = () => {
       console.log("Login response:", result);
 
       if (result.success) {
-        // Store comprehensive user data in localStorage
+        // Store user data in localStorage for immediate access
         localStorage.setItem("userId", result.userId);
         localStorage.setItem("role", result.role);
         localStorage.setItem("userName", result.name);
