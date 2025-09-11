@@ -9,13 +9,14 @@ import RecentActivity from './RecentActivity';
 
 const TravelerDashboard = () => {
   const [userName, setUserName] = useState('');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
     // Get the logged-in user's email from localStorage (set during login)
     const userEmail = localStorage.getItem('userEmail') || 
                      localStorage.getItem('email') ||
-                     'emma@traveller.com'; // Fallback for testing
+                     'test.traveller@example.com'; // Using an email that exists in DB
 
     console.log('🚀 Fetching traveller data for dashboard:', userEmail);
 
@@ -33,10 +34,13 @@ const TravelerDashboard = () => {
         return res.json();
       })
       .then((data) => {
+        console.log('🔍 Dashboard API Response:', data);
         if (data.success && data.data) {
+          console.log('✅ Dashboard data received:', data.data);
           setUserName(data.data.name || 'Traveller');
         } else {
-          console.error('Error fetching traveller info:', data.message || 'Unknown error');
+          console.error('❌ Error fetching traveller info:', data.message || 'Unknown error');
+          console.error('❌ Full dashboard response:', data);
           setUserName('Traveller'); // Fallback
         }
       })
@@ -44,10 +48,32 @@ const TravelerDashboard = () => {
         console.error('Fetch error:', err);
         setUserName('Traveller'); // Fallback
       });
-  }, []);
+  }, [refreshTrigger]); // Add refreshTrigger as dependency
+
+  const handleProfileUpdate = () => {
+    setRefreshTrigger(prev => prev + 1); // Trigger re-fetch
+  };
 
   const handleLogout = () => {
-    // Optional: clear auth/session data here
+    // Clear all localStorage data
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('email');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('role');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('name');
+    localStorage.removeItem('userRating');
+    localStorage.removeItem('userProfile');
+    localStorage.removeItem('sessionStartTime');
+    
+    // Dispatch event to notify Header component
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'userEmail',
+      newValue: null
+    }));
+    
+    // Navigate to homepage
     navigate('/homepage');
   };
 
@@ -58,7 +84,7 @@ const TravelerDashboard = () => {
         <button className="action-button" onClick={handleLogout}>Log Out</button>
       </div>
 
-      <ProfileInfo />
+      <ProfileInfo onProfileUpdate={handleProfileUpdate} />
       <QuickActions />
       <UpcomingTrips />
       <RecentActivity />

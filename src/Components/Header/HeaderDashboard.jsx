@@ -8,7 +8,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import "./HeaderDashboard.css";
 
-export default function Header() {
+export default function HeaderDashboard() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
 
@@ -48,10 +48,7 @@ export default function Header() {
             </Nav>
 
             <Nav className="topnav-right">
-              
-
-              
-
+              {/* Keep dashboard header simple - focus on main Header.jsx */}
               
             </Nav>
           </Navbar.Collapse>

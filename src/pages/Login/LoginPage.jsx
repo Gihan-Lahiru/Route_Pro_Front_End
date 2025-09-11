@@ -64,6 +64,7 @@ const LoginPage = () => {
         localStorage.setItem("userName", result.name);
         localStorage.setItem("userEmail", result.email);
         localStorage.setItem("userRating", result.rating || "0");
+        localStorage.setItem("sessionStartTime", Date.now().toString()); // Add session timestamp
         
         // Store additional profile data if available
         if (result.user && result.user.profile) {

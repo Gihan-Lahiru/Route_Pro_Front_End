@@ -107,10 +107,10 @@ export default function DriversSection() {
     console.log(`Driver ${driver.name || driver.user_name} status:`, driver.status);
     console.log("Full driver object:", driver);
     
-    // Only show drivers that are NOT "nonavailable"
-    return driver.status !== "nonavailable";
+    // For now, show all drivers regardless of status to test
+    return true;
     
-    // Alternative: Only show drivers with specific available statuses
+    // Original logic (commented out for debugging):
     // return driver.status === "available" || driver.status === "Available";
   };
   

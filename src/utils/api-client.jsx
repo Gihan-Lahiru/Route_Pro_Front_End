@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// Update the backend URL to match your actual backend location
+// Update the backend URL to match your actual backend location in XAMPP
 const BACKEND_URL = 'http://localhost/RoutePro-backend(02)/public';
 
 // Create axios instance with updated config

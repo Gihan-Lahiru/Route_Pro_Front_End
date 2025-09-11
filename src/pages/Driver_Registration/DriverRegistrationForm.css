@@ -61,8 +61,6 @@
 /* Removed duplicate input styling - consolidated above */
 
 .driver-checkbox-container {
-  width: 80%;
-  margin: 0 auto 20px auto;
   display: flex;
   align-items: center;
   justify-content: center; /* Center the checkbox */
@@ -80,7 +78,6 @@
 .driver-checkbox-container label {
   margin: 0;
   cursor: pointer;
-  white-space: normal;
 }
 
 .driver-checkbox-container a {

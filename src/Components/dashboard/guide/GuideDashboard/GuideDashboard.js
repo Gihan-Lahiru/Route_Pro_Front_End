@@ -58,9 +58,13 @@ const GuideDashboard = () => {
     localStorage.removeItem('name');
     localStorage.removeItem('userRating');
     localStorage.removeItem('userProfile');
+    localStorage.removeItem('sessionStartTime');
     
-    // Dispatch custom event to notify Header component
-    window.dispatchEvent(new Event('localStorageCleared'));
+    // Dispatch event to notify Header component
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'userEmail',
+      newValue: null
+    }));
     
     // Navigate to homepage
     navigate('/homepage');

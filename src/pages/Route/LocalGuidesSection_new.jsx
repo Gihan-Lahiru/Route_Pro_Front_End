@@ -37,9 +37,9 @@ export default function LocalGuidesSection() {
         console.log("API Base URL:", apiMethods.getBackendUrl());
         console.log("Full URL:", `${apiMethods.getBackendUrl()}/guides`);
         
-        // Test direct fetch first - try the existing available endpoint
-        const directUrl = `${apiMethods.getBackendUrl()}/guides/available`;
-        console.log("🔍 Testing direct fetch to existing endpoint:", directUrl);
+        // Test direct fetch first
+        const directUrl = `${apiMethods.getBackendUrl()}/guides`;
+        console.log("🔍 Testing direct fetch to:", directUrl);
         
         const directResponse = await fetch(directUrl, {
           method: 'GET',
@@ -55,60 +55,37 @@ export default function LocalGuidesSection() {
         if (directResponse.ok) {
           const directData = await directResponse.json();
           console.log("📊 Direct fetch response data:", directData);
-          console.log("📊 Direct data type:", typeof directData);
-          console.log("📊 Direct data keys:", Object.keys(directData || {}));
         } else {
-          console.log("❌ Direct fetch failed with status:", directResponse.status);
-          const errorText = await directResponse.text();
-          console.log("❌ Direct fetch error text:", errorText);
+          console.log("❌ Direct fetch failed:", await directResponse.text());
         }
         
-        // Now try with the API client - use existing available endpoint
-        const response = await apiMethods.authenticatedRequest("/guides/available", null, "GET");
+        // Now try with the API client
+        const response = await apiMethods.authenticatedRequest("/guides", null, "GET");
         console.log("📊 API Client Response:", response);
-        console.log("📊 Response type:", typeof response);
-        console.log("📊 Response.data:", response.data);
-        console.log("📊 Response.data type:", typeof response.data);
         
         // Handle different response structures
         let guideData = [];
-        if (response && response.data) {
-          console.log("📊 Processing response.data...");
+        if (response.data) {
           // Check for different response structures from backend
           if (Array.isArray(response.data.guides)) {
-            console.log("📊 Found guides in response.data.guides");
             guideData = response.data.guides;
           } else if (Array.isArray(response.data.data)) {
-            console.log("📊 Found guides in response.data.data");
             guideData = response.data.data;
           } else if (Array.isArray(response.data)) {
-            console.log("📊 Found guides in response.data directly");
             guideData = response.data;
-          } else {
-            console.log("📊 Response.data is not an array:", response.data);
           }
-        } else if (response && Array.isArray(response.guides)) {
-          console.log("📊 Found guides in response.guides directly");
-          guideData = response.guides;
         } else if (Array.isArray(response)) {
-          console.log("📊 Response is directly an array");
           guideData = response;
-        } else {
-          console.log("📊 Unexpected response structure:", response);
         }
         
         console.log("✅ Processed guides data:", guideData);
-        console.log("✅ Guide data length:", guideData.length);
-        console.log("✅ Guide data type:", typeof guideData);
-        console.log("✅ Is guide data array?", Array.isArray(guideData));
-        
-        // Always set the guides data, even if empty, for debugging
-        setGuides(guideData);
         
         if (guideData.length === 0) {
-          console.log("⚠️ No guides found - checking if API returned empty array or no data");
-          console.log("⚠️ Original response:", response);
-          setError("No guides available at the moment - check console for API details");
+          console.log("⚠️ No guides found in database");
+          setGuides([]);
+          setError("No guides available at the moment");
+        } else {
+          setGuides(guideData);
         }
         
       } catch (err) {
@@ -130,9 +107,11 @@ export default function LocalGuidesSection() {
     console.log(`Guide ${guide.name || guide.user_name} status:`, guide.status);
     console.log("Full guide object:", guide);
     
-    // Since we're using /guides/available endpoint, all returned guides should be shown
-    // The backend already filtered for available guides
-    return true;
+    // Only show guides that are NOT "nonavailable"
+    return guide.status !== "nonavailable";
+    
+    // Alternative: Only show guides with specific available statuses
+    // return guide.status === "available" || guide.status === "Available";
   };
   
   // Filter guides based on availability only (ignore date filtering)

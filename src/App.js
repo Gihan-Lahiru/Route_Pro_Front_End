@@ -1,4 +1,6 @@
 import React from "react";
+import DriverDetails from "./pages/Route/DriverDetailsSimple";
+import GuideDetails from "./pages/Route/GuideDetails";
 import {
   BrowserRouter as Router,
   Routes,
@@ -29,6 +31,9 @@ import GuideRegistrationForm from "./pages/Guide_Registration/GuideRegistrationF
 import DriverRegistrationForm from "./pages/Driver_Registration/DriverRegistrationForm";
 import TravelerRegistrationForm from "./pages/Traveller_Registration/TravelerRegistrationForm";
 import LoginPage from "./pages/Login/LoginPage";
+import ForgotPasswordPage from "./pages/Login/ForgotPasswordPage";
+import VerifyOTPPage from "./pages/Login/VerifyOTPPage";
+import ResetPasswordPage from "./pages/Login/ResetPasswordPage";
 import BookDriver from "./pages/Route/BookDriver";
 import AboutUs from "./pages/AboutUs/AboutUs";
 import TermsCondition from "./pages/TermsCondition/TermsConditions";
@@ -36,10 +41,10 @@ import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy";
 import ContactUs from "./pages/ContactUs/ContactUs";
 
 // Dashboards
-import DriverDashboard from "./Components/dashboard/driver/DriverDashboard/DriverDashboard";
-import GuideDashboard from "./Components/dashboard/guide/GuideDashboard/GuideDashboard";
-import AdminDashboard from "./Components/dashboard/admin/AdminDashboard";
-import TravelerDashboard from "./Components/dashboard/traveler/TravelerDashboard";
+import DriverDashboard from "./Components/dashboard/driver/DriverDashboard/DriverDashboard.js";
+import GuideDashboard from "./Components/dashboard/guide/GuideDashboard/GuideDashboard.js";
+import AdminDashboard from "./Components/dashboard/admin/AdminDashboard.jsx";
+import TravelerDashboard from "./Components/dashboard/traveler/TravelerDashboard.jsx";
 import HeadSection from "./pages/Home/headsection";
 
 const HomePage = () => (
@@ -88,10 +93,15 @@ const AppContent = () => {
             element={<DriverRegistrationForm />}
           />
           <Route path="/user-login" element={<LoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/verify-otp" element={<VerifyOTPPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/budget" element={<BudgetSelection />} />
           <Route path="/culture" element={<Cultural />} />
           <Route path="/route" element={<RoutePlanner />} />
           <Route path="/bookdriver" element={<BookDriver />} />
+          <Route path="/driver/:id" element={<DriverDetails />} />
+          <Route path="/guide/:id" element={<GuideDetails />} />
 
           {/* Dashboards */}
           <Route path="/driver-dashboard" element={<DriverDashboard />} />
