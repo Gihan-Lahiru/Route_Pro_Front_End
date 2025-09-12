@@ -91,12 +91,10 @@ export default function Header() {
     }
   };
 
-  // Check on mount and route changes
-  useEffect(() => {
     checkUserLogin();
-  }, [location.pathname]);
-
-  // Listen for storage changes (logout events)
+  }, [location.pathname]); // Re-check when route changes
+  
+  // Listen for storage changes (when logout happens in another tab or component)
   useEffect(() => {
     const handleStorageChange = (e) => {
       console.log('🔄 Storage change detected:', e);
@@ -109,6 +107,7 @@ export default function Header() {
       setUserInfo(null);
     };
 
+    // Listen for storage events
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('localStorageCleared', handleLocalStorageCleared);
     
@@ -127,8 +126,6 @@ export default function Header() {
       navigate('/driver-dashboard');
     } else if (userInfo?.role === 'guide') {
       navigate('/guide-dashboard');
-    } else if (userInfo?.role === 'traveller') {
-      navigate('/traveller-dashboard');
     }
   };
 
@@ -144,23 +141,23 @@ export default function Header() {
       <Navbar collapseOnSelect expand="lg" fixed="top" className="header-navbar">
         <Container>
           <Link to="/homepage">
-            <img src="/images/new logo.png" alt="Logo" className="routeprologo" />
+                         <img src="/images/new logo.png" alt="Logo" className="routeprologo" />
           </Link>
 
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="me-auto"></Nav>
             <Nav>
-              <img src="/images/home.png" alt="Home Icon" className="topnav-logo" />
+                             <img src="/images/home.png" alt="Home Icon" className="topnav-logo" />
               <Nav.Link as={Link} to="/homepage" className="nav-link-underline">Home</Nav.Link>
 
-              <img src="/images/navigation.png" alt="Route Icon" className="topnav-logo" />
+                                                             <img src="/images/navigation.png" alt="Route Icon" className="topnav-logo" />
               <Nav.Link as={Link} to="/route" className="nav-link-underline">Route</Nav.Link>
 
-              <img src="/images/budget.png" alt="Budget Icon" className="topnav-logo" />
+                                                             <img src="/images/budget.png" alt="Budget Icon" className="topnav-logo" />
               <Nav.Link as={Link} to="/budget" className="nav-link-underline">Budget</Nav.Link>
 
-              <img src="/images/culture.png" alt="Culture Icon" className="topnav-logo" />
+                                                             <img src="/images/culture.png" alt="Culture Icon" className="topnav-logo" />
               <Nav.Link as={Link} to="/culture" className="nav-link-underline">Culture</Nav.Link>
             </Nav>
 
@@ -185,10 +182,9 @@ export default function Header() {
                       style={{ display: userInfo?.photo ? 'none' : 'block' }}
                     />
                   </div>
-                  <span className="user-name">{userInfo?.name}</span>
                 </div>
               ) : (
-                // Not logged in view
+                // Not logged in view (current way)
                 <>
                   <Button
                     className="topnav-button custom-login-button"
@@ -214,32 +210,33 @@ export default function Header() {
 
       {/* Join Modal */}
       <Modal show={showModal} onHide={handleClose} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Join as</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="join-options">
-            <Button
-              className="join-option-button traveler"
-              onClick={() => handleJoinAs("traveler")}
-            >
-              Traveler
-            </Button>
-            <Button
-              className="join-option-button driver"
-              onClick={() => handleJoinAs("driver")}
-            >
-              Driver
-            </Button>
-            <Button
-              className="join-option-button guider"
-              onClick={() => handleJoinAs("guider")}
-            >
-              Guide
-            </Button>
-          </div>
-        </Modal.Body>
-      </Modal>
+  <Modal.Header closeButton>
+    <Modal.Title>Join as</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <div className="join-options">
+      <Button
+        className="join-option-button traveler"
+        onClick={() => handleJoinAs("traveler")}
+      >
+        Traveler
+      </Button>
+      <Button
+        className="join-option-button driver"
+        onClick={() => handleJoinAs("driver")}
+      >
+        Driver
+      </Button>
+      <Button
+        className="join-option-button guider"
+        onClick={() => handleJoinAs("guider")}
+      >
+        Guide
+      </Button>
+    </div>
+  </Modal.Body>
+</Modal>
+
     </>
   );
 }

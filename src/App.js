@@ -41,10 +41,10 @@ import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy";
 import ContactUs from "./pages/ContactUs/ContactUs";
 
 // Dashboards
-import DriverDashboard from "./Components/dashboard/driver/DriverDashboard/DriverDashboard";
-import GuideDashboard from "./Components/dashboard/guide/GuideDashboard/GuideDashboard";
-import AdminDashboard from "./Components/dashboard/admin/AdminDashboard";
-import TravelerDashboard from "./Components/dashboard/traveler/TravelerDashboard";
+import DriverDashboard from "./Components/dashboard/driver/DriverDashboard/DriverDashboard.js";
+import GuideDashboard from "./Components/dashboard/guide/GuideDashboard/GuideDashboard.js";
+import AdminDashboard from "./Components/dashboard/admin/AdminDashboard.jsx";
+import TravelerDashboard from "./Components/dashboard/traveler/TravelerDashboard.jsx";
 import HeadSection from "./pages/Home/headsection";
 
 const HomePage = () => (

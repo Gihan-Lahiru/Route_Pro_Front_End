@@ -1,6 +1,5 @@
 
 import React, { useState } from "react";
-import useAuthGuard from "../../../hooks/useAuthGuard";
 import Sidebar from "./Slidebar";
 import Dashboard from "./Dashboard";
 import TripManagement from "./TripManagement";
@@ -11,22 +10,6 @@ import "./AdminDashboard.css";
 const AdminDashboard = () => {
   // Possible values: "dashboard", "trips", "users", "notifications"
   const [currentPage, setCurrentPage] = useState("dashboard");
-  const { isAuthenticated, isLoading } = useAuthGuard('admin');
-
-  // Don't render dashboard if still loading or not authenticated
-  if (isLoading) {
-    return (
-      <div className="admin-dashboard">
-        <div className="loading-container">
-          <h1>Loading...</h1>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return null; // useAuthGuard will handle redirect
-  }
 
   // Render the main content based on currentPage
   const renderContent = () => {
