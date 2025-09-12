@@ -21,7 +21,8 @@ const UserManagement = () => {
       setLoading(true);
       setError(null);
       
-      const url = `http://localhost/RoutePro-backend(02)/public/admin-dashboard-api.php/admin-dashboard/users?type=${activeTab}&search=${encodeURIComponent(searchTerm)}`;
+      // Use the drivers endpoint which now returns all user types
+      const url = `http://localhost/RoutePro-backend(02)/public/drivers?search=${encodeURIComponent(searchTerm)}`;
       
       const response = await fetch(url, {
         method: 'GET',
@@ -32,9 +33,18 @@ const UserManagement = () => {
       });
 
       const data = await response.json();
-      
+      console.log('API Response data:', data); // Debug log
+      console.log('Drivers with status:', data.drivers?.slice(0, 5).map(d => ({name: d.name, status: d.status}))); // First 5 drivers
+      console.log('Guides with status:', data.guides?.slice(0, 5).map(g => ({name: g.name, status: g.status}))); // First 5 guides
       if (data.success) {
-        setUsers(data.data);
+        // The endpoint now returns all user types
+        const grouped = {
+          travelers: data.travelers || [],
+          drivers: data.drivers || [],
+          guides: data.guides || []
+        };
+        console.log('Grouped data:', grouped); // Debug log
+        setUsers(grouped);
       } else {
         setError(data.message || 'Failed to fetch users');
       }
@@ -48,8 +58,8 @@ const UserManagement = () => {
 
   const updateRating = async (userId, newRating) => {
     try {
-      const response = await fetch('http://localhost/RoutePro-backend(02)/public/admin-dashboard-api.php/admin-dashboard/update-rating', {
-        method: 'POST',
+      const response = await fetch('http://localhost/RoutePro-backend(02)/public/admin/users/update-rating', {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -91,10 +101,8 @@ const UserManagement = () => {
             <th>Name</th>
             <th>Email</th>
             <th>Phone</th>
-            <th>Total Spent</th>
-            <th>Total Trips</th>
+            <th>Rating</th>
             <th>Join Date</th>
-            <th>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -104,20 +112,18 @@ const UserManagement = () => {
                 <td>{traveler.id}</td>
                 <td>{traveler.name}</td>
                 <td>{traveler.email}</td>
-                <td>{traveler.phone}</td>
-                <td>{formatCurrency(traveler.totalSpent)}</td>
-                <td>{traveler.totalTrips}</td>
-                <td>{formatDate(traveler.joinDate)}</td>
+                <td>{traveler.phone || 'N/A'}</td>
                 <td>
-                  <span className={`status-badge ${traveler.status}`}>
-                    {traveler.status}
+                  <span className={`rating ${(traveler.rating || 0) < 2.5 ? 'low' : ''}`}>
+                    ⭐ {parseFloat(traveler.rating || 0).toFixed(1)}
                   </span>
                 </td>
+                <td>{formatDate(traveler.created_at)}</td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="8" className="no-data">
+              <td colSpan="6" className="no-data">
                 No travelers found
               </td>
             </tr>
@@ -136,15 +142,10 @@ const UserManagement = () => {
             <th>Name</th>
             <th>Email</th>
             <th>Phone</th>
-            <th>License</th>
             <th>Vehicle</th>
-            <th>Rating</th>
-            <th>Earnings</th>
-            <th>Trips</th>
-            <th>Status</th>
             <th>Experience</th>
-            <th>Location</th>
-            <th>Join Date</th>
+            <th>Rating</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -155,29 +156,26 @@ const UserManagement = () => {
                 <td>{driver.id}</td>
                 <td>{driver.name}</td>
                 <td>{driver.email}</td>
-                <td>{driver.phone}</td>
-                <td>{driver.license}</td>
-                <td>{driver.vehicle}</td>
+                <td>{driver.phone || 'N/A'}</td>
+                <td>{driver.vehicle_type || 'N/A'}</td>
+                <td>{driver.experience || 0} years</td>
                 <td>
-                  <span className={`rating ${driver.rating < 2.5 ? 'low' : ''}`}>
-                    ⭐ {driver.rating.toFixed(1)}
+                  <span className={`rating ${(driver.rating || 0) < 2.5 ? 'low' : ''}`}>
+                    ⭐ {parseFloat(driver.rating || 0).toFixed(1)}
                   </span>
                 </td>
-                <td>{formatCurrency(driver.earnings)}</td>
-                <td>{driver.totalTrips}</td>
                 <td>
-                  <span className={`status-badge ${driver.status.toLowerCase()}`}>
-                    {driver.status}
+                  <span className={`status-badge ${driver.status?.toLowerCase() === 'nonavailable' ? 'unavailable' : driver.status?.toLowerCase() || 'unknown'}`}>
+                    {driver.status === 'nonavailable' ? 'Unavailable' : 
+                     driver.status === 'available' ? 'Available' : 
+                     driver.status || 'Unknown'}
                   </span>
                 </td>
-                <td>{driver.experience} years</td>
-                <td>{driver.location}</td>
-                <td>{formatDate(driver.joinDate)}</td>
                 <td>
-                  {driver.rating < 2.5 && (
+                  {(driver.rating || 0) < 2.5 && (
                     <button 
                       className="reset-rating-btn"
-                      onClick={() => updateRating(driver.id.replace('D', ''), 0)}
+                      onClick={() => updateRating(driver.id, 0)}
                     >
                       Reset Rating
                     </button>
@@ -187,7 +185,7 @@ const UserManagement = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="14" className="no-data">
+              <td colSpan="9" className="no-data">
                 No drivers found
               </td>
             </tr>
@@ -206,15 +204,10 @@ const UserManagement = () => {
             <th>Name</th>
             <th>Email</th>
             <th>Phone</th>
-            <th>License</th>
             <th>Languages</th>
-            <th>Rating</th>
-            <th>Earnings</th>
-            <th>Trips</th>
-            <th>Status</th>
             <th>Experience</th>
-            <th>Location</th>
-            <th>Join Date</th>
+            <th>Rating</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -225,29 +218,26 @@ const UserManagement = () => {
                 <td>{guide.id}</td>
                 <td>{guide.name}</td>
                 <td>{guide.email}</td>
-                <td>{guide.phone}</td>
-                <td>{guide.license}</td>
-                <td>{guide.languages}</td>
+                <td>{guide.phone || 'N/A'}</td>
+                <td>{guide.languages || 'N/A'}</td>
+                <td>{guide.experience || 0} years</td>
                 <td>
-                  <span className={`rating ${guide.rating < 2.5 ? 'low' : ''}`}>
-                    ⭐ {guide.rating.toFixed(1)}
+                  <span className={`rating ${(guide.rating || 0) < 2.5 ? 'low' : ''}`}>
+                    ⭐ {parseFloat(guide.rating || 0).toFixed(1)}
                   </span>
                 </td>
-                <td>{formatCurrency(guide.earnings)}</td>
-                <td>{guide.totalTrips}</td>
                 <td>
-                  <span className={`status-badge ${guide.status.toLowerCase()}`}>
-                    {guide.status}
+                  <span className={`status-badge ${guide.status?.toLowerCase() === 'nonavailable' ? 'unavailable' : guide.status?.toLowerCase() || 'unknown'}`}>
+                    {guide.status === 'nonavailable' ? 'Unavailable' : 
+                     guide.status === 'available' ? 'Available' : 
+                     guide.status || 'Unknown'}
                   </span>
                 </td>
-                <td>{guide.experience} years</td>
-                <td>{guide.location}</td>
-                <td>{formatDate(guide.joinDate)}</td>
                 <td>
-                  {guide.rating < 2.5 && (
+                  {(guide.rating || 0) < 2.5 && (
                     <button 
                       className="reset-rating-btn"
-                      onClick={() => updateRating(guide.id.replace('G', ''), 0)}
+                      onClick={() => updateRating(guide.id, 0)}
                     >
                       Reset Rating
                     </button>
@@ -257,7 +247,7 @@ const UserManagement = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="14" className="no-data">
+              <td colSpan="9" className="no-data">
                 No guides found
               </td>
             </tr>
@@ -272,7 +262,6 @@ const UserManagement = () => {
       <div className="page-header">
         <h2>User Management</h2>
         <div className="search-bar">
-          <input type="text" placeholder="Search users..." />
           <input 
             type="text" 
             placeholder="Search users..." 

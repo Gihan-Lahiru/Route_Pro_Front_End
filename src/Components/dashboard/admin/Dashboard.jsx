@@ -20,7 +20,7 @@ const Dashboard = () => {
   const fetchDashboardStats = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost/RoutePro-backend(02)/public/admin-dashboard-api.php/admin-dashboard/stats', {
+      const response = await fetch('http://localhost/RoutePro-backend(02)/public/admin/stats', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
