@@ -17,115 +17,104 @@ export default function Header() {
   const [userInfo, setUserInfo] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Clear any invalid localStorage data on component mount
+  // Clear stale/invalid localStorage data on startup
   useEffect(() => {
-    const clearInvalidData = () => {
-      const userEmail = localStorage.getItem('userEmail') || localStorage.getItem('email');
-      const userRole = localStorage.getItem('userRole') || localStorage.getItem('role');
-      const userName = localStorage.getItem('userName') || localStorage.getItem('name');
-      
-      // Only clear if data is incomplete/invalid (not if all fields are present)
-      if ((userEmail && !userRole) || (userEmail && !userName) || (!userEmail && (userRole || userName))) {
-        console.log('Clearing incomplete localStorage data');
-        localStorage.removeItem('userEmail');
-        localStorage.removeItem('email');
-        localStorage.removeItem('userRole');
-        localStorage.removeItem('role');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('userName');
-        localStorage.removeItem('name');
-        localStorage.removeItem('userRating');
-        localStorage.removeItem('userProfile');
-      }
-    };
+    const userEmail = localStorage.getItem('userEmail') || localStorage.getItem('email');
+    const userRole = localStorage.getItem('userRole') || localStorage.getItem('role');
+    const userName = localStorage.getItem('userName') || localStorage.getItem('name');
+    const sessionTime = localStorage.getItem('sessionStartTime');
     
-    clearInvalidData();
-  }, []); // Run once on mount
+    // Check if session is too old (more than 24 hours) or data is incomplete
+    const twentyFourHours = 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    const isSessionExpired = sessionTime && (now - parseInt(sessionTime)) > twentyFourHours;
+    const isIncomplete = (userEmail && !userRole) || (userEmail && !userName) || (!userEmail && (userRole || userName));
+    
+    // Clear invalid/expired data to prevent showing stale names
+    if (isSessionExpired || isIncomplete) {
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('email');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('role');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('name');
+      localStorage.removeItem('userRating');
+      localStorage.removeItem('userProfile');
+      localStorage.removeItem('sessionStartTime');
+    }
+  }, []);
 
-  // Check if user is logged in - localStorage first, backend validation optional
-  useEffect(() => {
-    const checkUserLogin = async () => {
-      // First check localStorage for immediate response
-      const userEmail = localStorage.getItem('userEmail') || localStorage.getItem('email');
-      const userRole = localStorage.getItem('userRole') || localStorage.getItem('role');
-      const userName = localStorage.getItem('userName') || localStorage.getItem('name');
+  // Check user login status
+  const checkUserLogin = async () => {
+    const userEmail = localStorage.getItem('userEmail') || localStorage.getItem('email');
+    const userRole = localStorage.getItem('userRole') || localStorage.getItem('role');
+    const userName = localStorage.getItem('userName') || localStorage.getItem('name');
+    
+    if (userEmail && userRole && userName) {
+      setIsLoggedIn(true);
+      setUserInfo({
+        name: userName,
+        photo: null,
+        role: userRole
+      });
       
-      console.log('Header checking login state:', { userEmail, userRole, userName });
-      
-      // If we have complete localStorage data, show user as logged in immediately
-      if (userEmail && userRole && userName) {
-        setIsLoggedIn(true);
-        setUserInfo({
-          name: userName || 'User',
-          photo: null,
-          role: userRole
-        });
-        
-        // Then try to get fresh data from backend (but don't fail if it doesn't work)
-        try {
-          let profileEndpoint = '';
-          if (userRole === 'driver') {
-            profileEndpoint = `http://localhost/RoutePro-backend(02)/public/driver/profile?email=${encodeURIComponent(userEmail)}`;
-          } else if (userRole === 'guide') {
-            profileEndpoint = `http://localhost/RoutePro-backend(02)/public/guide/profile?email=${encodeURIComponent(userEmail)}`;
-          }
-          
-          if (profileEndpoint) {
-            const response = await fetch(profileEndpoint, {
-              credentials: 'include'
-            });
-            const data = await response.json();
-            
-            if (data.success && data.data) {
-              // Backend validation successful - update with fresh data including photo
-              setUserInfo({
-                name: data.data.name || userName || 'User',
-                photo: data.data.photo || null,
-                role: userRole
-              });
-            }
-            // If backend fails, we keep the localStorage data (don't logout)
-          }
-        } catch (error) {
-          console.error('Error fetching profile (keeping localStorage data):', error);
-          // Keep the localStorage data even if backend fails
+      // Try to get profile photo from backend
+      try {
+        let profileEndpoint = '';
+        if (userRole === 'driver') {
+          profileEndpoint = `http://localhost/RoutePro-backend(02)/public/driver/profile?email=${encodeURIComponent(userEmail)}`;
+        } else if (userRole === 'guide') {
+          profileEndpoint = `http://localhost/RoutePro-backend(02)/public/guide/profile?email=${encodeURIComponent(userEmail)}`;
+        } else if (userRole === 'traveller') {
+          profileEndpoint = `http://localhost/RoutePro-backend(02)/public/traveller/profile?email=${encodeURIComponent(userEmail)}`;
         }
-      } else {
-        // No localStorage data or incomplete data
-        console.log('No complete localStorage data, setting logged out');
-        setIsLoggedIn(false);
-        setUserInfo(null);
+        
+        if (profileEndpoint) {
+          const response = await fetch(profileEndpoint);
+          const data = await response.json();
+          
+          if (data.success && data.data) {
+            setUserInfo({
+              name: data.data.name || userName,
+              photo: data.data.photo || null,
+              role: userRole
+            });
+          }
+        }
+      } catch (error) {
+        // Keep localStorage data even if backend fails
       }
-    };
+    } else {
+      setIsLoggedIn(false);
+      setUserInfo(null);
+    }
+  };
 
-    checkUserLogin();
-  }, [location.pathname]); // Re-check when route changes
-  
-  // Listen for storage changes (when logout happens in another tab or component)
+  // Check on mount and route changes
   useEffect(() => {
-    const handleStorageChange = () => {
-      const userEmail = localStorage.getItem('userEmail') || localStorage.getItem('email');
-      const userRole = localStorage.getItem('userRole') || localStorage.getItem('role');
-      const userName = localStorage.getItem('userName') || localStorage.getItem('name');
-      
-      console.log('Storage changed, checking login state:', { userEmail, userRole, userName });
-      
-      if (!(userEmail && userRole && userName)) {
-        console.log('Storage cleared, logging out');
-        setIsLoggedIn(false);
-        setUserInfo(null);
-      }
+    checkUserLogin();
+  }, [location.pathname]);
+
+  // Listen for storage changes (logout events)
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      console.log('🔄 Storage change detected:', e);
+      checkUserLogin();
     };
 
-    // Listen for storage events
+    const handleLocalStorageCleared = () => {
+      console.log('🔄 LocalStorage cleared event detected');
+      setIsLoggedIn(false);
+      setUserInfo(null);
+    };
+
     window.addEventListener('storage', handleStorageChange);
-    
-    // Also listen for a custom event we'll dispatch from logout
-    window.addEventListener('localStorageCleared', handleStorageChange);
+    window.addEventListener('localStorageCleared', handleLocalStorageCleared);
     
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('localStorageCleared', handleStorageChange);
+      window.removeEventListener('localStorageCleared', handleLocalStorageCleared);
     };
   }, []);
 
@@ -138,6 +127,8 @@ export default function Header() {
       navigate('/driver-dashboard');
     } else if (userInfo?.role === 'guide') {
       navigate('/guide-dashboard');
+    } else if (userInfo?.role === 'traveller') {
+      navigate('/traveller-dashboard');
     }
   };
 
@@ -153,23 +144,23 @@ export default function Header() {
       <Navbar collapseOnSelect expand="lg" fixed="top" className="header-navbar">
         <Container>
           <Link to="/homepage">
-                         <img src="/images/new logo.png" alt="Logo" className="routeprologo" />
+            <img src="/images/new logo.png" alt="Logo" className="routeprologo" />
           </Link>
 
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="me-auto"></Nav>
             <Nav>
-                             <img src="/images/home.png" alt="Home Icon" className="topnav-logo" />
+              <img src="/images/home.png" alt="Home Icon" className="topnav-logo" />
               <Nav.Link as={Link} to="/homepage" className="nav-link-underline">Home</Nav.Link>
 
-                                                             <img src="/images/navigation.png" alt="Route Icon" className="topnav-logo" />
+              <img src="/images/navigation.png" alt="Route Icon" className="topnav-logo" />
               <Nav.Link as={Link} to="/route" className="nav-link-underline">Route</Nav.Link>
 
-                                                             <img src="/images/budget.png" alt="Budget Icon" className="topnav-logo" />
+              <img src="/images/budget.png" alt="Budget Icon" className="topnav-logo" />
               <Nav.Link as={Link} to="/budget" className="nav-link-underline">Budget</Nav.Link>
 
-                                                             <img src="/images/culture.png" alt="Culture Icon" className="topnav-logo" />
+              <img src="/images/culture.png" alt="Culture Icon" className="topnav-logo" />
               <Nav.Link as={Link} to="/culture" className="nav-link-underline">Culture</Nav.Link>
             </Nav>
 
@@ -177,7 +168,6 @@ export default function Header() {
               {isLoggedIn ? (
                 // Logged in user view - clickable name and photo to go to dashboard
                 <div className="user-profile-section" onClick={handleUserProfileClick} style={{cursor: 'pointer'}}>
-                  <span className="user-name">{userInfo?.name}</span>
                   <div className="user-avatar-container">
                     {userInfo?.photo ? (
                       <img 
@@ -195,9 +185,10 @@ export default function Header() {
                       style={{ display: userInfo?.photo ? 'none' : 'block' }}
                     />
                   </div>
+                  <span className="user-name">{userInfo?.name}</span>
                 </div>
               ) : (
-                // Not logged in view (current way)
+                // Not logged in view
                 <>
                   <Button
                     className="topnav-button custom-login-button"
@@ -223,33 +214,32 @@ export default function Header() {
 
       {/* Join Modal */}
       <Modal show={showModal} onHide={handleClose} centered>
-  <Modal.Header closeButton>
-    <Modal.Title>Join as</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    <div className="join-options">
-      <Button
-        className="join-option-button traveler"
-        onClick={() => handleJoinAs("traveler")}
-      >
-        Traveler
-      </Button>
-      <Button
-        className="join-option-button driver"
-        onClick={() => handleJoinAs("driver")}
-      >
-        Driver
-      </Button>
-      <Button
-        className="join-option-button guider"
-        onClick={() => handleJoinAs("guider")}
-      >
-        Guide
-      </Button>
-    </div>
-  </Modal.Body>
-</Modal>
-
+        <Modal.Header closeButton>
+          <Modal.Title>Join as</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="join-options">
+            <Button
+              className="join-option-button traveler"
+              onClick={() => handleJoinAs("traveler")}
+            >
+              Traveler
+            </Button>
+            <Button
+              className="join-option-button driver"
+              onClick={() => handleJoinAs("driver")}
+            >
+              Driver
+            </Button>
+            <Button
+              className="join-option-button guider"
+              onClick={() => handleJoinAs("guider")}
+            >
+              Guide
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
     </>
   );
 }

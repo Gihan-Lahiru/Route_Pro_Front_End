@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// Update the backend URL to match your actual backend location
+// Update the backend URL to match your actual backend location in XAMPP
 const BACKEND_URL = 'http://localhost/RoutePro-backend(02)/public';
 
 // Create axios instance with updated config
@@ -112,8 +112,18 @@ export const sessionUtils = {
     localStorage.removeItem('userRating');
     localStorage.removeItem('sessionToken');
     localStorage.removeItem('userProfile');
+    localStorage.removeItem('sessionStartTime');
     
-    // Redirect to login page
+    // Add a logout marker to prevent back navigation to protected pages
+    localStorage.setItem('justLoggedOut', 'true');
+    
+    // Clear browser history and redirect to login page
+    window.history.replaceState(null, null, '/user-login');
+    
+    // Add multiple history entries to prevent easy back navigation
+    window.history.pushState(null, null, '/user-login');
+    window.history.pushState(null, null, '/user-login');
+    
     window.location.href = '/user-login';
   },
 

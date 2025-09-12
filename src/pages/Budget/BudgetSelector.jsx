@@ -5,7 +5,7 @@ import React from "react";
 export default function BudgetSelector({ budget, setBudget }) {
   return (
     <div className="budget-selector">
-      <h3>Select Your Budget Package:</h3>
+      <h3>Select Your Budget Package</h3>
       <label>
         <input
           type="radio"
