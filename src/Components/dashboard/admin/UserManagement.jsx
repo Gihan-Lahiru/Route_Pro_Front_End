@@ -33,9 +33,6 @@ const UserManagement = () => {
       });
 
       const data = await response.json();
-      console.log('API Response data:', data); // Debug log
-      console.log('Drivers with status:', data.drivers?.slice(0, 5).map(d => ({name: d.name, status: d.status}))); // First 5 drivers
-      console.log('Guides with status:', data.guides?.slice(0, 5).map(g => ({name: g.name, status: g.status}))); // First 5 guides
       if (data.success) {
         // The endpoint now returns all user types
         const grouped = {
@@ -43,7 +40,6 @@ const UserManagement = () => {
           drivers: data.drivers || [],
           guides: data.guides || []
         };
-        console.log('Grouped data:', grouped); // Debug log
         setUsers(grouped);
       } else {
         setError(data.message || 'Failed to fetch users');
