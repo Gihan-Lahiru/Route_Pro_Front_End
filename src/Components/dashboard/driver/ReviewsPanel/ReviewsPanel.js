@@ -27,14 +27,6 @@ const ReviewsPanel = () => (
       <div key={review.id} className="review-card">
         <p><strong>{review.name}</strong> <span>{review.date}</span></p>
         <p>"{review.comment}"</p>
-        {review.status === 'Pending' ? (
-          <textarea placeholder="Write your response..." />
-        ) : (
-          <div className="response-box">
-            <strong>Your Response:</strong>
-            <p>{review.response}</p>
-          </div>
-        )}
       </div>
     ))}
   </div>

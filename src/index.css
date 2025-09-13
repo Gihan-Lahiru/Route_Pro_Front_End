@@ -1,15 +1,10 @@
 body {
   margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background: #f4f8fb; /* Light background for clarity */
-  color: #04614e; /* Teal green for text, matches theme */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  color: #04614e; /* Theme heading color */
-  font-family: 'Poppins', sans-serif;
 }
 
 code {

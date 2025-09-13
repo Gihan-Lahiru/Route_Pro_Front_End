@@ -1,38 +1,38 @@
 import React from 'react';
 import './TripDetails.css';
 
+const trips = [
+  { id: 'G001', traveler: 'Helena', time: '9:00 AM', fee: 'Rs. 5500', location: 'Sigiriya', type: 'Half-day', status: 'Active' },
+  { id: 'G002', traveler: 'Monk H.', time: '11:30 AM', fee: 'Rs. 4200', location: 'Kandy', type: 'Temple tour', status: 'Active' },
+  { id: 'G003', traveler: 'Family L', time: '2:00 PM', fee: 'Rs. 7800', location: 'Galle', type: 'City tour', status: 'Scheduled' }
+];
+
 const TripDetails = () => (
   <div className="trip-details">
-    <h2>Trip Details</h2>
-
-    {/* Trip 1 */}
-    <div className="trip-card">
-      <p><strong>Passenger:</strong> Aashiq</p>
-      <p><strong>Pickup Time:</strong> 2:00 PM</p>
-      <p><strong>Fare:</strong> Rs. 2400</p>
-      <p><strong>Pickup Location:</strong> Nuwara Eliya</p>
-      <p><strong>Vehicle:</strong> Toyota Prius / WP CAB 1234</p>
-      <div className="trip-actions">
-        <button>Start Trip</button>
-        <button>View Map Routes</button>
-        <button>Contact Rider</button>
-      </div>
+    <div className="trip-details-header">
+      <h2>Upcoming Tours</h2>
+      <span className="trip-count">{trips.length}</span>
     </div>
-<br></br>
-    {/* Trip 2 */}
-    <div className="trip-card">
-      <p><strong>Passenger:</strong> Nimesha</p>
-      <p><strong>Pickup Time:</strong> 3:30 PM</p>
-      <p><strong>Fare:</strong> Rs. 3100</p>
-      <p><strong>Pickup Location:</strong> Kandy</p>
-      <p><strong>Vehicle:</strong> Honda Fit / CP CAB 5678</p>
-      <div className="trip-actions">
-        <button>Start Trip</button>
-        <button>View Map Routes</button>
-        <button>Contact Rider</button>
-      </div>
+    <div className="trip-grid">
+      {trips.map(t => (
+        <div key={t.id} className="trip-card">
+          <div className="trip-card-header">
+            <span className={`status-badge ${t.status.toLowerCase()}`}>{t.status}</span>
+            <span className="trip-id">{t.id}</span>
+          </div>
+          <p><strong>Traveler:</strong> {t.traveler}</p>
+          <p><strong>Start Time:</strong> {t.time}</p>
+          <p><strong>Fee:</strong> {t.fee}</p>
+          <p><strong>Location:</strong> {t.location}</p>
+          <p><strong>Tour Type:</strong> {t.type}</p>
+          <div className="trip-actions">
+            <button>Start Tour</button>
+            <button>View Route</button>
+            <button>Contact</button>
+          </div>
+        </div>
+      ))}
     </div>
-    
   </div>
 );
 
