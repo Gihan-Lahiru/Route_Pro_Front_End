@@ -1,5 +1,6 @@
 import React, { useState ,useEffect} from 'react';
 import { useNavigate } from 'react-router-dom'; // 👈 Add this
+import useAuthGuard from '../../../../hooks/useAuthGuard';
 import TripDetails from '../TripDetails/TripDetails';
 import ReviewsPanel from '../ReviewsPanel/ReviewsPanel';
 import './GuideDashboard.css';
@@ -9,9 +10,12 @@ const GuideDashboard = () => {
   const [status, setStatus] = useState('available');
   const [activeView, setActiveView] = useState('trip');
   const [userName, setUserName] = useState('');
+  const { isAuthenticated, isLoading } = useAuthGuard('guide');
   const navigate = useNavigate(); // 👈 Initialize useNavigate
 
   useEffect(() => {
+    if (!isAuthenticated) return; // Only fetch data if authenticated
+    
     // Get the logged-in user's email from localStorage (set during login)
     const userEmail = localStorage.getItem('userEmail') || 
                      localStorage.getItem('email') ||
@@ -58,9 +62,13 @@ const GuideDashboard = () => {
     localStorage.removeItem('name');
     localStorage.removeItem('userRating');
     localStorage.removeItem('userProfile');
+    localStorage.removeItem('sessionStartTime');
     
-    // Dispatch custom event to notify Header component
-    window.dispatchEvent(new Event('localStorageCleared'));
+    // Dispatch event to notify Header component
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'userEmail',
+      newValue: null
+    }));
     
     // Navigate to homepage
     navigate('/homepage');
@@ -105,6 +113,21 @@ const GuideDashboard = () => {
   };
 
  const userId = localStorage.getItem('userId');
+
+  // Don't render dashboard if still loading or not authenticated
+  if (isLoading) {
+    return (
+      <div className="dashboard">
+        <div className="dashboard-header">
+          <h1>Loading...</h1>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // useAuthGuard will handle redirect
+  }
 
   
   return (

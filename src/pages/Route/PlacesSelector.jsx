@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react"
 import { MapPin, Plus, ChevronDown, MoreHorizontal, Square, List, ChevronLeft, Search } from "lucide-react"
-import "./PlacesSelector.css"
+import "./PlacesSelector.css";
 
 const PlacesSelector = ({ nearbyPlaces = [], setNearbyPlaces }) => {
   const [selectedPlaces, setSelectedPlaces] = useState([])

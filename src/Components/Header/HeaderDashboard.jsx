@@ -8,7 +8,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import "./HeaderDashboard.css";
 
-export default function Header() {
+export default function HeaderDashboard() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
 
@@ -48,10 +48,7 @@ export default function Header() {
             </Nav>
 
             <Nav className="topnav-right">
-              
-
-              
-
+              {/* Keep dashboard header simple - focus on main Header.jsx */}
               
             </Nav>
           </Navbar.Collapse>
@@ -59,6 +56,25 @@ export default function Header() {
       </Navbar>
 
       {/* Join Modal */}
+      <Modal show={showModal} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Join RoutePro</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Choose how you'd like to join RoutePro:</p>
+          <div className="d-grid gap-2">
+            <Button variant="primary" onClick={() => handleJoinAs("traveler")}>
+              Join as Traveler
+            </Button>
+            <Button variant="success" onClick={() => handleJoinAs("driver")}>
+              Join as Driver
+            </Button>
+            <Button variant="info" onClick={() => handleJoinAs("guider")}>
+              Join as Guide
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
     
     </>
   );

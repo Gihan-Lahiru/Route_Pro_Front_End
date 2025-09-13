@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import MapComponent from "../../Components/MapComponent";
+import MapComponent from "./MapComponent";
 import axios from "axios";
 import "./RoutePlanner.css";
+import TripDateSelector from "./TripDateSelector";
 
 import PlacesSelector from "./PlacesSelector";
 
@@ -15,6 +16,7 @@ const RoutePlanner = () => {
   const navigate = useNavigate();
   const [findAttractions, setFindAttractions] = useState(false);
   const [selectedPlaces, setSelectedPlaces] = useState([]);
+  const [showDateSelector, setShowDateSelector] = useState(false);
 
   // ✅ Your older pricing logic:
   const basePricePerKM = 100;
@@ -35,6 +37,21 @@ const RoutePlanner = () => {
     distanceValue && vehicle
       ? (distanceValue * basePricePerKM * (vehicleMultiplier[vehicle] || 1)).toFixed(2)
       : "N/A";
+
+  const handleBookDriverGuide = () => {
+    setShowDateSelector(true);
+  };
+
+  const handleDateConfirm = (dates) => {
+    setShowDateSelector(false);
+    // Store dates in localStorage or pass them to the booking page
+    localStorage.setItem('tripDates', JSON.stringify(dates));
+    navigate("/bookdriver");
+  };
+
+  const handleDateCancel = () => {
+    setShowDateSelector(false);
+  };
 
   const handleConfirm = async () => {
     if (!from || !to || !vehicle || !routeDetails.distance || !routeDetails.duration) {
@@ -117,17 +134,42 @@ const RoutePlanner = () => {
           </button>
         </div> */}
 
-        <div className="card">
+        <div className="card route-info-card">
           <h3>Route Information</h3>
-          <p><strong>Distance:</strong> {routeDetails.distance ? `${(distanceValue).toFixed(2)} km` : "N/A"}</p>
-          <p><strong>Duration:</strong> {routeDetails.duration || "N/A"}</p>
-          <p><strong>Price:</strong> Rs.{estimatedPrice}</p>
+          <div className="route-info-grid">
+            <div className="route-info-item">
+              <div className="route-info-label">
+                <span className="route-info-icon"></span>Distance
+              </div>
+              <div className="route-info-value">
+                {routeDetails.distance ? `${(distanceValue).toFixed(1)} km` : "N/A"}
+              </div>
+            </div>
+            
+            <div className="route-info-item">
+              <div className="route-info-label">
+                <span className="route-info-icon"></span>Duration
+              </div>
+              <div className="route-info-value">
+                {routeDetails.duration || "N/A"}
+              </div>
+            </div>
+            
+            <div className="route-info-item">
+              <div className="route-info-label">
+                <span className="route-info-icon"></span>Estimated Price
+              </div>
+              <div className="route-info-value">
+                Rs. {estimatedPrice}
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="card">
           <h3>Need Assistance?</h3>
           <p>Book a professional driver and local guide for your journey.</p>
-          <button className="book-button" onClick={() => navigate("/bookdriver")}>
+          <button className="book-button" onClick={handleBookDriverGuide}>
             Book Driver & Guide
           </button>
         </div>
@@ -148,6 +190,13 @@ const RoutePlanner = () => {
           setNearbyPlaces={setNearbyPlaces}
         />
       </div>
+      
+      {showDateSelector && (
+        <TripDateSelector
+          onClose={handleDateCancel}
+          onConfirm={handleDateConfirm}
+        />
+      )}
     </div>
   );
 };

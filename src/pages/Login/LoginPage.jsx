@@ -1,5 +1,5 @@
 // LoginPage.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./LoginPage.css";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
@@ -9,6 +9,52 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Check if user is already logged in and redirect accordingly
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      const userId = localStorage.getItem("userId");
+      const role = localStorage.getItem("role");
+      const sessionStartTime = localStorage.getItem("sessionStartTime");
+
+      // Check if user is logged in and session is valid
+      if (userId && role && sessionStartTime) {
+        // Optional: Check session timeout (24 hours = 86400000 ms)
+        const sessionAge = Date.now() - parseInt(sessionStartTime);
+        const sessionLimit = 24 * 60 * 60 * 1000; // 24 hours
+
+        if (sessionAge < sessionLimit) {
+          // User is logged in with valid session, redirect to appropriate dashboard
+          console.log("User already logged in, redirecting to dashboard");
+          
+          // Use replace instead of navigate to prevent going back to login
+          if (role === "driver") {
+            navigate("/driver-dashboard", { replace: true });
+          } else if (role === "guide") {
+            navigate("/guide-dashboard", { replace: true });
+          } else if (role === "traveller") {
+            navigate("/traveller-dashboard", { replace: true });
+          } else if (role === "admin") {
+            navigate("/admin-dashboard", { replace: true });
+          } else {
+            navigate("/", { replace: true });
+          }
+        } else {
+          // Session expired, clear localStorage
+          console.log("Session expired, clearing authentication data");
+          localStorage.removeItem("userId");
+          localStorage.removeItem("role");
+          localStorage.removeItem("userName");
+          localStorage.removeItem("userEmail");
+          localStorage.removeItem("userRating");
+          localStorage.removeItem("sessionStartTime");
+          localStorage.removeItem("userProfile");
+        }
+      }
+    };
+
+    checkAuthStatus();
+  }, [navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -64,6 +110,7 @@ const LoginPage = () => {
         localStorage.setItem("userName", result.name);
         localStorage.setItem("userEmail", result.email);
         localStorage.setItem("userRating", result.rating || "0");
+        localStorage.setItem("sessionStartTime", Date.now().toString()); // Add session timestamp
         
         // Store additional profile data if available
         if (result.user && result.user.profile) {
@@ -74,15 +121,15 @@ const LoginPage = () => {
         
         // Navigate based on role using the inheritance-based system
         if (result.role === "driver") {
-          navigate("/driver-dashboard");
+          navigate("/driver-dashboard", { replace: true });
         } else if (result.role === "guide") {
-          navigate("/guide-dashboard");
+          navigate("/guide-dashboard", { replace: true });
         } else if (result.role === "traveller") {
-          navigate("/traveller-dashboard");
+          navigate("/traveller-dashboard", { replace: true });
         } else if (result.role === "admin") {
-          navigate("/admin-dashboard");
+          navigate("/admin-dashboard", { replace: true });
         } else {
-          navigate("/");
+          navigate("/", { replace: true });
         }
         
       } else {
