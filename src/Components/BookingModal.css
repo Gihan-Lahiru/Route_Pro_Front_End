@@ -1,0 +1,696 @@
+/* ==================== BOOKING MODAL STYLES ==================== */
+
+/* Overlay and Modal Container */
+.booking-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.18);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.booking-modal {
+  max-width: 900px;
+  width: 98vw;
+  margin: 32px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* ==================== HEADER SECTION ==================== */
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 32px 0 32px;
+}
+
+.close-btn {
+  background: #e5e7eb;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #d1d5db;
+}
+
+/* ==================== MAIN CONTENT LAYOUT ==================== */
+
+.modal-content {
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  padding: 0 32px 32px 32px;
+  min-width: 0;
+}
+
+.modal-left,
+.modal-right {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.modal-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+
+/* ==================== PROFILE CARD SECTION ==================== */
+
+.profile-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Avatar Styling */
+.avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: #4a90e2;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.avatar-initials {
+  width: 100%;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+/* Profile Details */
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.profile-details h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.meta {
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+/* Rating System */
+.rating-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.stars .star,
+.review-rating .star {
+  color: #eab308;
+  font-size: 1.1rem;
+}
+
+.rating-value {
+  font-weight: 600;
+  color: #222;
+  text-align: center;
+}
+
+.review-count {
+  color: #666;
+  font-size: 0.95rem;
+  margin-left: 4px;
+  text-align: center;
+}
+
+/* Description */
+.desc {
+  margin: 12px 0;
+  color: #444;
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* Languages and Specialties */
+.languages,
+.specialties {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 12px 0;
+  text-align: center;
+  width: 100%;
+}
+
+.languages .section-label,
+.specialties .section-label {
+  margin-bottom: 8px;
+  margin-right: 0;
+  text-align: center;
+}
+
+.section-label {
+  font-weight: 600;
+  color: #222;
+  font-size: 1rem;
+  margin-right: 8px;
+  text-align: center;
+}
+
+/* Pills for Languages and Specialties */
+.lang-pill,
+.spec-pill {
+  display: inline-block;
+  background: #f3f4f6;
+  color: #222;
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 0.95rem;
+  margin: 2px 4px 2px 0;
+  font-weight: 500;
+  text-align: center;
+}
+
+.spec-pill {
+  background: #d1fae5;
+  color: #059669;
+}
+
+
+/* ==================== REVIEWS SECTION ==================== */
+
+.reviews-section {
+  margin-top: 24px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.reviews-section h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.review-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.review-author {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 2px;
+  text-align: center;
+}
+
+.review-author span {
+  color: #888;
+  font-size: 0.95rem;
+  margin-left: 8px;
+  text-align: center;
+}
+
+.review-text {
+  color: #444;
+  font-size: 1rem;
+  margin-top: 2px;
+  text-align: center;
+}
+
+.no-reviews {
+  color: #888;
+  font-size: 1rem;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+/* ==================== BOOKING OPTIONS (Legacy) ==================== */
+
+.booking-options label {
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 8px;
+  display: block;
+  font-size: 1.1rem;
+}
+
+.option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+  min-width: 0;
+  width: 100%;
+}
+
+.option-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  background: #fff;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: border 0.2s, box-shadow 0.2s;
+  position: relative;
+  flex-wrap: wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.option-card.selected {
+  border: 2px solid #4a90e2;
+  box-shadow: 0 2px 8px rgba(74,144,226,0.08);
+}
+
+.option-card input[type="radio"] {
+  accent-color: #4a90e2;
+  margin-right: 8px;
+}
+
+.option-price {
+  margin-left: auto;
+  font-size: 1.2rem;
+  color: #222;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.option-hour {
+  color: #888;
+  font-size: 0.95rem;
+  margin-left: 8px;
+  white-space: nowrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.option-discount {
+  background: #eab308;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 4px 10px;
+  margin-left: 12px;
+}
+
+/* ==================== TOTAL AND LEGACY BUTTON ==================== */
+
+.booking-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 24px 0 18px 0;
+}
+
+.total-price {
+  color: #4a90e2;
+}
+
+.proceed-btn {
+  background: #4a90e2;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+
+.proceed-btn:hover {
+  background: #357ab8;
+}
+
+.proceed-btn:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}
+
+.trip-package-cart {
+  display: inline-block;
+  background: #fffbe6;
+  border: 1px solid #ffe58f;
+  border-radius: 10px;
+  padding: 10px 18px;
+  margin-left: 8px;
+  box-shadow: 0 2px 8px rgba(255, 229, 143, 0.08);
+}
+
+.cart-details {
+  font-size: 0.98rem;
+  margin-top: 6px;
+  color: #444;
+}
+
+.cart-icon {
+  vertical-align: middle;
+}
+
+
+/* ==================== RIGHT SIDE - BOOKING FORM ==================== */
+
+.modal-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: flex-start;
+}
+
+/* Booking Form Container */
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.booking-form h3 {
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #222;
+}
+
+.booking-form form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* Cost Information Display */
+.cost-info {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #4a90e2;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Trip Details Form Groups */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.form-group label {
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 8px;
+  display: block;
+  font-size: 1.1rem;
+  text-align: center;
+  width: 100%;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  text-align: center;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+  text-align: left;
+}
+
+.form-group input[type="date"],
+.form-group input[type="time"] {
+  cursor: pointer;
+}
+
+/* Error Messages */
+.error-message {
+  color: #dc3545;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  text-align: center;
+  width: 100%;
+  background: #f8d7da;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #f5c6cb;
+}
+
+/* Success Messages */
+.success-message {
+  color: #155724;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  text-align: center;
+  width: 100%;
+  background: #d4edda;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #c3e6cb;
+}
+
+/* Confirm Booking Button */
+.booking-form .proceed-btn {
+  width: 100%;
+  max-width: 300px;
+  margin: 16px auto 0;
+  padding: 14px 24px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  background: #4a90e2;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.booking-form .proceed-btn:hover {
+  background: #357ab8;
+  transform: translateY(-1px);
+}
+
+.booking-form .proceed-btn:active {
+  transform: translateY(0);
+}
+
+.booking-form .proceed-btn:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Loading State */
+.booking-form .proceed-btn.loading {
+  position: relative;
+  color: transparent;
+}
+
+.booking-form .proceed-btn.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  margin-left: -10px;
+  border: 2px solid #ffffff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Booking Confirmation */
+.booking-confirmation {
+  text-align: center;
+  padding: 20px;
+  background: #d4edda;
+  border-radius: 12px;
+  border: 1px solid #c3e6cb;
+  margin: 20px 0;
+}
+
+.booking-confirmation h3 {
+  color: #155724;
+  margin-bottom: 10px;
+}
+
+.booking-confirmation p {
+  color: #155724;
+  margin: 0;
+}
+
+/* Button - Centered */
+.booking-form .proceed-btn {
+  width: 100%;
+  max-width: 300px;
+  margin: 16px auto 0;
+}
+
+/* Responsive Fixes */
+@media (max-width: 900px) {
+  .modal-content {
+    flex-direction: column;
+    padding: 0 8px 24px 8px;
+  }
+  .modal-left,
+  .modal-right {
+    padding: 0 4px;
+  }
+  .profile-card {
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px;
+  }
+  .option-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    width: 100%;
+  }
+  .option-price,
+  .option-hour {
+    margin-left: 0;
+    width: 100%;
+    text-align: left;
+  }
+  .booking-form {
+    max-width: 100%;
+    padding: 0 8px;
+  }
+  .form-group {
+    max-width: 100%;
+  }
+  .booking-form .proceed-btn {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .booking-modal {
+    max-width: 99vw;
+    margin: 8px auto;
+  }
+  .modal-content {
+    flex-direction: column;
+    padding: 0 2vw 16px 2vw;
+  }
+  .modal-left,
+  .modal-right {
+    padding: 0 2vw;
+  }
+  .option-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    width: 100%;
+  }
+  .option-price,
+  .option-hour {
+    margin-left: 0;
+    width: 100%;
+    text-align: left;
+  }
+  .booking-form {
+    padding: 0 4px;
+  }
+}

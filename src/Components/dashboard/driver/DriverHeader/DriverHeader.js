@@ -29,8 +29,13 @@ const DriverHeader = ({ status, setStatus, userId, setUserName }) => {
   useEffect(() => {
     // Get the logged-in user's email from localStorage (set during login)
     const userEmail = localStorage.getItem('userEmail') || 
-                     localStorage.getItem('email') ||
-                     'admin@gmail.com'; // Fallback for testing
+                     localStorage.getItem('email');
+
+    if (!userEmail) {
+      console.error('No user email found in localStorage');
+      navigate('/login');
+      return;
+    }
 
     console.log('🚀 Fetching driver data for logged-in user:', userEmail);
 
@@ -132,8 +137,12 @@ const DriverHeader = ({ status, setStatus, userId, setUserName }) => {
     // Fetch dynamic revenue for the logged-in driver
     const userEmail =
       localStorage.getItem('userEmail') ||
-      localStorage.getItem('email') ||
-      'admin@gmail.com';
+      localStorage.getItem('email');
+
+    if (!userEmail) {
+      console.error('No user email found for revenue calculation');
+      return;
+    }
 
     const controller = new AbortController();
     const signal = controller.signal;

@@ -4,7 +4,6 @@ import styles from './TravelerDashboard.module.css';
 import apiClient from '../../../utils/api-client';
 import useAuthGuard from '../../../hooks/useAuthGuard';
 import ProfileInfo from './ProfileInfo';
-import QuickActions from './QuickActions';
 import UpcomingTrips from './UpcomingTrips';
 import RecentActivity from './RecentActivity';
 
@@ -91,7 +90,6 @@ const TravelerDashboard = () => {
       </div>
 
       <ProfileInfo onProfileUpdate={handleProfileUpdate} />
-      <QuickActions />
       <UpcomingTrips />
       <RecentActivity />
     </div>

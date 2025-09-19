@@ -97,19 +97,21 @@
 }
 
 .status-toggle.available {
-  background-color: #28a745;
+  background-color: #dc3545; /* Red for "Go Unavailable" button */
 }
 
 .status-toggle.available:hover {
-  background-color: #218838;
-}
-
-.status-toggle.unavailable {
-  background-color: #dc3545;
-}
-
-.status-toggle.unavailable:hover {
   background-color: #c82333;
+}
+
+.status-toggle.unavailable,
+.status-toggle.nonavailable {
+  background-color: #28a745; /* Green for "Go Available" button */
+}
+
+.status-toggle.unavailable:hover,
+.status-toggle.nonavailable:hover {
+  background-color: #218838;
 }
 
 /* View Toggle Buttons */
@@ -204,17 +206,19 @@
 }
 
 .status-toggle.available {
-  background-color: #c82333;
+  background-color: #dc3545; /* Red for "Go Unavailable" button */
 }
 
 .status-toggle.available:hover {
-  background-color: #dc3545;
+  background-color: #c82333;
 }
 
-.status-toggle.unavailable {
+.status-toggle.unavailable,
+.status-toggle.nonavailable {
+  background-color: #28a745; /* Green for "Go Available" button */
+}
+
+.status-toggle.unavailable:hover,
+.status-toggle.nonavailable:hover {
   background-color: #218838;
-}
-
-.status-toggle.unavailable:hover {
-  background-color: #28a745;
 }

@@ -198,7 +198,9 @@ export default function LocalGuidesSection() {
                   onClick={() => {
                     // Store guide info in localStorage for booking
                     localStorage.setItem('selectedGuide', JSON.stringify({
-                      id: guide.id,
+                      id: guide.user_id || guide.id, // Use user_id for validation
+                      user_id: guide.user_id, // Explicitly include user_id
+                      guide_table_id: guide.id, // Keep original guide table ID for reference
                       name: guide.name,
                       specialization: guide.specialization || guide.languages,
                       location: guide.location,

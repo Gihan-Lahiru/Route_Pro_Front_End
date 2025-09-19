@@ -13,12 +13,12 @@ const renderStars = (rating) => {
   ));
 };
 
-export default function LocalGuidesSection() {
+export default function LocalGuidesSection({ onGuideSelect }) {
   const navigate = useNavigate();
   const [guides, setGuides] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Get trip dates from localStorage
   const tripDatesStr = localStorage.getItem('tripDates');
   let tripDates = null;
@@ -176,66 +176,62 @@ export default function LocalGuidesSection() {
         }
       </p>
       <div className="cards">
-        {availableGuides.map((guide) => {
-          // Debug: Log guide image info
-          console.log(`Guide ${guide.name} image info:`, {
-            image: guide.image,
-            photo_url: guide.photo_url,
-            photo: guide.photo
-          });
-          
-          return (
-            <article key={guide.id} className="guide-card">
-              <div className="image-container">
-                <img 
-                  src={guide.photo_url || guide.image || 'https://via.placeholder.com/150x150/28A745/FFFFFF?text=Guide'} 
-                  alt={guide.name} 
-                  className="guide-image" 
-                  onError={(e) => {
-                    console.log(`Image failed to load for ${guide.name}:`, e.target.src);
-                    e.target.src = 'https://via.placeholder.com/150x150/28A745/FFFFFF?text=Guide';
-                  }}
-                />
-                <span className="price-badge">{guide.status || guide.availability || 'Available'}</span>
-                {guide.verified && <span className="badge verified">Verified</span>}
-                {guide.recommended && <span className="badge recommended">Recommended</span>}
+        {availableGuides.map((guide) => (
+          <article key={guide.id} className="guide-card">
+            <div className="image-container">
+              <img 
+                src={guide.photo_url || guide.image || 'https://via.placeholder.com/150x150/28A745/FFFFFF?text=Guide'} 
+                alt={guide.name} 
+                className="guide-image" 
+                onError={(e) => {
+                  e.target.src = 'https://via.placeholder.com/150x150/28A745/FFFFFF?text=Guide';
+                }}
+              />
+              <span className="price-badge">{guide.status || guide.availability || 'Available'}</span>
+              {guide.verified && <span className="badge verified">Verified</span>}
+              {guide.recommended && <span className="badge recommended">Recommended</span>}
+            </div>
+            <div className="card-body">
+              <h3>{guide.name}</h3>
+              <ul className="guide-info">
+                <li>🌍 {guide.specialization || guide.languages || 'Specialization'}</li>
+                <li>📍 {guide.location || 'Location Info'}</li>
+                <li>✅ {guide.languages || 'Languages'}</li>
+              </ul>
+              <div className="rating">
+                {renderStars(guide.rating || 4)}
+                <span className="rating-text">({guide.rating || 4}/5)</span>
               </div>
-              <div className="card-body">
-                <h3>{guide.name}</h3>
-                <ul className="guide-info">
-                  <li>🌍 {guide.specialization || guide.languages || 'Specialization'}</li>
-                  <li>📍 {guide.location || 'Location Info'}</li>
-                  <li>✅ {guide.languages || 'Languages'}</li>
-                </ul>
-                <div className="rating">
-                  {renderStars(guide.rating || 4)}
-                  <span className="rating-text">({guide.rating || 4}/5)</span>
-                </div>
-                <div className="experience">
-                  <span>Experience: {guide.experience || '5+'} years</span>
-                </div>
-                <button 
-                  className="book-now-btn"
-                  onClick={() => {
-                    // Store guide info in localStorage for booking
-                    localStorage.setItem('selectedGuide', JSON.stringify({
-                      id: guide.id,
+              <div className="experience">
+                <span>Experience: {guide.experience || '5+'} years</span>
+              </div>
+              <button 
+                className="book-now-btn"
+                onClick={() => {
+                  if (onGuideSelect) {
+                    // Pass the selected guide data to parent for modal
+                    // Use user_id for backend validation, keep guide.id as fallback
+                    onGuideSelect({
+                      id: guide.id, // This is user_id from the API
+                      user_id: guide.user_id, // Explicitly include user_id  
+                      guide_table_id: guide.guide_table_id, // Use the correct guide_table_id from API
                       name: guide.name,
                       specialization: guide.specialization || guide.languages,
+                      languages: guide.languages || 'English',
                       location: guide.location,
                       rating: guide.rating || 4,
                       phone: guide.phone,
-                      photo_url: guide.photo_url
-                    }));
-                    navigate('/booking');
-                  }}
-                >
-                  Book Now
-                </button>
-              </div>
-            </article>
-          );
-        })}
+                      photo_url: guide.photo_url,
+                      experience: guide.experience || '5+'
+                    });
+                  }
+                }}
+              >
+                Book Now
+              </button>
+            </div>
+          </article>
+        ))}
       </div>
     </section>
   );

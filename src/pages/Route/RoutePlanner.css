@@ -1,43 +1,42 @@
 .route-planner {
   display: flex;
-  padding: 20px;
+  padding: 10px;
   gap: 20px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 /* Route Planner Sidebar - scoped to avoid admin conflicts */
-.route-planner .sidebar { 
-  width: 25%;
+.route-planner .sidebar {
+  width: 350px;
+  min-width: 320px;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   gap: 20px;
   position: relative;
   background: transparent;
+  flex-shrink: 0;
+  height: fit-content;
 }
 
 .route-planner .card {
   background-color: #fcfcfc;
   border-radius: 10px;
   padding: 15px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-.route-planner .card-route h3 {
-  margin-bottom: 10px;
-  font-family: 'Poppins', sans-serif;
-  
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  /* Ensure cards have proper height and don't cut off content */
+  min-height: fit-content;
+  overflow: visible;
 }
 
 .route-planner .card input {
   width: 100%;
   padding: 8px;
   margin: 5px 0 10px;
-  font-family: 'Poppins', sans-serif;
-}
-
-.combined-input label {
-  margin-top: 10px;
-  display: block;
+  font-family: "Poppins", sans-serif;
 }
 
 .vehicle-options {
@@ -45,6 +44,8 @@
   flex-wrap: wrap;
   gap: 10px;
   color: #555;
+  /* Add margin to ensure spacing from button */
+  margin-bottom: 15px;
 }
 
 .vehicle {
@@ -64,12 +65,16 @@
   margin-top: 15px;
   background-color: #00bfa6;
   color: white;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   width: 100%;
   font-weight: bold;
+  /* Ensure button is fully visible and has proper sizing */
+  font-size: 14px;
+  min-height: 44px;
+  display: block;
 }
 
 .book-button {
@@ -79,15 +84,22 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
-   font-weight: bold;
+  font-weight: bold;
+  width: 100%;
+  /* Ensure book button is properly sized */
+  font-size: 14px;
+  min-height: 40px;
 }
 
 /* Main content */
 .main-content {
-  width: 75%;
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  min-width: 0;
+  height: fit-content;
+  overflow: visible;
 }
 
 .map-placeholder {
@@ -99,19 +111,21 @@
   justify-content: center;
   font-style: italic;
   color: #555;
+  overflow: hidden;
 }
 
 .nearby-attractions h3 {
   margin-bottom: 10px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .attraction-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 15px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
+
 .attractions-button {
   background-color: #00bfa6;
   color: white;
@@ -121,13 +135,14 @@
   cursor: pointer;
   width: 100%;
 }
+
 .attraction-card {
   background-color: #fff;
   border-radius: 8px;
   padding: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .attraction-image {
@@ -152,9 +167,10 @@
   font-weight: bold;
   color: #f39c12;
 }
+
 .highlight-m1 {
   font-weight: bold;
-  background: linear-gradient(90deg, #FFD700, #2a7f62);
+  background: linear-gradient(90deg, #ffd700, #2a7f62);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -179,13 +195,13 @@
 }
 
 .route-info-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
   pointer-events: none;
 }
 
@@ -194,8 +210,9 @@
   font-weight: 600;
   margin-bottom: 20px;
   text-align: center;
-  color: white;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  /* Fixed contrast - changed to dark color that works on gradient background */
+  color: #1a1a1a;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
   position: relative;
   z-index: 1;
 }
@@ -213,7 +230,7 @@
   border-radius: 10px;
   padding: 20px 16px;
   border: 1px solid #e0e0e0;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -226,13 +243,13 @@
 }
 
 .route-info-item::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.05), transparent);
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.05), transparent);
   transition: left 0.5s;
 }
 
@@ -244,16 +261,17 @@
   background: #f8f8f8;
   transform: scale(1.02);
   border-color: #d0d0d0;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.15);
 }
 
 .route-info-label {
-  font-size: 0.4rem;
+  /* Fixed extremely small font sizes that made text invisible */
+  font-size: 0.85rem;
   font-weight: 600;
   color: #666;
   margin-bottom: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.1px;
+  letter-spacing: 0.5px;
   display: flex;
   align-items: center;
   text-align: center;
@@ -261,12 +279,13 @@
 }
 
 .route-info-value {
-  font-size: 0.5rem;
+  /* Fixed extremely small font sizes that made text invisible */
+  font-size: 1.1rem;
   font-weight: 700;
   color: #333;
   margin: 0;
   text-shadow: none;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   text-align: center;
   line-height: 1.2;
 }
@@ -274,7 +293,8 @@
 .route-info-icon {
   display: inline-block;
   margin-right: 8px;
-  font-size: 0.1rem;
+  /* Increased icon size from 1rem to 1.5rem for better visibility */
+  font-size: 1.5rem;
   color: #555;
   opacity: 0.8;
 }
@@ -285,58 +305,68 @@
     flex-direction: column;
     padding: 10px;
     gap: 15px;
+    width: 100%;
   }
-  
+
   .route-planner .sidebar {
     width: 100%;
+    min-width: unset;
+    max-width: unset;
+    flex-shrink: unset;
+    height: auto;
   }
-  
+
   .main-content {
-    width: 100%;
     order: 2;
+    height: auto;
   }
-  
+
   .route-info-grid {
     grid-template-columns: 1fr;
     gap: 8px;
     margin: 10px 0;
   }
-  
+
   .route-info-item {
-    padding: 15px 12px;
-    min-height: 70px;
+    padding: 20px 12px;
+    min-height: 80px;
     border-radius: 10px;
     background: #fcfcfc;
     border: 1px solid #e0e0e0;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }
-  
+
   .route-info-label {
-    font-size: 0.45rem;
+    /* Fixed mobile font sizes to be readable */
+    font-size: 0.75rem;
     margin-bottom: 6px;
     letter-spacing: 0.3px;
     font-weight: 650;
     color: #666;
   }
-  
+
   .route-info-value {
-    font-size: 0.75rem;
+    /* Fixed mobile font sizes to be readable */
+    font-size: 0.95rem;
     line-height: 1.1;
-    font-weight: 750;
+    font-weight: 800;
     color: #333;
     text-shadow: none;
   }
-  
+
   .route-info-icon {
-    font-size: 1rem;
-    margin-right: 6px;
+    /* Increased mobile icon size from 0.8rem to 1.2rem */
+    font-size: 1.2rem;
+    margin-right: 4px;
     color: #555;
   }
-  
+
   /* Price highlight for mobile */
   .route-info-item:last-child .route-info-value {
-    font-size: 0.7rem;
-    color: #00a25c;
+    font-size: 0.95rem;
+    /* Fixed mobile contrast - changed from light green to dark green */
+    color: #00876c;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   }
 }
 
@@ -346,37 +376,39 @@
     padding: 8px;
     gap: 10px;
   }
-  
+
   .route-info-item {
-    padding: 12px 8px;
-    min-height: 60px;
+    padding: 18px 8px;
+    min-height: 75px;
     background: #fcfcfc;
     border: 1px solid #e0e0e0;
-    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
   }
-  
+
   .route-info-label {
+    /* Fixed small mobile font sizes to be readable */
     font-size: 0.7rem;
     margin-bottom: 4px;
     font-weight: 700;
     color: #666;
   }
-  
+
   .route-info-value {
-    font-size: 1rem;
+    /* Fixed small mobile font sizes to be readable */
+    font-size: 0.95rem;
     font-weight: 800;
     color: #333;
-    text-shadow: none;
   }
-  
+
   .route-info-item:last-child .route-info-value {
-    font-size: 0.7rem;
-    color: #FFD700;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    font-size: 0.95rem;
+    /* Fixed small mobile contrast - changed from gold to dark green */
+    color: #00876c;
   }
-  
+
   .route-info-icon {
-    font-size: 0.9rem;
+    /* Increased small mobile icon size from 0.8rem to 1.1rem */
+    font-size: 1.1rem;
     margin-right: 4px;
   }
 }
@@ -386,35 +418,38 @@
   .route-planner {
     padding: 15px;
   }
-  
+
   .route-info-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
   }
-  
+
   .route-info-item {
-    padding: 16px 10px;
+    padding: 18px 10px;
     min-height: 75px;
     background: #fcfcfc;
     border: 1px solid #e0e0e0;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }
-  
+
   .route-info-label {
-    font-size: 0.8rem;
+    /* Fixed tablet font sizes to be readable */
+    font-size: 0.75rem;
     font-weight: 650;
     color: #666;
   }
-  
+
   .route-info-value {
-    font-size: 1.3rem;
+    /* Fixed tablet font sizes to be readable */
+    font-size: 1rem;
     font-weight: 750;
     color: #333;
   }
-  
+
   .route-info-item:last-child .route-info-value {
-    font-size: 0.7rem;
-    color: #FFD700;
+    font-size: 1rem;
+    /* Fixed tablet contrast - changed from gold to dark green */
+    color: #00876c;
   }
 }
 
@@ -424,30 +459,79 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 15px;
   }
-  
+
   .route-info-value {
     font-size: 1.2rem;
     color: #333;
   }
-  
+
+  .route-info-label {
+    font-size: 0.85rem;
+    color: #666;
+  }
+}
+
+/* Large screen optimizations */
+@media (min-width: 1200px) {
+  .route-planner {
+    padding: 30px;
+    gap: 30px;
+    max-width: 1600px;
+  }
+
+  .route-planner .sidebar {
+    width: 380px;
+    max-width: 420px;
+  }
+
+  .map-placeholder {
+    height: 600px;
+  }
+
+  .route-info-grid {
+    gap: 20px;
+  }
+
+  .route-info-item {
+    padding: 25px 20px;
+    min-height: 90px;
+  }
+
+  .route-info-value {
+    font-size: 1.3rem;
+  }
+
   .route-info-label {
     font-size: 0.9rem;
-    color: #666;
+  }
+}
+
+/* Extra large screens */
+@media (min-width: 1600px) {
+  .route-planner {
+    max-width: 1800px;
+    padding: 40px;
+  }
+
+  .route-planner .sidebar {
+    width: 400px;
+  }
+
+  .map-placeholder {
+    height: 650px;
   }
 }
 
 /* Price highlight */
 .route-info-item:last-child .route-info-value {
-  background: linear-gradient(45deg, #00876c, #007668);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  /* Fixed contrast - changed from gold to dark green for better readability */
+  color: #00876c;
   font-weight: 800;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   text-shadow: none;
 }
 
 /* Fallback for browsers that don't support background-clip */
 .route-info-item:last-child .route-info-value {
-  color: #FFD700;
+  color: #00876c;
 }

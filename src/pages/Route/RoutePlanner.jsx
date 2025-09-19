@@ -4,8 +4,9 @@ import MapComponent from "./MapComponent";
 import axios from "axios";
 import "./RoutePlanner.css";
 import TripDateSelector from "./TripDateSelector";
-
+import { sessionUtils } from "../../utils/api-client";
 import PlacesSelector from "./PlacesSelector";
+
 
 const RoutePlanner = () => {
   const [from, setFrom] = useState("");
@@ -18,33 +19,105 @@ const RoutePlanner = () => {
   const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [showDateSelector, setShowDateSelector] = useState(false);
 
-  // ✅ Your older pricing logic:
-  const basePricePerKM = 100;
-  const vehicleMultiplier = {
-    Bike: 0.6,
-    Car: 1.3,
-    "Mini Car": 1.1,  // Added since you have "Mini Car" now
-    Tuk: 0.8,         // Added since you have "Tuk" now
-    Van: 1.8,
+  // Updated pricing logic - Cars should be more expensive than Tuk-Tuks
+  const pricePerKM = {
+    Bike: 10,
+    "Tuk-Tuk": 15,      // Lower price for Tuk-Tuk
+    Car: 25,            // Higher price for Car
+    Van: 30,            // Highest price for Van
   };
 
   let distanceValue = 300;
   if (routeDetails.distance) {
     distanceValue = parseFloat(routeDetails.distance) / 1; // meters to km
+    
+    // Clear bike selection if distance exceeds 150km
+    if (distanceValue > 150 && vehicle === "Bike") {
+      setVehicle("");
+    }
   }
 
+  // Use new price logic
   const estimatedPrice =
     distanceValue && vehicle
-      ? (distanceValue * basePricePerKM * (vehicleMultiplier[vehicle] || 1)).toFixed(2)
+      ? (distanceValue * (pricePerKM[vehicle] || 0)).toFixed(2)
       : "N/A";
 
-  const handleBookDriverGuide = () => {
-    setShowDateSelector(true);
+  const handleBookDriverGuide = async () => {
+    if (!from || !to || !vehicle || !routeDetails.distance || !routeDetails.duration) {
+      alert("Please fill in all fields and ensure the route is loaded on map.");
+      return;
+    }
+    const currentUser = sessionUtils.getCurrentUser();
+    if (!currentUser) {
+      if (window.confirm("You must log in first to book drivers and guides. Would you like to go to the login page?")) {
+        navigate("/user-login");
+      }
+      return;
+    }
+    if (currentUser.role === 'driver' || currentUser.role === 'guide') {
+      alert("Drivers and guides cannot book other drivers or guides. This feature is only available for travelers.");
+      return;
+    }
+    if (currentUser.role !== 'traveller') {
+      alert("Only travelers can book drivers and guides.");
+      return;
+    }
+
+    // Prepare route data for DB
+    const routeData = {
+      start_location: from,
+      end_location: to,
+      distance_km: parseFloat((parseFloat(routeDetails.distance) / 1000).toFixed(2)), // meters to km as float
+      estimated_time: Math.round(parseFloat(routeDetails.duration) / 60), // minutes as number
+      cost: parseFloat(estimatedPrice)
+    };
+
+    try {
+      // Send route data to backend
+      const response = await axios.post("http://localhost/RoutePro-backend(02)/public/api/routes/routes.php", routeData);
+      
+      // Capture the route_id returned from backend
+      if (response.data.success && response.data.route_id) {
+        // Add the route_id to routeData before storing
+        const routeDataWithId = {
+          ...routeData,
+          route_id: response.data.route_id,
+          id: response.data.route_id  // Also store as 'id' for compatibility
+        };
+        
+        console.log('🎯 Route created successfully with ID:', response.data.route_id);
+        console.log('💾 Storing complete route data:', routeDataWithId);
+        
+        // Store complete route data with route_id in localStorage
+        localStorage.setItem('routeData', JSON.stringify(routeDataWithId));
+        
+        // Also store route_id separately for easy access
+        localStorage.setItem('route_id', response.data.route_id.toString());
+        localStorage.setItem('routeId', response.data.route_id.toString());
+        
+        navigate("/bookdriver");
+      } else {
+        throw new Error('Route creation failed or no route_id returned');
+      }
+    } catch (error) {
+      alert("Error saving route to database.");
+      console.error(error);
+    }
+  };
+
+  const prepareRouteData = () => {
+    return {
+      start_location: from,
+      end_location: to,
+      distance_km: parseFloat(routeDetails.distance) / 1000, // Convert meters to km
+      estimated_time: Math.round(parseFloat(routeDetails.duration) / 60), // Convert seconds to minutes
+      cost: parseFloat(estimatedPrice)
+    };
   };
 
   const handleDateConfirm = (dates) => {
     setShowDateSelector(false);
-    // Store dates in localStorage or pass them to the booking page
     localStorage.setItem('tripDates', JSON.stringify(dates));
     navigate("/bookdriver");
   };
@@ -58,18 +131,15 @@ const RoutePlanner = () => {
       alert("Please fill in all fields and ensure the route is loaded on map.");
       return;
     }
-
     try {
-      const routeResponse = await axios.post("http://localhost/Routepro/save_route.php", {
+      const routeResponse = await axios.post("http://localhost/RoutePro-backend(02)/public/api/routes/routes.php", {
         start_location: from,
         end_location: to,
-        distance_km: (parseFloat(routeDetails.distance) / 1000).toFixed(2),
-        estimated_time: routeDetails.duration,
+        distance_km: parseFloat((parseFloat(routeDetails.distance) / 1000).toFixed(2)),
+        estimated_time: Math.round(parseFloat(routeDetails.duration) / 60),
       });
-
       const route_id = routeResponse.data.route_id;
       const traveler_id = 1;
-
       for (const place of nearbyPlaces) {
         await axios.post("http://localhost/Routepro/save_attractions.php", {
           traveler_id,
@@ -79,7 +149,6 @@ const RoutePlanner = () => {
           lng: place.geometry.location.lng(),
         });
       }
-
       alert("Route and attractions saved successfully.");
     } catch (error) {
       console.error("Saving failed", error);
@@ -90,9 +159,9 @@ const RoutePlanner = () => {
   return (
     <div className="route-planner">
       <div className="sidebar">
+
         <div className="card combined-input">
           <h2 className="highlight-m1">Plan Your Route</h2>
-
           <label>From</label>
           <input
             type="text"
@@ -107,10 +176,17 @@ const RoutePlanner = () => {
             value={to}
             onChange={(e) => setTo(e.target.value)}
           />
-
           <label>Select Vehicle</label>
           <div className="vehicle-options">
-            {["Bike", "Tuk-Tuk", "Mini Car", "Car", "Van"].map((v) => (
+            {["Bike", "Tuk-Tuk", "Car", "Van"]
+              .filter((v) => {
+                // Hide Bike option if distance is more than 150km
+                if (v === "Bike" && distanceValue > 150) {
+                  return false;
+                }
+                return true;
+              })
+              .map((v) => (
               <button
                 key={v}
                 className={`vehicle ${vehicle === v ? "active" : ""}`}
@@ -120,19 +196,7 @@ const RoutePlanner = () => {
               </button>
             ))}
           </div>
-
-          <button className="confirm-button" onClick={handleConfirm}>
-            Find The Best Route
-          </button>
         </div>
-        {/* <div>
-          <button
-            className="attractions-button"
-            onClick={() => setFindAttractions((prev) => !prev)}
-          >
-            Find Nearby Attractions
-          </button>
-        </div> */}
 
         <div className="card route-info-card">
           <h3>Route Information</h3>
@@ -145,7 +209,6 @@ const RoutePlanner = () => {
                 {routeDetails.distance ? `${(distanceValue).toFixed(1)} km` : "N/A"}
               </div>
             </div>
-            
             <div className="route-info-item">
               <div className="route-info-label">
                 <span className="route-info-icon"></span>Duration
@@ -154,7 +217,6 @@ const RoutePlanner = () => {
                 {routeDetails.duration || "N/A"}
               </div>
             </div>
-            
             <div className="route-info-item">
               <div className="route-info-label">
                 <span className="route-info-icon"></span>Estimated Price
@@ -190,7 +252,6 @@ const RoutePlanner = () => {
           setNearbyPlaces={setNearbyPlaces}
         />
       </div>
-      
       {showDateSelector && (
         <TripDateSelector
           onClose={handleDateCancel}

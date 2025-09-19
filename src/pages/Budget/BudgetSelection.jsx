@@ -19,15 +19,20 @@ export default function BudgetSelection() {
         <div className="budget-sidebar">
           <StartingPoint location={location} setLocation={setLocation} />
           <BudgetSelector budget={budget} setBudget={setBudget} />
-          <NearbyAttractions attractions={attractions} />
         </div>
-        <div className="budget-map-area">
-          <MapComponent
-            location={location}
-            budget={budget}
-            setAttractions={setAttractions}
-          />
+        <div className="budget-map-section">
+          <div className="budget-map-area">
+            <MapComponent
+              location={location}
+              budget={budget}
+              setAttractions={setAttractions}
+            />
+          </div>
         </div>
+      </div>
+      
+      <div className="full-width-cards">
+        <NearbyAttractions attractions={attractions} budget={budget} />
       </div>
     </div>
   );

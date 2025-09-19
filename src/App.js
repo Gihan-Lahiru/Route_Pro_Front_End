@@ -39,12 +39,17 @@ import AboutUs from "./pages/AboutUs/AboutUs";
 import TermsCondition from "./pages/TermsCondition/TermsConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy";
 import ContactUs from "./pages/ContactUs/ContactUs";
+import PaymentPage from "./pages/PaymentPage";
+
+// Map Examples and Enhanced Route Planner
+import MapExample from "./pages/MapExample";
+import EnhancedRoutePlanner from "./pages/Route/EnhancedRoutePlanner";
 
 // Dashboards
 import DriverDashboard from "./Components/dashboard/driver/DriverDashboard/DriverDashboard.js";
 import GuideDashboard from "./Components/dashboard/guide/GuideDashboard/GuideDashboard.js";
 import AdminDashboard from "./Components/dashboard/admin/AdminDashboard.jsx";
-import TravelerDashboard from "./Components/dashboard/traveler/TravelerDashboard.jsx";
+import TravelerDashboard from "./Components/dashboard/traveler/TravelerDashboard";
 import HeadSection from "./pages/Home/headsection";
 
 const HomePage = () => (
@@ -58,22 +63,25 @@ const HomePage = () => (
   </>
 );
 
-// Helper to detect if path is dashboard
+// Helper to detect if path is dashboard (excluding admin)
 const isDashboardRoute = (pathname) =>
   pathname.startsWith("/driver-dashboard") ||
   pathname.startsWith("/guide-dashboard") ||
-  pathname.startsWith("/admin-dashboard") ||
   pathname.startsWith("/traveller-dashboard");
+
+// Helper to detect if path is admin dashboard
+const isAdminDashboard = (pathname) => pathname.startsWith("/admin-dashboard");
 
 // Component that renders layout based on current route
 const AppContent = () => {
   const location = useLocation();
   const isDashboard = isDashboardRoute(location.pathname);
+  const isAdmin = isAdminDashboard(location.pathname);
 
   return (
     <div className="App">
       {/* Conditional header */}
-      {isDashboard ? <HeaderDashboard /> : <Header />}
+      {isDashboard ? <HeaderDashboard /> : !isAdmin ? <Header /> : null}
 
       <main style={{ marginTop: isDashboard ? "0" : "0px" }}>
         <Routes>
@@ -99,9 +107,12 @@ const AppContent = () => {
           <Route path="/budget" element={<BudgetSelection />} />
           <Route path="/culture" element={<Cultural />} />
           <Route path="/route" element={<RoutePlanner />} />
+          <Route path="/enhanced-route" element={<EnhancedRoutePlanner />} />
+          <Route path="/map-example" element={<MapExample />} />
           <Route path="/bookdriver" element={<BookDriver />} />
           <Route path="/driver/:id" element={<DriverDetails />} />
           <Route path="/guide/:id" element={<GuideDetails />} />
+          <Route path="/payment" element={<PaymentPage />} />
 
           {/* Dashboards */}
           <Route path="/driver-dashboard" element={<DriverDashboard />} />
@@ -117,8 +128,8 @@ const AppContent = () => {
         </Routes>
       </main>
 
-      {/* Footer only if not a dashboard */}
-      {!isDashboard && <Footer />}
+      {/* Footer only if not a dashboard and not admin */}
+      {!isDashboard && !isAdmin && <Footer />}
     </div>
   );
 };

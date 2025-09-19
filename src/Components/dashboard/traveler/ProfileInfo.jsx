@@ -9,7 +9,8 @@ const ProfileInfo = ({ onProfileUpdate }) => {
     phone: '',
     member_since: '',
     user_id: '',
-    photoUrl: ''
+    photoUrl: '',
+    completedTrips: 0
   });
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState(null);
@@ -53,7 +54,8 @@ const ProfileInfo = ({ onProfileUpdate }) => {
             phone: data.data.phone || 'Not provided',
             member_since: data.data.member_since ? new Date(data.data.member_since).getFullYear() : 'Unknown',
             user_id: data.data.user_id || '',
-            photoUrl: (data.data.photo && data.data.photo.trim() !== '') ? data.data.photo : null
+            photoUrl: (data.data.photo && data.data.photo.trim() !== '') ? data.data.photo : null,
+            completedTrips: data.data.completed_trips || 0
           });
         } else {
           console.error('❌ Error fetching traveller profile:', data.message || 'Unknown error');
@@ -66,7 +68,8 @@ const ProfileInfo = ({ onProfileUpdate }) => {
             phone: 'Not provided',
             member_since: 'Unknown',
             user_id: '',
-            photoUrl: null
+            photoUrl: null,
+            completedTrips: 0
           });
         }
       })
@@ -81,7 +84,8 @@ const ProfileInfo = ({ onProfileUpdate }) => {
           phone: 'Not provided',
           member_since: 'Unknown',
           user_id: '',
-          photoUrl: null
+          photoUrl: null,
+          completedTrips: 0
         });
       });
   };
@@ -123,6 +127,19 @@ const ProfileInfo = ({ onProfileUpdate }) => {
               : 'http://localhost/RoutePro-backend(02)/public/images/defaults/default.png')}
             alt={travellerInfo.name}
             className={styles.profileImage}
+            onError={(e) => {
+              console.log('📸 Image load failed for URL:', e.target.src);
+              console.log('📸 Original photoUrl:', travellerInfo.photoUrl);
+              console.log('📸 Setting fallback to default image');
+              e.target.src = 'http://localhost/RoutePro-backend(02)/public/images/defaults/default.png';
+            }}
+            onLoad={() => {
+              console.log('📸 Profile image loaded successfully');
+              console.log('📸 Image URL was:', travellerInfo.photoUrl);
+              console.log('📸 Full constructed URL was:', photoPreview || (travellerInfo.photoUrl && travellerInfo.photoUrl.trim() !== '' 
+                ? `http://localhost${travellerInfo.photoUrl}?t=${Date.now()}` 
+                : 'http://localhost/RoutePro-backend(02)/public/images/defaults/default.png'));
+            }}
           />
           <button
             type="button"
@@ -144,7 +161,7 @@ const ProfileInfo = ({ onProfileUpdate }) => {
         {/* Right: Travel Stats */}
         <div className={styles.statsBlock}>
           <div>
-            <strong>12</strong>
+            <strong>{travellerInfo.completedTrips || 0}</strong>
             <span>Trips Completed</span>
           </div>
         </div>
@@ -209,11 +226,37 @@ const ProfileInfo = ({ onProfileUpdate }) => {
                     accept="image/*"
                     onChange={(e) => {
                       const file = e.target.files?.[0] || null;
-                      console.log('📸 Photo selected:', file?.name);
+                      console.log('📸 Photo selected:', file?.name, 'Size:', file?.size, 'Type:', file?.type);
                       setPhotoFile(file);
                       if (file) {
+                        // Check file size (5MB limit)
+                        if (file.size > 5 * 1024 * 1024) {
+                          alert('File size too large. Please select an image smaller than 5MB.');
+                          e.target.value = ''; // Clear the input
+                          setPhotoFile(null);
+                          setPhotoPreview(null);
+                          return;
+                        }
+                        
+                        // Check file type
+                        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                        if (!allowedTypes.includes(file.type)) {
+                          alert('Invalid file type. Please select a JPEG, PNG, or GIF image.');
+                          e.target.value = ''; // Clear the input
+                          setPhotoFile(null);
+                          setPhotoPreview(null);
+                          return;
+                        }
+                        
                         const reader = new FileReader();
-                        reader.onload = (ev) => setPhotoPreview(ev.target?.result || null);
+                        reader.onload = (ev) => {
+                          console.log('📸 File read successfully, setting preview');
+                          setPhotoPreview(ev.target?.result || null);
+                        };
+                        reader.onerror = (err) => {
+                          console.error('📸 File read error:', err);
+                          alert('Failed to read the selected image file.');
+                        };
                         reader.readAsDataURL(file);
                       } else {
                         setPhotoPreview(null);
@@ -231,8 +274,18 @@ const ProfileInfo = ({ onProfileUpdate }) => {
                           objectFit: 'cover', 
                           borderRadius: '8px',
                           border: '2px solid #ddd'
-                        }} 
+                        }}
+                        onError={(e) => {
+                          console.error('📸 Image load error:', e);
+                          e.target.src = 'http://localhost/RoutePro-backend(02)/public/images/defaults/default.png';
+                        }}
+                        onLoad={() => {
+                          console.log('📸 Image loaded successfully');
+                        }}
                       />
+                      <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+                        {photoPreview ? 'New photo selected' : 'Current photo'}
+                      </div>
                     </div>
                   )}
                 </label>
@@ -294,25 +347,38 @@ const ProfileInfo = ({ onProfileUpdate }) => {
                     // Handle photo upload if provided
                     if (photoFile) {
                       console.log('📸 Uploading photo...');
-                      const form = new FormData();
-                      form.append('email', userEmail);
-                      form.append('photo', photoFile);
-                      
-                      const photoResponse = await fetch('http://localhost/RoutePro-backend(02)/public/traveller/photo', {
-                        method: 'POST',
-                        body: form
-                      });
-                      
-                      console.log('📡 Photo upload response status:', photoResponse.status);
-                      const photoResult = await photoResponse.json();
-                      console.log('📊 Photo upload response data:', photoResult);
-                      
-                      if (photoResponse.ok && photoResult.success) {
-                        console.log('✅ Photo uploaded successfully');
-                      } else {
-                        console.warn('⚠️ Photo upload failed:', photoResult.message);
-                        alert(`Profile updated but photo upload failed: ${photoResult.message || 'Unknown error'}`);
+                      try {
+                        const form = new FormData();
+                        form.append('email', userEmail);
+                        form.append('photo', photoFile);
+                        
+                        console.log('📸 FormData created with email:', userEmail, 'and photo:', photoFile.name);
+                        
+                        const photoResponse = await fetch('http://localhost/RoutePro-backend(02)/public/traveller/photo', {
+                          method: 'POST',
+                          body: form,
+                          credentials: 'include' // Include credentials for CORS
+                        });
+                        
+                        console.log('📡 Photo upload response status:', photoResponse.status);
+                        console.log('📡 Photo upload response ok:', photoResponse.ok);
+                        
+                        const photoResult = await photoResponse.json();
+                        console.log('📊 Photo upload response data:', photoResult);
+                        
+                        if (photoResponse.ok && photoResult.success) {
+                          console.log('✅ Photo uploaded successfully');
+                          alert('Profile and photo updated successfully!');
+                        } else {
+                          console.warn('⚠️ Photo upload failed:', photoResult.message);
+                          alert(`Profile updated successfully, but photo upload failed: ${photoResult.message || 'Unknown error'}`);
+                        }
+                      } catch (photoError) {
+                        console.error('📸 Photo upload error:', photoError);
+                        alert(`Profile updated successfully, but photo upload encountered an error: ${photoError.message}`);
                       }
+                    } else {
+                      alert('Profile updated successfully!');
                     }
 
                     // Refresh profile data
@@ -326,8 +392,6 @@ const ProfileInfo = ({ onProfileUpdate }) => {
                     setShowEditModal(false);
                     setPhotoFile(null);
                     setPhotoPreview(null);
-                    
-                    alert('Profile updated successfully!');
                     
                   } catch (err) {
                     console.error('❌ Failed to save profile:', err);

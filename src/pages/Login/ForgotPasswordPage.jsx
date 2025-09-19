@@ -10,6 +10,12 @@ const ForgotPasswordPage = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Email validation function
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -18,15 +24,27 @@ const ForgotPasswordPage = () => {
       navigate("/verify-otp", { state: { email } });
       return;
     }
+
+    // Validate email format
+    if (!isValidEmail(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
     
     setLoading(true);
     setMessage("");
     setError("");
 
     try {
+      console.log("Sending OTP request to:", "http://localhost/RoutePro-backend(02)/public/auth/send-otp");
+      console.log("Request payload:", { email });
+      
       const response = await axios.post(
         "http://localhost/RoutePro-backend(02)/public/auth/send-otp",
-        { email },
+        { 
+          email,
+          type: "password_reset" // Specify this is for password reset
+        },
         {
           headers: {
             'Content-Type': 'application/json',
@@ -35,6 +53,8 @@ const ForgotPasswordPage = () => {
         }
       );
 
+      console.log("Response received:", response);
+
       if (response.data.success) {
         setMessage("OTP sent to your email! Please check your email and enter the 6-digit code.");
       } else {
@@ -42,10 +62,25 @@ const ForgotPasswordPage = () => {
       }
     } catch (err) {
       console.error("Forgot password error:", err);
-      if (err.response?.data?.message) {
-        setError(err.response.data.message);
+      
+      // More detailed error handling
+      if (err.code === 'ECONNREFUSED' || err.message.includes('Network Error')) {
+        setError("Cannot connect to server. Please ensure the backend server is running on localhost.");
+      } else if (err.code === 'ENOTFOUND') {
+        setError("Server not found. Please check the backend URL configuration.");
+      } else if (err.response) {
+        // Server responded with error status
+        console.log("Error response status:", err.response.status);
+        console.log("Error response data:", err.response.data);
+        setError(err.response.data.message || `Server error: ${err.response.status}`);
+      } else if (err.request) {
+        // Request was made but no response received
+        console.log("No response received:", err.request);
+        setError("No response from server. Please check your internet connection and try again.");
       } else {
-        setError("An error occurred. Please try again.");
+        // Something else happened
+        console.log("Request setup error:", err.message);
+        setError(`Request error: ${err.message}`);
       }
     } finally {
       setLoading(false);
@@ -74,7 +109,21 @@ const ForgotPasswordPage = () => {
             />
           </div>
 
-          {error && <div className="error-message">{error}</div>}
+          {error && (
+            <div className="error-message">
+              <strong>Error:</strong> {error}
+              <br />
+              <small>
+                If this issue persists, please:
+                <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>
+                  <li>Check your internet connection</li>
+                  <li>Ensure the backend server is running</li>
+                  <li>Verify your email address is correct</li>
+                  <li>Contact support if the problem continues</li>
+                </ul>
+              </small>
+            </div>
+          )}
           {message && <div className="success-message">{message}</div>}
 
           <button

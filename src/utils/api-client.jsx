@@ -159,4 +159,7 @@ api.interceptors.response.use(
   }
 );
 
+// Add logout method to the default export
+api.logout = sessionUtils.logout;
+
 export default api;

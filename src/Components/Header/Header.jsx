@@ -19,6 +19,29 @@ export default function Header() {
 
   // Clear stale/invalid localStorage data on startup
   useEffect(() => {
+    // Check if user just logged out
+    const justLoggedOut = localStorage.getItem('justLoggedOut');
+    if (justLoggedOut) {
+      localStorage.removeItem('justLoggedOut');
+      // Force clear all user data
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('email');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('role');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('name');
+      localStorage.removeItem('userRating');
+      localStorage.removeItem('userProfile');
+      localStorage.removeItem('sessionStartTime');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      sessionStorage.clear();
+      setIsLoggedIn(false);
+      setUserInfo(null);
+      return;
+    }
+    
     const userEmail = localStorage.getItem('userEmail') || localStorage.getItem('email');
     const userRole = localStorage.getItem('userRole') || localStorage.getItem('role');
     const userName = localStorage.getItem('userName') || localStorage.getItem('name');
@@ -42,14 +65,53 @@ export default function Header() {
       localStorage.removeItem('userRating');
       localStorage.removeItem('userProfile');
       localStorage.removeItem('sessionStartTime');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      sessionStorage.clear();
+      setIsLoggedIn(false);
+      setUserInfo(null);
     }
   }, []);
 
   // Check user login status
   const checkUserLogin = async () => {
+    // First check if user just logged out
+    if (localStorage.getItem('justLoggedOut')) {
+      setIsLoggedIn(false);
+      setUserInfo(null);
+      return;
+    }
+    
     const userEmail = localStorage.getItem('userEmail') || localStorage.getItem('email');
     const userRole = localStorage.getItem('userRole') || localStorage.getItem('role');
     const userName = localStorage.getItem('userName') || localStorage.getItem('name');
+    const sessionTime = localStorage.getItem('sessionStartTime');
+    
+    // Validate session is not expired
+    if (sessionTime) {
+      const sessionAge = Date.now() - parseInt(sessionTime);
+      const sessionLimit = 24 * 60 * 60 * 1000; // 24 hours
+      
+      if (sessionAge > sessionLimit) {
+        // Session expired, clear all data
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('email');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('role');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('name');
+        localStorage.removeItem('userRating');
+        localStorage.removeItem('userProfile');
+        localStorage.removeItem('sessionStartTime');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        sessionStorage.clear();
+        setIsLoggedIn(false);
+        setUserInfo(null);
+        return;
+      }
+    }
     
     if (userEmail && userRole && userName) {
       setIsLoggedIn(true);
@@ -100,6 +162,16 @@ export default function Header() {
   useEffect(() => {
     const handleStorageChange = (e) => {
       console.log('🔄 Storage change detected:', e);
+      
+      // If justLoggedOut flag is set, immediately clear user state
+      if (e.key === 'justLoggedOut' && e.newValue) {
+        setIsLoggedIn(false);
+        setUserInfo(null);
+        localStorage.removeItem('justLoggedOut'); // Clean up the flag
+        return;
+      }
+      
+      // For other changes, recheck login status
       checkUserLogin();
     };
 
@@ -129,6 +201,8 @@ export default function Header() {
       navigate('/guide-dashboard');
     } else if (userInfo?.role === 'traveller') {
       navigate('/traveller-dashboard');
+    } else if (userInfo?.role === 'admin') {
+      navigate('/admin-dashboard');
     }
   };
 
@@ -144,7 +218,7 @@ export default function Header() {
       <Navbar collapseOnSelect expand="lg" fixed="top" className="header-navbar">
         <Container>
           <Link to="/homepage">
-            <img src="/images/new logo.png" alt="Logo" className="routeprologo" />
+            <img src="/images/newlogo.png" alt="Logo" className="routeprologo" />
           </Link>
 
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />

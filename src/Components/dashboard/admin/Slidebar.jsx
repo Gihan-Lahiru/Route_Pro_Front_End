@@ -1,7 +1,7 @@
 "use client"
 import "./Sidebar.css"
 
-const Sidebar = ({ currentPage, setCurrentPage }) => {
+const Sidebar = ({ currentPage, setCurrentPage, onLogout }) => {
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: "🏠" },
     { id: "trips", label: "Trips", icon: "📍" },
@@ -39,6 +39,13 @@ const Sidebar = ({ currentPage, setCurrentPage }) => {
           </ul>
         </div>
       </nav>
+
+      <div className="sidebar-footer">
+        <button className="logout-btn" onClick={onLogout}>
+          <span className="nav-icon">🚪</span>
+          <span className="nav-label">Logout</span>
+        </button>
+      </div>
     </div>
   )
 }

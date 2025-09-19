@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuthGuard from '../../../../hooks/useAuthGuard';
+import { sessionUtils } from '../../../../utils/api-client';
 import TripDetails from '../TripDetails/TripDetails';
 import ReviewsPanel from '../ReviewsPanel/ReviewsPanel';
 import './DriverDashboard.css';
@@ -16,40 +17,146 @@ const DriverDashboard = () => {
   useEffect(() => {
     if (!isAuthenticated) return; // Only fetch data if authenticated
     
-    // Get the logged-in user's email from localStorage (set during login)
+    console.log('🔍 Starting driver name fetch process...');
+    
+    // Debug: Log all localStorage values
+    const localStorageData = {
+      userName: localStorage.getItem('userName'),
+      name: localStorage.getItem('name'),
+      userEmail: localStorage.getItem('userEmail'),
+      email: localStorage.getItem('email'),
+      userId: localStorage.getItem('userId')
+    };
+    console.log('localStorage values:', localStorageData);
+    
+    // Try multiple sources for the user name
+    const storedName = localStorage.getItem('userName') || localStorage.getItem('name');
+    const currentUser = sessionUtils.getCurrentUser();
+    
+    console.log('currentUser from sessionUtils:', currentUser);
+    
+    // Check if we have a valid stored name (not null, undefined, or empty)
+    if (storedName && storedName !== 'null' && storedName !== 'undefined' && storedName.trim() !== '') {
+      setUserName(storedName);
+      console.log('✅ Got driver name from localStorage:', storedName);
+      return;
+    }
+    
+    // Check sessionUtils for userName
+    if (currentUser && currentUser.userName && currentUser.userName.trim() !== '') {
+      setUserName(currentUser.userName);
+      console.log('✅ Got driver name from session:', currentUser.userName);
+      return;
+    }
+    
+    // If no valid stored name, try to fetch from APIs
+    console.log('⚠️ No valid stored name found, attempting API fetch...');
+    
+    // Try to get user ID directly
+    const userId = localStorage.getItem('userId') || currentUser?.userId;
     const userEmail = localStorage.getItem('userEmail') || 
                      localStorage.getItem('email') ||
-                     'admin@gmail.com'; // Fallback for testing
-
-    console.log('🚀 Fetching driver data for dashboard:', userEmail);
-
-    // Use proper DriverController endpoint with email parameter
-    fetch(`http://localhost/RoutePro-backend(02)/public/driver/profile?email=${encodeURIComponent(userEmail)}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
+                     currentUser?.email;
+    
+    console.log('Available identifiers:', { userId, userEmail });
+    
+    if (userId) {
+      console.log('🚀 Trying to fetch driver name using user ID:', userId);
+      
+      fetch(`http://localhost/RoutePro-backend(02)/public/api/auth/user-info.php?user_id=${userId}`)
+        .then(res => {
+          console.log('User info API response status:', res.status);
+          return res.json();
+        })
+        .then(userData => {
+          console.log('User info API response data:', userData);
+          if (userData.success && userData.user && userData.user.name && userData.user.name.trim() !== '') {
+            const userName = userData.user.name;
+            setUserName(userName);
+            localStorage.setItem('userName', userName);
+            console.log('✅ Got driver name from user info API:', userName);
+            return;
+          }
+          
+          // If user info API doesn't have name, try driver profile API with email
+          if (userEmail) {
+            console.log('🚀 Trying driver profile API with email:', userEmail);
+            
+            return fetch(`http://localhost/RoutePro-backend(02)/public/driver/profile?email=${encodeURIComponent(userEmail)}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            });
+          } else {
+            throw new Error('No email found for driver profile API');
+          }
+        })
+        .then(res => {
+          if (res) {
+            console.log('Driver profile API response status:', res.status);
+            return res.json();
+          }
+          return null;
+        })
+        .then((data) => {
+          if (data) {
+            console.log('Driver profile API response:', data);
+            if (data.success && data.data && data.data.name && data.data.name.trim() !== '') {
+              const driverName = data.data.name;
+              setUserName(driverName);
+              setStatus(data.data.status || 'available');
+              localStorage.setItem('userName', driverName);
+              console.log('✅ Got driver name from driver profile API:', driverName);
+            } else {
+              console.log('❌ No valid name found in driver profile API response');
+              setUserName('Driver'); // Final fallback
+            }
+          } else {
+            console.log('❌ No response from driver profile API');
+            setUserName('Driver'); // Final fallback
+          }
+        })
+        .catch((err) => {
+          console.error('❌ API calls failed:', err);
+          setUserName('Driver'); // Final fallback
+        });
+    } else if (userEmail) {
+      // Try driver profile API directly if we have email but no user ID
+      console.log('🚀 No user ID found, trying driver profile API with email:', userEmail);
+      
+      fetch(`http://localhost/RoutePro-backend(02)/public/driver/profile?email=${encodeURIComponent(userEmail)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
         }
-        return res.json();
       })
-      .then((data) => {
-        if (data.success && data.data) {
-          setUserName(data.data.name || 'Driver');
-          setStatus(data.data.status || 'available'); // Update status from backend
-        } else {
-          console.error('Error fetching driver info:', data.message || 'Unknown error');
-          setUserName('Driver'); // Fallback
-        }
-      })
-      .catch((err) => {
-        console.error('Fetch error:', err);
-        setUserName('Driver'); // Fallback
-      });
-  }, []);
+        .then(res => {
+          console.log('Driver profile API response status:', res.status);
+          return res.json();
+        })
+        .then((data) => {
+          console.log('Driver profile API response:', data);
+          if (data.success && data.data && data.data.name && data.data.name.trim() !== '') {
+            const driverName = data.data.name;
+            setUserName(driverName);
+            setStatus(data.data.status || 'available');
+            localStorage.setItem('userName', driverName);
+            console.log('✅ Got driver name from driver profile API:', driverName);
+          } else {
+            console.log('❌ No valid name found in driver profile API');
+            setUserName('Driver'); // Final fallback
+          }
+        })
+        .catch((err) => {
+          console.error('❌ Driver profile API failed:', err);
+          setUserName('Driver'); // Final fallback
+        });
+    } else {
+      console.error('❌ No user ID or email found anywhere');
+      setUserName('Driver'); // Final fallback
+    }
+  }, [isAuthenticated]);
 
   const handleLogout = () => {
     // Clear all localStorage data

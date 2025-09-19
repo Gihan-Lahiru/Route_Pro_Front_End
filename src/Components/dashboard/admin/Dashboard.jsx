@@ -20,24 +20,32 @@ const Dashboard = () => {
   const fetchDashboardStats = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost/RoutePro-backend(02)/public/admin/stats', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include'
-      });
+      setError(null);
+      
+      console.log('Fetching dashboard stats...');
+      
+      const response = await fetch('http://localhost:80/RoutePro-backend(02)/public/api/admin/system-stats.php');
+      
+      console.log('Response received:', response);
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       const data = await response.json();
+      console.log('Data received:', data);
       
       if (data.success) {
         setStats(data.data);
+        console.log('Stats updated successfully');
       } else {
-        setError(data.message || 'Failed to fetch dashboard statistics');
+        throw new Error(data.message || 'API returned unsuccessful response');
       }
     } catch (err) {
       console.error('Error fetching dashboard stats:', err);
-      setError('Failed to connect to server');
+      setError(`Failed to load dashboard: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -142,17 +150,22 @@ const Dashboard = () => {
               <div key={index} className="trip-item">
                 <div className="trip-info">
                   <div className="trip-id">
-                    <span className="trip-code">{trip.id}</span>
+                    <span className="trip-code">TR{String(trip.trip_id).padStart(3, '0')}</span>
                     <span className={`trip-status ${trip.status}`}>{trip.status}</span>
                   </div>
                   <div className="trip-details">
-                    <div className="traveler">{trip.traveler}</div>
+                    <div className="traveler">{trip.traveler?.name || 'Unknown'}</div>
                     <div className="route">{trip.route}</div>
                   </div>
                 </div>
                 <div className="trip-meta">
-                  <div className="trip-amount">{trip.amount}</div>
-                  <div className="trip-staff">{trip.staff || 'No staff assigned'}</div>
+                  <div className="trip-amount">Rs. {trip.system_fee?.toFixed(2)}</div>
+                  <div className="trip-staff">
+                    {trip.driver?.name && trip.guide?.name 
+                      ? `${trip.driver.name} | ${trip.guide.name}`
+                      : trip.driver?.name || trip.guide?.name || 'No staff assigned'
+                    }
+                  </div>
                 </div>
               </div>
             ))

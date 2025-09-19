@@ -24,11 +24,20 @@ export default function GuideRegistrationForm() {
     confirmPassword: '',
     agree: false,
   });
+
+  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState("form"); // "form": Registration form, "otp": OTP verification
+  const [currentEmail, setCurrentEmail] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [error, setError] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
+    // Clear errors when user starts typing
+    if (error) setError("");
   };
 // 1. Full Name: Only letters and spaces allowed
 const validateName = (name) => /^[a-zA-Z\s]+$/.test(name);
@@ -67,124 +76,204 @@ const validatePassword = (password) =>
 
 
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const sendOTP = async () => {
+    // Step 1: Terms agreement must be ticked
+    if (!form.agree) {
+      setError('You must agree to the Terms and Conditions and Privacy Policy.');
+      return;
+    }
 
-   // Step 1: Terms agreement must be ticked
-if (!form.agree) {
-  alert('You must agree to the Terms and Conditions and Privacy Policy.');
-  return;
-}
+    // Step 2: Validate each field in order
+    if (!validateName(form.name)) {
+      setError('Full name can only contain letters and spaces.');
+      return;
+    }
 
-// Step 2: Validate each field in order
-if (!validateName(form.name)) {
-  alert('Full name can only contain letters and spaces.');
-  return;
-}
+    if (!validateEmail(form.email)) {
+      setError('Invalid email format.');
+      return;
+    }
 
-if (!validateEmail(form.email)) {
-  alert('Invalid email format.');
-  return;
-}
+    if (!validatePhone(form.phone)) {
+      setError('Phone number must be 10 digits starting with 0 or 9 digits starting with 7.');
+      return;
+    }
 
-if (!validatePhone(form.phone)) {
-  alert('Phone number must be 10 digits starting with 0 or 9 digits starting with 7.');
-  return;
-}
+    if (!validateNIC(form.nic)) {
+      setError('NIC must be 9 digits + V/v/X/x or 12 digits.');
+      return;
+    }
 
-if (!validateNIC(form.nic)) {
-  alert('NIC must be 9 digits + V/v/X/x or 12 digits.');
-  return;
-}
+    if (!validateLicense(form.license_no)) {
+      setError('Guide License must be alphanumeric only.');
+      return;
+    }
 
-if (!validateLicense(form.license_no)) {
-  alert('Guide License must be alphanumeric only.');
-  return;
-}
+    if (!validateExperience(form.experience)) {
+      setError('Experience must be a positive whole number.');
+      return;
+    }
 
-if (!validateExperience(form.experience)) {
-  alert('Experience must be a positive whole number.');
-  return;
-}
+    if (!validateLocation(form.location)) {
+      setError('Location contains invalid characters.');
+      return;
+    }
 
-if (!validateLocation(form.location)) {
-  alert('Location contains invalid characters.');
-  return;
-}
+    if (!validateLanguages(form.languages)) {
+      setError('Languages must contain only letters, commas, and spaces.');
+      return;
+    }
 
-if (!validateLanguages(form.languages)) {
-  alert('Languages must contain only letters, commas, and spaces.');
-  return;
-}
+    if (!validatePassword(form.password)) {
+      setError('Password must be at least 8 characters and include a letter, a number, and a special character.');
+      return;
+    }
 
-if (!validatePassword(form.password)) {
-  alert('Password must be at least 8 characters and include a letter, a number, and a special character.');
-  return;
-}
-
-if (form.password !== form.confirmPassword) {
-  alert('Passwords do not match.');
-  return;
-}
-
-// Prepare data
-    const { confirmPassword, agree, ...submitData } = form;
-    
-    // Add role to the payload
-    submitData.role = 'guide';
+    if (form.password !== form.confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
 
     setLoading(true);
+    setError("");
+    setSuccessMessage("");
+
     try {
-      const response = await api.post(
-        'http://localhost/RoutePro-backend(02)/public/auth/register',
-        submitData
-      );
+      console.log("Sending guide registration OTP with form data:", form);
+      
+      // Send all guide registration data with the OTP request - backend will store temporarily
+      const response = await api.post("http://localhost/RoutePro-backend(02)/public/auth/send-guide-registration-otp", {
+        email: form.email,
+        name: form.name,
+        phone: form.phone,
+        password: form.password,
+        nic: form.nic,
+        license_no: form.license_no,
+        experience: form.experience,
+        location: form.location,
+        languages: form.languages
+      });
 
       if (response.data.success) {
-        alert('Guide registered successfully!');
-        setForm({
-          name: '',
-          email: '',
-          phone: '',
-          nic: '',
-          license_no: '',
-          experience: '',
-          location: '',
-          languages: '',
-          password: '',
-          confirmPassword: '',
-          agree: false,
-        });
-        // Redirect to login page after user clicks OK on alert
-        window.location.href = '/user-login';
+        setCurrentEmail(form.email);
+        setStep("otp");
+        setError('');
+        setSuccessMessage('Verification code sent to your email! Your guide account will be created after verification.');
       } else {
-        alert('Error: ' + (response.data.message || 'Unknown server error'));
+        setError(response.data.message || 'Failed to send verification code');
       }
     } catch (error) {
-      console.error('Registration error:', error);
-      console.error('Error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-        statusText: error.response?.statusText
-      });
-      
-      if (error.response) {
-        // Server responded with error status
-        const errorMessage = error.response.data?.message || 
-                           error.response.data?.error || 
-                           `Server error: ${error.response.status}`;
-        alert('Registration failed: ' + errorMessage);
-      } else if (error.request) {
-        // Request was made but no response received
-        alert('Network error: Unable to connect to server. Please check if the backend is running.');
+      console.error('Error sending OTP:', error);
+      if (error.response?.status === 409) {
+        setError('Email is already registered. Please login instead.');
+      } else if (error.response?.data?.message) {
+        setError(error.response.data.message);
       } else {
-        // Something else happened
-        alert('Registration failed: ' + error.message);
+        setError('Failed to send verification code. Please try again.');
       }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleVerifyOTP = async () => {
+    if (!otp || otp.length !== 6) {
+      setError("Please enter a valid 6-digit OTP.");
+      return;
+    }
+
+    setIsVerifying(true);
+    setError("");
+
+    try {
+      console.log("Verifying OTP and creating guide account for:", currentEmail);
+      
+      // Verify OTP and create the actual guide account
+      const response = await api.post(
+        "http://localhost/RoutePro-backend(02)/public/auth/verify-otp",
+        { 
+          email: currentEmail,
+          otp: otp,
+          type: "registration"
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          timeout: 10000,
+        }
+      );
+
+      if (response.data.success) {
+        setSuccessMessage("Guide registration completed successfully! Redirecting to login...");
+        setError("");
+        setOtp("");
+        
+        // Reset form and redirect immediately
+        setTimeout(() => {
+          setForm({
+            name: '',
+            email: '',
+            phone: '',
+            nic: '',
+            license_no: '',
+            experience: '',
+            location: '',
+            languages: '',
+            password: '',
+            confirmPassword: '',
+            agree: false,
+          });
+          setStep("form");
+          setSuccessMessage("");
+          // Redirect to login page
+          window.location.href = '/user-login';
+        }, 2000); // Reduced to 2 seconds for faster redirect
+      } else {
+        setError(response.data.message || "Failed to verify OTP");
+      }
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+      setError(error.response?.data?.message || "An error occurred while verifying OTP");
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const resendOTP = async () => {
+    setLoading(true);
+    setError("");
+    
+    try {
+      const response = await api.post("http://localhost/RoutePro-backend(02)/public/auth/send-guide-registration-otp", {
+        email: form.email,
+        name: form.name,
+        phone: form.phone,
+        password: form.password,
+        nic: form.nic,
+        license_no: form.license_no,
+        experience: form.experience,
+        location: form.location,
+        languages: form.languages
+      });
+
+      if (response.data.success) {
+        setSuccessMessage("New verification code sent to your email!");
+        setTimeout(() => setSuccessMessage(""), 3000);
+      } else {
+        setError(response.data.message || "Failed to resend verification code");
+      }
+    } catch (error) {
+      console.error("Error resending OTP:", error);
+      setError("Failed to resend verification code. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    sendOTP();
   };
 
   return (
@@ -196,12 +285,18 @@ if (form.password !== form.confirmPassword) {
       <div className="guide-form-section">
     <div className="guide-form-container">
       <div className="guide-form-header">
-                 <img className="guide-logo-image" src="/images/new logo.png" alt="Logo" />
-        <h2>Join as a Tour Guide</h2>
-        <p>Create your tour guide account</p>
+                 <img className="guide-logo-image" src="/images/newlogo.png" alt="Logo" />
+        <h2>{step === "form" ? "Join as a Tour Guide" : "Verify Your Email"}</h2>
+        <p>{step === "form" ? "Create your tour guide account" : "Enter the verification code sent to your email"}</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="guide-form">
+      {step === "form" && (
+        <form onSubmit={handleSubmit} className="guide-form">
+        
+        {/* Error and Success Messages */}
+        {error && <div className="error-message" style={{color: 'red', marginBottom: '10px', padding: '10px', backgroundColor: '#ffe6e6', border: '1px solid red', borderRadius: '4px'}}>{error}</div>}
+        {successMessage && <div className="success-message" style={{color: 'green', marginBottom: '10px', padding: '10px', backgroundColor: '#e6ffe6', border: '1px solid green', borderRadius: '4px'}}>{successMessage}</div>}
+        
         <input
           name="name"
           type="text"
@@ -306,14 +401,91 @@ if (form.password !== form.confirmPassword) {
             </div>
 
 
-        <button type="submit" disabled={loading} className="submit-btn">
-          {loading ? 'Registering...' : 'Create Guide Account'}
+        <button type="submit" disabled={loading || !form.agree} className="submit-btn">
+          {loading ? 'Sending...' : 'Send Verification Code'}
         </button>
 
         <p className="signin-link">
           Already have a guide account? <a href="/user-login">Sign in here</a>
         </p>
-      </form>
+        </form>
+      )}
+
+      {step === "otp" && (
+        <div className="guide-form">
+          <div className="otp-info">
+            <p>We've sent a 6-digit verification code to:</p>
+            <strong>{currentEmail}</strong>
+            <p style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+              Please check your email and enter the code to activate your guide account
+            </p>
+          </div>
+          
+          <input
+            type="text"
+            placeholder="Enter 6-digit verification code"
+            value={otp}
+            onChange={(e) => {
+              const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+              setOtp(value);
+              if (error) setError("");
+            }}
+            maxLength={6}
+            required
+            disabled={isVerifying}
+            style={{ 
+              textAlign: 'center', 
+              fontSize: '18px', 
+              letterSpacing: '2px',
+              fontWeight: 'bold'
+            }}
+          />
+
+          {/* Error and Success Messages */}
+          {error && (
+            <div className="error-message" style={{color: 'red', marginBottom: '10px', padding: '10px', backgroundColor: '#ffe6e6', border: '1px solid red', borderRadius: '4px'}}>
+              <strong>Error:</strong> {error}
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="success-message" style={{color: 'green', marginBottom: '10px', padding: '10px', backgroundColor: '#e6ffe6', border: '1px solid green', borderRadius: '4px'}}>
+              {successMessage}
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={handleVerifyOTP}
+            disabled={isVerifying || otp.length !== 6}
+            className="submit-btn"
+          >
+            {isVerifying ? "Verifying..." : "Verify Email & Activate Account"}
+          </button>
+
+          <div className="otp-actions" style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+            <button
+              type="button"
+              onClick={() => setStep("form")}
+              className="back-btn"
+              disabled={isVerifying}
+              style={{ flex: 1 }}
+            >
+              ← Back to Form
+            </button>
+            
+            <button
+              type="button"
+              onClick={resendOTP}
+              disabled={loading}
+              className="resend-btn"
+              style={{ flex: 1 }}
+            >
+              {loading ? "Sending..." : "Resend Verification Code"}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
     </div>
     </div>

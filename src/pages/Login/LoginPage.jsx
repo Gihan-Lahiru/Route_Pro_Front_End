@@ -174,7 +174,7 @@ const LoginPage = () => {
                  <img src="/images/login.jpg" alt="Train Scenic" />
       </div>
       <div className="login-right">
-                                     <img className="logo-image" src="/images/new logo.png" alt="Logo" />
+                                     <img className="logo-image" src="/images/newlogo.png" alt="Logo" />
         <h2 className="welcome">Welcome</h2>
         <p className="login-subtitle">Login with Email</p>
 

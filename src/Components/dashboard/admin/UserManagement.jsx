@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./UserManagement.css";
 
 const UserManagement = () => {
@@ -11,18 +11,28 @@ const UserManagement = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   useEffect(() => {
     fetchUsers();
-  }, [activeTab, searchTerm]);
+  }, [activeTab, debouncedSearchTerm]);
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      // Use the drivers endpoint which now returns all user types
-      const url = `http://localhost/RoutePro-backend(02)/public/drivers?search=${encodeURIComponent(searchTerm)}`;
+      // Use the admin/users endpoint which supports search
+      const url = `http://localhost/RoutePro-backend(02)/public/admin/users?search=${encodeURIComponent(debouncedSearchTerm)}`;
       
       const response = await fetch(url, {
         method: 'GET',
@@ -34,7 +44,7 @@ const UserManagement = () => {
 
       const data = await response.json();
       if (data.success) {
-        // The endpoint now returns all user types
+        // The endpoint now returns categorized user types
         const grouped = {
           travelers: data.travelers || [],
           drivers: data.drivers || [],

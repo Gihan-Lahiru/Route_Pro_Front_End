@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 13, 2025 at 09:38 AM
--- Server version: 10.4.32-MariaDB
+-- Generation Time: Sep 18, 2025 at 08:20 AM
+-- Server version: 8.0.37
 -- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -28,13 +28,19 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `admins` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
   `name` varchar(100) NOT NULL,
   `department` varchar(100) NOT NULL,
   `permissions` varchar(100) DEFAULT 'basic',
-  `created_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE= utf8mb4_general_ci;
+--
+-- Dumping data for table `admins`
+--
+
+INSERT INTO `admins` (`id`, `user_id`, `name`, `department`, `permissions`, `created_at`) VALUES
+(1, 134, 'System Administrator', 'IT Department', 'all', '2025-09-17 12:15:00');
 
 -- --------------------------------------------------------
 
@@ -43,12 +49,12 @@ CREATE TABLE `admins` (
 --
 
 CREATE TABLE `admin_action` (
-  `action_id` int(11) NOT NULL,
-  `admin_id` int(11) DEFAULT NULL,
-  `target_user_id` int(11) DEFAULT NULL,
-  `action_type` enum('warned','banned','reactivated') DEFAULT NULL,
-  `reason` text DEFAULT NULL,
-  `action_date` datetime DEFAULT current_timestamp()
+  `action_id` int NOT NULL,
+  `admin_id` int DEFAULT NULL,
+  `target_user_id` int DEFAULT NULL,
+  `action_type` enum('warned','banned','reactivated') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `reason` text COLLATE utf8mb4_general_ci,
+  `action_date` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -58,13 +64,13 @@ CREATE TABLE `admin_action` (
 --
 
 CREATE TABLE `attraction_place` (
-  `id` int(11) NOT NULL,
-  `traveler_id` int(11) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `address` varchar(255) DEFAULT NULL,
+  `id` int NOT NULL,
+  `traveler_id` int DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `address` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `lat` double DEFAULT NULL,
   `lng` double DEFAULT NULL,
-  `saved_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `saved_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -74,15 +80,42 @@ CREATE TABLE `attraction_place` (
 --
 
 CREATE TABLE `booking` (
-  `booking_id` int(11) NOT NULL,
-  `traveler_id` int(11) DEFAULT NULL,
-  `driver_id` int(11) DEFAULT NULL,
-  `guide_id` int(11) DEFAULT NULL,
-  `route_id` int(11) DEFAULT NULL,
+  `booking_id` int NOT NULL,
+  `traveler_id` int DEFAULT NULL,
+  `driver_id` int DEFAULT NULL,
+  `guide_id` int DEFAULT NULL,
+  `route_id` int DEFAULT NULL,
   `date` date DEFAULT NULL,
   `total_cost` decimal(10,2) DEFAULT NULL,
-  `status` enum('pending','confirmed','cancelled','completed') DEFAULT 'pending'
+  `status` enum('pending','confirmed','cancelled','completed') COLLATE utf8mb4_general_ci DEFAULT 'pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cost_settings`
+--
+
+CREATE TABLE `cost_settings` (
+  `id` int NOT NULL,
+  `setting_name` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `setting_value` decimal(10,2) NOT NULL,
+  `description` text COLLATE utf8mb4_general_ci,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `cost_settings`
+--
+
+INSERT INTO `cost_settings` (`id`, `setting_name`, `setting_value`, `description`, `created_at`, `updated_at`) VALUES
+(1, 'driver_markup_percentage', 3.00, 'System processing fee percentage (3% of route cost)', '2025-09-17 11:09:51', '2025-09-17 11:23:26'),
+(2, 'guide_base_fee', 3000.00, 'Base fee added to route cost for guide services', '2025-09-17 11:09:51', '2025-09-17 11:09:51'),
+(3, 'package_discount_percentage', 10.00, 'Discount percentage when booking both driver and guide', '2025-09-17 11:09:51', '2025-09-17 11:09:51'),
+(4, 'cost_per_km_default', 15.00, 'Default cost per kilometer for route calculation', '2025-09-17 11:09:51', '2025-09-17 11:09:51'),
+(5, 'fuel_surcharge_percentage', 5.00, 'Additional fuel surcharge percentage', '2025-09-17 11:09:51', '2025-09-17 11:09:51'),
+(6, 'system_fee_percentage', 10.00, 'System processing fee percentage (10% of route cost)', '2025-09-17 11:23:46', '2025-09-17 11:27:25');
 
 -- --------------------------------------------------------
 
@@ -91,16 +124,16 @@ CREATE TABLE `booking` (
 --
 
 CREATE TABLE `drivers` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `phone` varchar(20) NOT NULL,
-  `status` enum('available','nonavailable') NOT NULL DEFAULT 'nonavailable',
-  `license_no` varchar(50) NOT NULL,
-  `vehicle_type` varchar(50) NOT NULL,
-  `experience` int(11) NOT NULL,
-  `location` varchar(100) NOT NULL,
-  `photo` varchar(255) DEFAULT NULL
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `name` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `phone` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `status` enum('available','nonavailable') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'nonavailable',
+  `license_no` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `vehicle_type` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `experience` int NOT NULL,
+  `location` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `photo` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -131,7 +164,7 @@ INSERT INTO `drivers` (`id`, `user_id`, `name`, `phone`, `status`, `license_no`,
 (22, 33, '', '0723456789', 'nonavailable', '', '', 4, 'galle', NULL),
 (23, 34, '', '0700000000', 'nonavailable', '', '', 4, 'galle', NULL),
 (24, 45, 'Wasantha Mahima', '0712409293', 'nonavailable', 'AB12345', 'tuk', 1, 'colombo', NULL),
-(25, 62, 'praneeth kariyawasam', '0776517590', 'available', '', 'van', 5, 'galle', '/RoutePro-backend(02)/public/uploads/drivers/driver_62_1756447966.jpg'),
+(25, 62, 'praneeth kariyawasam', '0776517590', 'nonavailable', '', 'van', 5, 'galle', '/RoutePro-backend(02)/public/uploads/drivers/driver_62_1758084879.png'),
 (26, 63, 'lasith', '0776517484', 'nonavailable', 'DRIVER34567', 'bike', 4, 'matara', NULL),
 (27, 64, 'kalana pradeepa', '0776524567', 'nonavailable', 'DRIVER12345', 'car', 4, 'Galle', NULL),
 (28, 65, 'kalama', '0776524567', 'nonavailable', 'DRIVER12345', 'car', 4, 'Galle', NULL),
@@ -160,9 +193,9 @@ INSERT INTO `drivers` (`id`, `user_id`, `name`, `phone`, `status`, `license_no`,
 (51, 115, 'akilaaaaaaaaaa  ', '0776517595', 'nonavailable', 'BG1234', 'minicar', 4, 'Galle', NULL),
 (52, 122, 'Test Driver', '0123456789', 'nonavailable', 'DL123456', 'car', 5, 'Colombo', NULL),
 (53, 128, 'nayana', '0776517595', 'nonavailable', '', 'car', 4, 'Galle', '/RoutePro-backend(02)/public/uploads/drivers/driver_128_1756228498.jpg'),
-(55, 131, 'Gihan Lahiru Bimsara', '0776517595', 'available', '', 'van', 4, 'Galle', '/RoutePro-backend(02)/public/uploads/drivers/driver_131_1757646857.jpg'),
+(55, 131, 'Gihan Lahiru Bimsara', '0776517595', 'nonavailable', 'DRIVER12345', 'van', 4, 'Galle', '/RoutePro-backend(02)/public/uploads/drivers/driver_131_1757646857.jpg'),
 (56, 133, 'driver driver 123', '0776517595', 'nonavailable', '', 'car', 3, 'Galle', NULL),
-(57, 135, 'Yuki Navarathne', '0703545654', 'available', '', 'tuk', 3, 'Galewela', '/RoutePro-backend(02)/public/uploads/drivers/driver_135_1757747697.jpg');
+(57, 135, 'geetha ranjani', '0776517595', 'available', '', 'bike', 2, 'badulla', '/RoutePro-backend(02)/public/uploads/drivers/driver_135_1758124003.PNG');
 
 -- --------------------------------------------------------
 
@@ -171,17 +204,17 @@ INSERT INTO `drivers` (`id`, `user_id`, `name`, `phone`, `status`, `license_no`,
 --
 
 CREATE TABLE `guides` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `phone` varchar(20) NOT NULL,
-  `status` enum('available','nonavailable') NOT NULL,
-  `nic` varchar(20) NOT NULL,
-  `license_no` varchar(50) NOT NULL,
-  `experience` int(11) NOT NULL,
-  `location` varchar(100) NOT NULL,
-  `languages` text NOT NULL,
-  `photo` varchar(255) DEFAULT NULL
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `name` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `phone` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `status` enum('available','nonavailable') COLLATE utf8mb4_general_ci NOT NULL,
+  `nic` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `license_no` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `experience` int NOT NULL,
+  `location` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `languages` text COLLATE utf8mb4_general_ci NOT NULL,
+  `photo` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -191,7 +224,7 @@ CREATE TABLE `guides` (
 INSERT INTO `guides` (`id`, `user_id`, `name`, `phone`, `status`, `nic`, `license_no`, `experience`, `location`, `languages`, `photo`) VALUES
 (2, 44, '', '0723456789', 'available', '200129603632', '', 4, 'galle', 'sinhala', NULL),
 (3, 46, '', '0723456789', 'available', '200129603632', '', 4, 'galle', 'tamil', NULL),
-(4, 47, 'akila sudeepa ', '0776517595', 'available', '200129603630', 'GUIDE45678', 1, 'Badulla', 'Sinahala', '/RoutePro-backend(02)/public/uploads/guides/guide_47_1756229028.jpg'),
+(4, 47, 'Akila sudeepa ', '0776517595', 'available', '200129603630', 'GUIDE45678', 1, 'Badulla', 'Sinahala', '/RoutePro-backend(02)/public/uploads/guides/guide_47_1756229028.jpg'),
 (5, 74, 'Test Guide', '0771234567', 'nonavailable', '123456789V', 'GL123', 5, 'Kandy', 'English, Sinhala', NULL),
 (6, 75, 'Another Guide', '0712345678', 'nonavailable', '987654321V', 'GL456', 3, 'Colombo', 'English, Tamil', NULL),
 (7, 76, 'akila ', '0776517595', 'nonavailable', '200129603632', 'DRIVER12345', 2, 'galle', 'english', NULL),
@@ -208,20 +241,59 @@ INSERT INTO `guides` (`id`, `user_id`, `name`, `phone`, `status`, `nic`, `licens
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `notifications`
+--
+
+CREATE TABLE `notifications` (
+  `id` int NOT NULL,
+  `type` varchar(50) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `message` text NOT NULL,
+  `user_id` int DEFAULT NULL,
+  `trip_id` int DEFAULT NULL,
+  `is_read` tinyint(1) DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE= utf8mb4_general_ci;
+--
+-- Dumping data for table `notifications`
+--
+
+INSERT INTO `notifications` (`id`, `type`, `title`, `message`, `user_id`, `trip_id`, `is_read`, `created_at`, `updated_at`) VALUES
+(1, 'trip_cancelled', 'Trip Cancelled', 'Trip has been cancelled by a traveler', NULL, NULL, 1, '2025-09-17 12:42:48', '2025-09-17 13:05:10'),
+(3, 'new_traveller', 'New Traveller Registered', 'A new traveller \'John Doe\' (john@example.com) has registered on the platform.', 123, NULL, 1, '2025-09-17 13:20:54', '2025-09-17 13:23:01'),
+(4, 'new_driver', 'New Driver Registered', 'A new driver \'Mike Smith\' (mike@example.com) has registered on the platform.', 124, NULL, 1, '2025-09-17 13:20:54', '2025-09-17 13:23:01'),
+(5, 'new_guide', 'New Guide Registered', 'A new guide \'Sara Johnson\' (sara@example.com) has registered on the platform.', 125, NULL, 1, '2025-09-17 13:20:54', '2025-09-17 13:23:01'),
+(6, 'new_driver', 'New Driver Registered', 'A new driver \'geetha ranjani\' (geetharanjani1974.03.02@gmail.com) has registered on the platform.', 135, NULL, 1, '2025-09-17 15:43:29', '2025-09-17 15:50:04'),
+(7, 'new_traveller', 'New Traveller Registered', 'A new traveller \'kamala\' (kalana99@gmail.com) has registered on the platform.', 136, NULL, 1, '2025-09-17 16:38:37', '2025-09-17 18:13:17'),
+(8, 'trip_cancelled', 'Trip Cancelled', 'Trip #78 has been cancelled by traveler tharaka paranawithana', 85, 78, 1, '2025-09-17 17:03:10', '2025-09-17 18:13:17'),
+(9, 'trip_cancelled', 'Trip Cancelled', 'Trip #80 has been cancelled by traveler tharaka paranawithana', 85, 80, 1, '2025-09-17 17:03:16', '2025-09-17 18:13:17'),
+(10, 'trip_cancelled', 'Trip Cancelled', 'Trip #79 has been cancelled by traveler tharaka paranawithana', 85, 79, 1, '2025-09-17 17:03:22', '2025-09-17 18:13:17'),
+(11, 'trip_cancelled', 'Trip Cancelled', 'Trip #86 has been cancelled by traveler tharaka paranawithana', 85, 86, 1, '2025-09-17 17:56:44', '2025-09-17 18:13:17'),
+(12, 'trip_cancelled', 'Trip Cancelled', 'Trip #81 has been cancelled by traveler tharaka paranawithana', 85, 81, 1, '2025-09-17 17:57:20', '2025-09-17 18:13:17'),
+(13, 'trip_cancelled', 'Trip Cancelled', 'Trip #59 has been cancelled by traveler tharaka paranawithana', 85, 59, 1, '2025-09-17 17:57:26', '2025-09-17 18:13:17'),
+(14, 'trip_cancelled', 'Trip Cancelled', 'Trip #35 has been cancelled by traveler tharaka paranawithana', 85, 35, 1, '2025-09-17 17:57:31', '2025-09-17 18:13:17'),
+(15, 'trip_cancelled', 'Trip Cancelled', 'Trip #82 has been cancelled by traveler tharaka paranawithana', 85, 82, 1, '2025-09-17 17:57:36', '2025-09-17 18:13:17'),
+(16, 'trip_cancelled', 'Trip Cancelled', 'Trip #101 has been cancelled by traveler tharaka paranawithana', 85, 101, 0, '2025-09-17 19:50:13', '2025-09-17 19:50:13'),
+(17, 'new_traveller', 'New Traveller Registered', 'A new traveller \'inuka kavinda\' (inuka@gmail.com) has registered on the platform.', 137, NULL, 0, '2025-09-17 19:51:45', '2025-09-17 19:51:45');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `password_resets`
 --
 
 CREATE TABLE `password_resets` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
   `email` varchar(255) NOT NULL,
   `token` varchar(255) DEFAULT NULL,
   `otp` varchar(6) DEFAULT NULL,
   `expires_at` datetime NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `used` tinyint(1) DEFAULT 0,
-  `otp_verified` tinyint(1) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `used` tinyint(1) DEFAULT '0',
+  `otp_verified` tinyint(1) DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE= utf8mb4_general_ci;
 
 --
 -- Dumping data for table `password_resets`
@@ -282,7 +354,9 @@ INSERT INTO `password_resets` (`id`, `user_id`, `email`, `token`, `otp`, `expire
 (52, 131, 'gihanbimsara2001@gmail.com', '8937e3385ebf45512aa0cc2e72685b9dba7d11cfa3abea897aeba4f54f439e66', '486582', '2025-09-05 19:58:22', '2025-09-05 17:27:07', 1, 1),
 (53, 131, 'gihanbimsara2001@gmail.com', '94a09ffb7760ae7988f6f6a15541aaa89d4fa2140574745a34fab87849bbe862', '898154', '2025-09-05 21:41:01', '2025-09-05 19:10:19', 1, 1),
 (54, 131, 'gihanbimsara2001@gmail.com', '128d59c33d10ec979d5d231c131b459ec9ed9b8dd24541236109dab98b4983e9', '321072', '2025-09-12 04:44:18', '2025-09-12 02:13:50', 1, 1),
-(55, 131, 'gihanbimsara2001@gmail.com', 'e5db9c535d5511218d2dc252ced5ca40e88840f5729908a75b48ec84f8aa8eac', '107583', '2025-09-12 10:46:43', '2025-09-12 08:16:03', 1, 1);
+(55, 131, 'gihanbimsara2001@gmail.com', 'e5db9c535d5511218d2dc252ced5ca40e88840f5729908a75b48ec84f8aa8eac', '107583', '2025-09-12 10:46:43', '2025-09-12 08:16:03', 1, 1),
+(56, 131, 'gihanbimsara2001@gmail.com', NULL, '104049', '2025-09-14 19:57:26', '2025-09-14 17:52:26', 0, 0),
+(57, 135, 'geetharanjani1974.03.02@gmail.com', '81f52a6a4c8fc48e62169cfe7c9835d541bc2a7ba97612546fbf0fec756673c2', '594694', '2025-09-17 18:14:47', '2025-09-17 15:44:14', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -291,8 +365,8 @@ INSERT INTO `password_resets` (`id`, `user_id`, `email`, `token`, `otp`, `expire
 --
 
 CREATE TABLE `payment` (
-  `payment_id` int(11) NOT NULL,
-  `booking_id` int(11) DEFAULT NULL,
+  `payment_id` int NOT NULL,
+  `booking_id` int DEFAULT NULL,
   `amount` decimal(10,2) DEFAULT NULL,
   `payment_date` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -304,11 +378,11 @@ CREATE TABLE `payment` (
 --
 
 CREATE TABLE `ratings_review` (
-  `review_id` int(11) NOT NULL,
-  `booking_id` int(11) DEFAULT NULL,
-  `reviewed_user_id` int(11) DEFAULT NULL,
+  `review_id` int NOT NULL,
+  `booking_id` int DEFAULT NULL,
+  `reviewed_user_id` int DEFAULT NULL,
   `rating` decimal(2,1) DEFAULT NULL,
-  `review_text` text DEFAULT NULL
+  `review_text` text COLLATE utf8mb4_general_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -318,12 +392,39 @@ CREATE TABLE `ratings_review` (
 --
 
 CREATE TABLE `routes` (
-  `route_id` int(11) NOT NULL,
-  `start_location` varchar(100) DEFAULT NULL,
-  `end_location` varchar(100) DEFAULT NULL,
+  `route_id` int NOT NULL,
+  `start_location` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `end_location` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `distance_km` decimal(5,2) DEFAULT NULL,
-  `estimated_time` varchar(50) DEFAULT NULL
+  `estimated_time` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cost` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `routes`
+--
+
+INSERT INTO `routes` (`route_id`, `start_location`, `end_location`, `distance_km`, `estimated_time`, `cost`) VALUES
+(1, 'galle', 'matara', 0.04, '1', 0.57),
+(2, 'galle', 'colombo', 0.11, '0', 1.62),
+(3, 'matara', 'colombo', 0.13, '0', 1.98),
+(4, 'galle', 'badulla', 2.38, '1', 35.76),
+(5, 'galle', 'jaffna', 0.12, '0', 1.83),
+(6, 'galle ', 'kandy', 0.15, '0', 2.21),
+(7, 'matara', 'jaffna', 0.42, '0', 6.30),
+(8, 'badulla', 'jaffna', 0.32, '0', 4.80),
+(9, 'jaffna', 'badulla', 0.32, '0', 4.80),
+(10, 'jaffna', 'galle', 0.40, '0', 6.00),
+(11, 'matara', 'galle', 0.04, '1', 0.60),
+(12, 'colombo', 'galle', 0.11, '0', 1.65),
+(13, 'kandy', 'jaffna', 0.28, '0', 4.20),
+(14, 'kandy', 'galle', 0.15, '0', 2.25),
+(15, 'jaffna', 'kandy', 0.27, '0', 4.05),
+(16, 'colombo', 'matara', 0.13, '0', 1.95),
+(17, 'jaffna', 'hambantota', 0.41, '0', 6.15),
+(18, 'puttalam', 'ampara', 0.24, '0', 3.60),
+(19, 'mannar', 'ampara', 0.30, '0', 4.50),
+(20, 'jaffna', 'ampara', 0.35, '0', 5.25);
 
 -- --------------------------------------------------------
 
@@ -332,13 +433,13 @@ CREATE TABLE `routes` (
 --
 
 CREATE TABLE `travellers` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
   `name` varchar(100) NOT NULL,
   `phone` varchar(25) NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `photo` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE= utf8mb4_general_ci;
 
 --
 -- Dumping data for table `travellers`
@@ -371,7 +472,8 @@ INSERT INTO `travellers` (`id`, `user_id`, `name`, `phone`, `created_at`, `photo
 (24, 126, 'lppp', '0776517595', '2025-08-24 06:33:14', NULL),
 (25, 127, 'akilallllll', '0776517595', '2025-08-24 07:18:56', NULL),
 (26, 132, 'ko', '0776517590', '2025-09-05 18:39:10', NULL),
-(27, 134, 'Supun Perera', '0703545654', '2025-09-13 06:53:49', '/RoutePro-backend(02)/public/uploads/travellers/traveller_134_1757746485.jpg');
+(27, 136, 'kamala', '0776517590', '2025-09-17 16:38:37', NULL),
+(28, 137, 'inuka kavinda', '0776517595', '2025-09-17 19:51:45', NULL);
 
 -- --------------------------------------------------------
 
@@ -380,16 +482,61 @@ INSERT INTO `travellers` (`id`, `user_id`, `name`, `phone`, `created_at`, `photo
 --
 
 CREATE TABLE `trips` (
-  `trip_id` int(11) NOT NULL,
-  `traveler_id` int(11) DEFAULT NULL,
-  `route_id` int(11) DEFAULT NULL,
-  `driver_id` int(11) DEFAULT NULL,
-  `guide_id` int(11) DEFAULT NULL,
+  `trip_id` int NOT NULL,
+  `traveler_id` int NOT NULL,
+  `route_id` int DEFAULT NULL,
+  `driver_id` int DEFAULT NULL,
+  `guide_id` int DEFAULT NULL,
   `date` datetime DEFAULT NULL,
   `start_time` datetime DEFAULT NULL,
   `trip_status` enum('not_started','in_progress','completed','cancelled') DEFAULT 'not_started',
-  `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `route_cost` decimal(10,2) DEFAULT '0.00' COMMENT 'Base route cost',
+  `driver_cost` decimal(10,2) DEFAULT '0.00' COMMENT 'Driver service cost',
+  `guide_cost` decimal(10,2) DEFAULT '0.00' COMMENT 'Guide service cost',
+  `total_cost` decimal(10,2) DEFAULT '0.00' COMMENT 'Total trip cost',
+  `special_requests` text COMMENT 'Special requests from traveler',
+  `system_fee` decimal(8,2) DEFAULT '0.00' COMMENT 'System processing fee (10%)',
+  `start_location` varchar(255) DEFAULT 'Start Location',
+  `end_location` varchar(255) DEFAULT 'End Location'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE= utf8mb4_general_ci;
+--
+-- Dumping data for table `trips`
+--
+
+INSERT INTO `trips` (`trip_id`, `traveler_id`, `route_id`, `driver_id`, `guide_id`, `date`, `start_time`, `trip_status`, `created_at`, `route_cost`, `driver_cost`, `guide_cost`, `total_cost`, `special_requests`, `system_fee`, `start_location`, `end_location`) VALUES
+(33, 16, 1, 2, 8, '2024-12-28 00:00:00', '2024-12-28 08:00:00', 'cancelled', '2025-09-17 14:44:52', 5000.00, 2500.00, 3000.00, 10500.00, 'This trip was cancelled by the traveler due to weather conditions.', 0.00, 'Colombo', 'Kandy'),
+(35, 85, 1, 25, 4, '2025-09-18 00:00:00', '2025-09-18 15:07:00', 'cancelled', '2025-09-17 15:07:37', 571.50, 686.00, 3572.00, 3889.15, 'meet me driver', 57.15, 'galle', 'matara'),
+(59, 85, 15, 25, 4, '2025-09-18 00:00:00', '2025-09-18 15:34:00', 'cancelled', '2025-09-17 15:32:47', 4089.00, 4907.00, 7089.00, 11204.90, 'Driver requests: driver | Guide requests: guider', 408.90, 'jaffna', 'kandy'),
+(61, 16, NULL, 3, 9, '2025-05-20 14:30:00', '2025-05-20 14:30:00', 'completed', '2025-05-20 14:30:00', 3000.00, 1500.00, 1000.00, 5500.00, NULL, 275.00, 'Kandy', 'Ella'),
+(62, 85, NULL, 25, 4, '2025-05-28 09:15:00', '2025-05-28 09:15:00', 'completed', '2025-05-28 09:15:00', 2500.00, 1200.00, 800.00, 4500.00, NULL, 225.00, 'Galle', 'Mirissa'),
+(64, 16, NULL, 3, 9, '2025-06-12 08:30:00', '2025-06-12 08:30:00', 'completed', '2025-06-12 08:30:00', 6000.00, 2500.00, 2000.00, 10500.00, NULL, 525.00, 'Kandy', 'Sigiriya'),
+(65, 85, NULL, 25, 4, '2025-06-18 13:45:00', '2025-06-18 13:45:00', 'completed', '2025-06-18 13:45:00', 3500.00, 1800.00, 1200.00, 6500.00, NULL, 325.00, 'Anuradhapura', 'Polonnaruwa'),
+(67, 16, NULL, 3, 9, '2025-07-03 07:45:00', '2025-07-03 07:45:00', 'completed', '2025-07-03 07:45:00', 7000.00, 3000.00, 2500.00, 12500.00, NULL, 625.00, 'Colombo', 'Arugam Bay'),
+(68, 85, NULL, 25, 4, '2025-07-10 12:30:00', '2025-07-10 12:30:00', 'completed', '2025-07-10 12:30:00', 4000.00, 2000.00, 1500.00, 7500.00, NULL, 375.00, 'Kandy', 'Dambulla'),
+(70, 16, NULL, 3, 9, '2025-07-22 09:00:00', '2025-07-22 09:00:00', 'completed', '2025-07-22 09:00:00', 5000.00, 2500.00, 2000.00, 9500.00, NULL, 475.00, 'Galle', 'Yala'),
+(71, 85, NULL, 25, 4, '2025-07-29 14:45:00', '2025-07-29 14:45:00', 'completed', '2025-07-29 14:45:00', 6500.00, 3200.00, 2800.00, 12500.00, NULL, 625.00, 'Matara', 'Tangalle'),
+(73, 16, NULL, 3, 9, '2025-08-08 11:45:00', '2025-08-08 11:45:00', 'completed', '2025-08-08 11:45:00', 7500.00, 3500.00, 3000.00, 14000.00, NULL, 700.00, 'Kandy', 'Batticaloa'),
+(74, 85, NULL, 25, 4, '2025-08-14 13:30:00', '2025-08-14 13:30:00', 'completed', '2025-08-14 13:30:00', 8500.00, 4200.00, 3800.00, 16500.00, NULL, 825.00, 'Nuwara Eliya', 'Ella'),
+(76, 16, NULL, 3, 9, '2025-08-25 16:00:00', '2025-08-25 16:00:00', 'completed', '2025-08-25 16:00:00', 10000.00, 5000.00, 4500.00, 19500.00, NULL, 975.00, 'Colombo', 'Passikudah'),
+(77, 85, NULL, 25, 4, '2025-08-30 12:45:00', '2025-08-30 12:45:00', 'completed', '2025-08-30 12:45:00', 7000.00, 3500.00, 3000.00, 13500.00, NULL, 675.00, 'Galle', 'Unawatuna'),
+(78, 85, 9, 25, NULL, '2025-09-18 00:00:00', '2025-09-18 21:42:00', 'cancelled', '2025-09-17 21:42:56', 7975.00, 9570.00, 0.00, 10367.50, NULL, 797.50, 'jaffna', 'badulla'),
+(79, 85, 1, 25, NULL, '2025-09-18 00:00:00', '2025-09-18 21:44:00', 'cancelled', '2025-09-17 21:44:25', 571.50, 686.00, 0.00, 743.15, NULL, 57.15, 'galle', 'matara'),
+(80, 85, 15, 57, NULL, '2025-09-20 00:00:00', '2025-09-20 22:14:00', 'cancelled', '2025-09-17 22:15:05', 6815.00, 8178.00, 0.00, 8859.50, 'meet me', 681.50, 'jaffna', 'kandy'),
+(81, 85, 11, 57, NULL, '2025-09-20 00:00:00', '2025-09-20 22:35:00', 'cancelled', '2025-09-17 22:30:27', 952.50, 1143.00, 0.00, 1238.25, 'll', 95.25, 'matara', 'galle'),
+(87, 85, 5, 57, NULL, '2025-09-26 00:00:00', '2025-09-26 11:28:00', 'not_started', '2025-09-17 23:28:10', 12135.00, 14562.00, 0.00, 15775.50, NULL, 1213.50, 'galle', 'jaffna'),
+(88, 16, 1, 43, NULL, '2025-09-18 00:00:00', '2025-09-18 10:00:00', 'not_started', '2025-09-17 23:32:06', 5000.00, 6000.00, 0.00, 6500.00, NULL, 0.00, 'Start Location', 'End Location'),
+(89, 16, 1, 43, NULL, '2025-09-18 00:00:00', '2025-09-18 10:00:00', 'not_started', '2025-09-17 23:32:25', 0.00, 0.00, 0.00, 0.00, NULL, 0.00, 'Start Location', 'End Location'),
+(90, 85, 6, 57, NULL, '2025-09-19 00:00:00', '2025-09-19 11:37:00', 'not_started', '2025-09-17 23:37:06', 2214.00, 2657.00, 0.00, 2878.40, NULL, 221.40, 'galle', 'kandy'),
+(91, 85, 2, NULL, 4, '2025-09-30 00:00:00', '2025-09-30 23:57:00', 'not_started', '2025-09-17 23:57:49', 2707.50, 0.00, 5708.00, 5978.75, 'pickup guider', 270.75, 'galle', 'colombo'),
+(92, 85, 17, 57, 4, '2025-09-24 00:00:00', '2025-09-24 12:05:00', 'not_started', '2025-09-18 00:06:05', 12372.00, 14846.00, 15372.00, 28433.20, 'Driver requests: None | Guide requests: None', 1237.20, 'jaffna', 'hambantota'),
+(101, 85, 18, 57, NULL, '2025-09-19 00:00:00', '2025-09-19 10:00:00', 'cancelled', '2025-09-18 01:15:42', 3.60, 4.32, 0.00, 4.32, NULL, 0.36, 'puttalam', 'ampara'),
+(103, 85, 1, NULL, 4, '2025-09-21 00:00:00', '2025-09-21 11:00:00', 'not_started', '2025-09-18 01:29:19', 100.00, 0.00, 130.00, 130.00, NULL, 10.00, 'test start', 'test end'),
+(104, 137, 19, NULL, 4, '2025-09-21 00:00:00', '2025-09-21 10:00:00', 'not_started', '2025-09-18 01:35:52', 4.50, 0.00, 7.50, 12.00, NULL, 0.45, 'mannar', 'ampara'),
+(105, 85, 19, 57, 4, '2025-09-22 00:00:00', '2025-09-22 09:00:00', 'not_started', '2025-09-18 01:46:55', 4.50, 7.50, 7.50, 19.45, 'Driver requests: None | Guide requests: None', 0.45, 'mannar', 'ampara'),
+(106, 85, 19, 57, NULL, '2025-09-22 00:00:00', '2025-09-22 09:00:00', 'not_started', '2025-09-18 02:07:29', 15.00, 18.00, 0.00, 20.50, 'Test booking with correct driver_table_id', 1.50, 'Mannar', 'Ampara'),
+(107, 85, 19, NULL, 4, '2025-09-23 00:00:00', '2025-09-23 10:00:00', 'not_started', '2025-09-18 02:07:46', 15.00, 0.00, 18.00, 20.50, 'Test booking with correct guide_table_id', 1.50, 'Mannar', 'Ampara'),
+(108, 85, 19, 57, NULL, '2025-09-25 00:00:00', '2025-09-25 11:00:00', 'not_started', '2025-09-18 02:11:28', 15.00, 18.00, 0.00, 20.50, 'Testing after DriversSection fix', 1.50, 'Mannar', 'Ampara');
 
 -- --------------------------------------------------------
 
@@ -398,14 +545,14 @@ CREATE TABLE `trips` (
 --
 
 CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
-  `name` varchar(40) DEFAULT NULL,
-  `email` varchar(100) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `role` enum('traveller','guide','driver','admin') NOT NULL,
+  `id` int NOT NULL,
+  `name` varchar(40) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `email` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `role` enum('traveller','guide','driver','admin') COLLATE utf8mb4_general_ci NOT NULL,
   `rating` decimal(2,1) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `reset_token` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `reset_token` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `reset_token_expiry` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -450,7 +597,7 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `rating`, `creat
 (44, '', 'navdedeo12f@gmail.com', '$2y$10$e/MzvHPuiy6J00PSKyeGXO//ndTYbKEbGa9wsS1C4HUdlVXmL8Ami', 'guide', 0.0, '2025-07-29 18:13:20', NULL, NULL),
 (45, 'Wasantha Mahima', 'wasantha@gmail.com', '$2y$10$sLoqOLGILA6N4v1kgnjeiuciIWjlB0aEZJfvAU4I/mj00I9vBgCLe', 'driver', 0.0, '2025-07-29 18:27:45', NULL, NULL),
 (46, '', 'navdedewedtaswo12lpf@gmail.com', '$2y$10$xQKl4xcgy.6R4JIKNUsmxuoFfQNbRm.BSPfG7L5u46sEVH47tRDQG', 'guide', 0.0, '2025-07-29 18:29:45', NULL, NULL),
-(47, 'akila sudeepa ', 'akila@gmail.com', '$2y$10$X0NpxnvRO.GLX2F7KmQcUuWYGaj1dBkgc6TxceChGNQdCFE20eNRe', 'guide', 0.0, '2025-07-29 18:37:19', NULL, NULL),
+(47, 'Akila sudeepa ', 'akila@gmail.com', '$2y$10$X0NpxnvRO.GLX2F7KmQcUuWYGaj1dBkgc6TxceChGNQdCFE20eNRe', 'guide', 0.0, '2025-07-29 18:37:19', NULL, NULL),
 (62, 'praneeth kariyawasam', 'praneeth@gmail.com', '$2y$10$71OBYgy.9tJyk2W5dtiaquGltLPh8kAsvNnnlW1xkKZ6tHnh1TQ8C', 'driver', 0.0, '2025-07-30 04:24:15', NULL, NULL),
 (63, 'lasith', 'lasith123@gmail.com', '$2y$10$e1hpCVAtiIHVdjDT9b.oI.ow7/EyCi03xRslzv.RdT39rUsXI/YcC', 'driver', 0.0, '2025-07-30 05:48:24', NULL, NULL),
 (64, 'kalana pradeepa', 'kalana123@gmail.com', '$2y$10$FrJ3t5ullbfUjxbmA9XLg.rmgOgRg4c3WiHrG7l6X/EMqOhvldEkO', 'driver', 0.0, '2025-07-30 06:47:03', NULL, NULL),
@@ -520,8 +667,10 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `rating`, `creat
 (131, 'Gihan Lahiru Bimsara', 'gihanbimsara2001@gmail.com', '$2y$10$q/8Pb2yiXVApc4.mnabvheFQLV/xJ4awn4KPN4XFsKskxPOMUzaLm', 'driver', 0.0, '2025-09-05 04:39:28', NULL, NULL),
 (132, 'ko', 'ko@gmail.com', '$2y$10$7j1NsUe..BBEpnwHrac65uf5KwKf8Wp5YlOwRfUHNeGqKctEAv5iS', 'traveller', 0.0, '2025-09-05 18:39:10', NULL, NULL),
 (133, 'driver driver 123', 'driverdriver@gmail.com', '$2y$10$u28.C5JMogKuMW1APEbdneaV8.A2ZODA/PubAUjvt6sOVzLLZS0IK', 'driver', 0.0, '2025-09-13 05:41:06', NULL, NULL),
-(134, 'Supun Perera', 'supun@gmail.com', '$2y$10$AVgkEKtH8LpCA8cttoatFeKFFfUPkKox8c54xok2RqEG6vXYljPH2', 'traveller', 0.0, '2025-09-13 06:53:49', NULL, NULL),
-(135, 'Yuki Navarathne', 'yuki@gmail.com', '$2y$10$erlUOzYDKvyQxhALp9ciCu7r22ZFh7mHt6k9/Fus54sWxInz1wb6u', 'driver', 0.0, '2025-09-13 07:13:53', NULL, NULL);
+(134, 'System Administrator', 'admin123@gmail.com', '$2y$10$djHBaaEaCNE1qF58a.JMUefStxuweYdfbAz8XdM499iS4grgxhejS', 'admin', 5.0, '2025-09-17 12:15:00', NULL, NULL),
+(135, 'geetha ranjani', 'geetharanjani1974.03.02@gmail.com', '$2y$10$JTBTVg1PtM8naLBPtc7fLOUwzqOSA1iwhtYC.qxx1qvR6HQ9eTqtm', 'driver', 0.0, '2025-09-17 15:43:29', NULL, NULL),
+(136, 'kamala', 'kalana99@gmail.com', '$2y$10$cCriIYlU7BDFoeFMuvM27OuhqOq0qg2VNH.T5505F4CCp6SQCeQAy', 'traveller', 0.0, '2025-09-17 16:38:37', NULL, NULL),
+(137, 'inuka kavinda', 'inuka@gmail.com', '$2y$10$3AdB2ZgXMk.2IAFSPTSIHuA/dCL1s.Zx2P7iQbGcQa8tOMQtW/XyG', 'traveller', 0.0, '2025-09-17 19:51:45', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -530,14 +679,13 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `rating`, `creat
 --
 
 CREATE TABLE `user_sessions` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
   `session_token` varchar(64) NOT NULL,
   `expires_at` datetime NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE= utf8mb4_general_ci;
 --
 -- Dumping data for table `user_sessions`
 --
@@ -719,8 +867,98 @@ INSERT INTO `user_sessions` (`id`, `user_id`, `session_token`, `expires_at`, `cr
 (174, 131, 'd8d2231904df98364702ae197614cab3b542e9750ab7658b74f86b79029d3fc8', '2025-09-13 10:17:12', '2025-09-12 08:17:12', '2025-09-12 08:17:12'),
 (175, 47, 'cc80dff2d26f161d9a0cce3c6c79508d4649d8a8c9003e70cc00567c60ad9455', '2025-09-13 17:43:48', '2025-09-12 15:43:48', '2025-09-12 15:43:48'),
 (176, 133, 'da34b568a0fa362403a0247ccefb047cd3a525bf616694ed17b045fa30c61899', '2025-09-14 07:41:18', '2025-09-13 05:41:18', '2025-09-13 05:41:18'),
-(177, 134, '7c67cb90345443c295507736e09228ba076f35a93e9432c606860dd5ffa6b2c0', '2025-09-14 08:54:19', '2025-09-13 06:54:19', '2025-09-13 06:54:19'),
-(178, 135, '7476350dcefad42a30c4e3885781ee5cb90d5a58434d88f95f98ac22a368c559', '2025-09-14 09:14:14', '2025-09-13 07:14:14', '2025-09-13 07:14:14');
+(177, 47, 'c51c3903cf636cbfee2216a778a8545666f17be32da50a29ed9081f7ea0df435', '2025-09-15 19:47:33', '2025-09-14 17:47:33', '2025-09-14 17:47:33'),
+(178, 85, 'a7886315dfd6b8e1068aac87d4870b67d019128b5893df5425406260b7f59cce', '2025-09-15 20:05:11', '2025-09-14 18:05:11', '2025-09-14 18:05:11'),
+(179, 85, '052ba8032a7710f69fb80d651fb658b6bfa555e1bdf5d3766380431600ba08a5', '2025-09-15 20:45:44', '2025-09-14 18:45:44', '2025-09-14 18:45:44'),
+(180, 47, '04eac2816383ff0384e5858b224b6fc294910002753555f6250495b99619d143', '2025-09-15 20:47:01', '2025-09-14 18:47:01', '2025-09-14 18:47:01'),
+(181, 85, '6a5c6232e6d57ced58b5f8ad11bae8aa6c3396dfe7b3eb96e62ea7141cb4df65', '2025-09-15 20:47:54', '2025-09-14 18:47:54', '2025-09-14 18:47:54'),
+(182, 85, '276e16c604f1de67b8b59465b25a07a4d3573851f35f7ca721b3f98588407b17', '2025-09-15 21:13:13', '2025-09-14 19:13:13', '2025-09-14 19:13:13'),
+(183, 85, '9dfd0c74854171b9433957e3dfc42b2f001c75995dd1901e50283c5e97cb70d5', '2025-09-15 21:28:35', '2025-09-14 19:28:35', '2025-09-14 19:28:35'),
+(184, 85, 'b2c54b7fee2d645832708884d8179d55182995d3b5f4b0de9085d1e4fe22a19b', '2025-09-15 21:54:43', '2025-09-14 19:54:43', '2025-09-14 19:54:43'),
+(185, 62, '88739131d671e0994a099ca10cdd57c48d465d43083acd5936492e3d9b062b23', '2025-09-15 22:03:52', '2025-09-14 20:03:52', '2025-09-14 20:03:52'),
+(186, 85, 'af03b92da91536492134937377b00aed12287e8ad65a3cbcac71e16142ef57db', '2025-09-15 22:07:41', '2025-09-14 20:07:41', '2025-09-14 20:07:41'),
+(187, 62, 'e377da23089ceb1e3595d4d05e527238f048298865bb116535a0e6c7b6c8dfbe', '2025-09-15 22:08:01', '2025-09-14 20:08:01', '2025-09-14 20:08:01'),
+(188, 62, '8b584cb873a3d7f2daced166c60bcf0c9b97261ccf65e5d37353ff93bfe44e80', '2025-09-15 22:18:33', '2025-09-14 20:18:33', '2025-09-14 20:18:33'),
+(189, 85, 'cbbff70ffe5d301dcbf103763441fe121148151cb1488a7115d581154ebdbedb', '2025-09-15 22:24:16', '2025-09-14 20:24:16', '2025-09-14 20:24:16'),
+(190, 62, '186a2ee91b2efb7c8f0118f6d9ceb6339f9902bd23433534e3e07af190f00076', '2025-09-15 22:25:25', '2025-09-14 20:25:25', '2025-09-14 20:25:25'),
+(191, 131, 'bd2511bad63d961ef433358886aa3ed7edd8f5aef132b58c0642f42607fec00a', '2025-09-15 22:38:19', '2025-09-14 20:38:19', '2025-09-14 20:38:19'),
+(192, 85, '4e771c344f7596ecccd1869a283a5167be5a72f2ac74b9d49bbdf8f1605560d9', '2025-09-15 22:39:36', '2025-09-14 20:39:36', '2025-09-14 20:39:36'),
+(193, 47, '49c2240c6f25a0aef2162a605f127fbc0eb6e21bb8ba53cb06327c3233af3aa9', '2025-09-15 22:40:45', '2025-09-14 20:40:45', '2025-09-14 20:40:45'),
+(194, 62, '5ed03630291326b626405744029f3be4411eeadc11f14ede95bc80ccd5f9e75d', '2025-09-15 22:41:09', '2025-09-14 20:41:09', '2025-09-14 20:41:09'),
+(195, 47, '79cc48e1f7a75430c91a690bb8d5020f5217de0dab7453cdaa03ae37892c828c', '2025-09-15 22:54:41', '2025-09-14 20:54:41', '2025-09-14 20:54:41'),
+(196, 62, '9bdd92d687777421a8de11030928ef328489f3aa3a2bd514b4582c02fca2af5e', '2025-09-15 22:58:09', '2025-09-14 20:58:09', '2025-09-14 20:58:09'),
+(197, 47, '8ec02a849cbdfaaa32e492626f40a112647ee3bf073a7191091e0d0baa4b4d9b', '2025-09-15 23:03:27', '2025-09-14 21:03:27', '2025-09-14 21:03:27'),
+(198, 85, '61b23e76d6718a368623af3afd43f75c99b38ae2d2f51aa3f9ae9ac6149ab962', '2025-09-15 23:03:58', '2025-09-14 21:03:58', '2025-09-14 21:03:58'),
+(199, 47, 'b8f364f0c0a8e8076ee0d819c7c73d96b5cb0ec9a0e94280b1b5aad9825e48f3', '2025-09-15 23:04:58', '2025-09-14 21:04:58', '2025-09-14 21:04:58'),
+(200, 47, '5d60456bbc832d03d2905b4c5007dbb98e4e557136c143eabc194742ee67cb1f', '2025-09-18 06:50:07', '2025-09-17 04:50:07', '2025-09-17 04:50:07'),
+(201, 85, 'af41f219bdf5ea6b144f30f2ffc3b59f21b98ba08d3643ea1ee2cb05ea83b076', '2025-09-18 06:50:35', '2025-09-17 04:50:35', '2025-09-17 04:50:35'),
+(202, 62, '56fb73b6dc6098467e65520eb845eef3ff1600ccac7d4f3f88ede4cee53b92ce', '2025-09-18 06:53:41', '2025-09-17 04:53:41', '2025-09-17 04:53:41'),
+(203, 47, '888124c26ae98907b98c4197b60688c2ea0e5962f6b4747409f8ce9b0620a693', '2025-09-18 06:55:32', '2025-09-17 04:55:32', '2025-09-17 04:55:32'),
+(204, 131, 'a453e5f4df787f11d380a4765719ebdb00e508b6c941ad64f22d304e598be329', '2025-09-18 06:56:27', '2025-09-17 04:56:27', '2025-09-17 04:56:27'),
+(205, 85, 'f7fe56c9b0c1cfc1f28ea5b32bb1659897f029ea21958496f2eba0f846572740', '2025-09-18 06:56:47', '2025-09-17 04:56:47', '2025-09-17 04:56:47'),
+(206, 85, '2edaa183005e3b07ca887cbfeb34d8226b77eb8001164f1c32c7de5eefd9047b', '2025-09-18 08:33:45', '2025-09-17 06:33:45', '2025-09-17 06:33:45'),
+(207, 62, '291ec495e1810536227da7ef10fe95e72399c194745ea8f9ce89b30c19d887f3', '2025-09-18 09:32:49', '2025-09-17 07:32:49', '2025-09-17 07:32:49'),
+(208, 85, '913b29ec42100753ec7c57d3065c1e2bcc57d84eac6f85f5e4aefd1ad7e8ba2a', '2025-09-18 09:44:47', '2025-09-17 07:44:47', '2025-09-17 07:44:47'),
+(209, 62, '83821a578039d383eb159df5ca270e6d069ad721cab112f4cd757eae766f9d0b', '2025-09-18 09:55:27', '2025-09-17 07:55:27', '2025-09-17 07:55:27'),
+(210, 85, 'd0f4474663036662f22040522955d007ee6d9e7f03144e5284a864404efa706d', '2025-09-18 10:11:35', '2025-09-17 08:11:35', '2025-09-17 08:11:35'),
+(211, 47, '5328325034e892b829ad24a15b3f466f1ffb2323a245550ab076ef9193b28fe9', '2025-09-18 10:12:09', '2025-09-17 08:12:09', '2025-09-17 08:12:09'),
+(212, 85, '269ac2156ecca5bf00b4f7ca3924e062ae3dfeb5cc5b59cffa27a3e91bf708a5', '2025-09-18 10:12:25', '2025-09-17 08:12:25', '2025-09-17 08:12:25'),
+(213, 47, '372a2e9e1742b3f9e737f0a345b723a02dc3fc6d1f46413a2e50959b0b2005c3', '2025-09-18 10:13:45', '2025-09-17 08:13:45', '2025-09-17 08:13:45'),
+(214, 85, '1fcc58db8ffd0d140f80fc97171c5316c96286ad1148b899c81914ed2833053c', '2025-09-18 10:14:04', '2025-09-17 08:14:04', '2025-09-17 08:14:04'),
+(215, 62, 'ed03f32e4dd6b4c611c52c640cbf00938fbe5e607025fc92a88231c45031232b', '2025-09-18 10:22:55', '2025-09-17 08:22:55', '2025-09-17 08:22:55'),
+(216, 85, '915fa34adf5f4c7732fc3dbb718ec30ddc5d510ec1af0e037ed049b9f4b770c5', '2025-09-18 11:15:40', '2025-09-17 09:15:40', '2025-09-17 09:15:40'),
+(217, 85, 'd5b329d3599c5a0850be5d8f18fd23b12fe4b9b6f8fb3be50d06e21b36810586', '2025-09-18 12:01:15', '2025-09-17 10:01:15', '2025-09-17 10:01:15'),
+(218, 62, '39e68d6dc134998d98517fcb2ec7e6a53a0a3d39c05fca15f93871394ea7331a', '2025-09-18 13:59:38', '2025-09-17 11:59:38', '2025-09-17 11:59:38'),
+(219, 47, '50c3d5ab8561270aaa72cc11c399a201b7c7ac6c61d563252a1c2a7164ca52e3', '2025-09-18 14:00:35', '2025-09-17 12:00:35', '2025-09-17 12:00:35'),
+(220, 85, '8d71436afc0e1895914f7b37cbe8a4fb1add9b99ea9e7ee6a8526b13363efb62', '2025-09-18 14:00:54', '2025-09-17 12:00:54', '2025-09-17 12:00:54'),
+(221, 134, '995871fd6ad6281c77626c04bff14624e4ff375dd4726301f4362463edc69c73', '2025-09-18 14:17:56', '2025-09-17 12:17:56', '2025-09-17 12:17:56'),
+(222, 134, '3c00c9b4a83c71e4b9cc5de013bbf05eecf6f19948f0167bf4994113e39974c7', '2025-09-18 16:47:30', '2025-09-17 14:47:30', '2025-09-17 14:47:30'),
+(223, 134, '6975f14ab2e19751b508ce8c803db99a4ce771edceadf0663c1f439811e87b41', '2025-09-18 17:33:32', '2025-09-17 15:33:32', '2025-09-17 15:33:32'),
+(224, 134, 'c07f13ac2a109d5762e724d6709661f68ed340be85c416e48986e1e717cd7754', '2025-09-18 17:34:51', '2025-09-17 15:34:51', '2025-09-17 15:34:51'),
+(225, 134, '3e09cc5d151b73f6739c08a02fe9243b02362f3feb85fae09121c665a30a4e8b', '2025-09-18 17:40:20', '2025-09-17 15:40:20', '2025-09-17 15:40:20'),
+(226, 135, 'fde5297f6c39f9445e1701007b326698fb901b39d8999675503ef3a4e9d720f0', '2025-09-18 17:43:47', '2025-09-17 15:43:47', '2025-09-17 15:43:47'),
+(227, 135, '564050a81b9db1e83c243a201c22e2accffa3e81725cfcf0fa63d8efe1528368', '2025-09-18 17:45:31', '2025-09-17 15:45:31', '2025-09-17 15:45:31'),
+(228, 134, 'd6b8736de3ae430a3d4fd242ef2c697a3a7dc21d5bb8993517b2b7b7c848d559', '2025-09-18 17:49:51', '2025-09-17 15:49:51', '2025-09-17 15:49:51'),
+(229, 85, '1d310e05d33b853d386ce9b10565996bbed3b8067726250705a1c72ccfb14462', '2025-09-18 17:54:02', '2025-09-17 15:54:02', '2025-09-17 15:54:02'),
+(230, 85, 'dc4b01286345fea60f00569c6208e36ecbd6a9ce4f9760e0983613654119dbb9', '2025-09-18 18:37:21', '2025-09-17 16:37:21', '2025-09-17 16:37:21'),
+(231, 136, 'ce0511c54329840fdf8921e2da0526d6c4502a1251cc698e784b2609311464af', '2025-09-18 18:38:50', '2025-09-17 16:38:50', '2025-09-17 16:38:50'),
+(232, 85, '7cf89cb9c5e4cb207ae9dda117b7d5ad148b1f6bf92a6895d9f51f90227cb09f', '2025-09-18 18:43:22', '2025-09-17 16:43:22', '2025-09-17 16:43:22'),
+(233, 62, '1800ebd4945e59e6d093d9f6a5b3cd678b18db4481bf760c4a1fb27d94bc3106', '2025-09-18 18:52:07', '2025-09-17 16:52:07', '2025-09-17 16:52:07'),
+(234, 85, '0873c27410db1f8db0389e711d08603fe7e57336267d9e565dd24e79dc3e2d67', '2025-09-18 18:52:19', '2025-09-17 16:52:19', '2025-09-17 16:52:19'),
+(235, 47, '98163b0bca37429b198f2295dc0dd3aafcf3fd5d9e9362a59691c728b62f0dbe', '2025-09-18 19:38:03', '2025-09-17 17:38:03', '2025-09-17 17:38:03'),
+(236, 85, 'b1b2a06b490ec7033115d78c4b6ab294ea941ce72aaf3e0223a55f74e374e1bf', '2025-09-18 19:38:28', '2025-09-17 17:38:28', '2025-09-17 17:38:28'),
+(237, 85, '796cefda0a3fca5b7325ede5a88c57f836f72118811b409ab992d14cc9b4ea3a', '2025-09-18 19:42:17', '2025-09-17 17:42:17', '2025-09-17 17:42:17'),
+(238, 135, '19902dce4650d8239234293d68f98ae83a3bc90b5b0b25b9319f4068281ee3a6', '2025-09-18 19:53:45', '2025-09-17 17:53:45', '2025-09-17 17:53:45'),
+(239, 85, '014aa93c48f9ef678e8753abd3ef53c85fe14ba2ae7b1289e213a8ec5b4c750c', '2025-09-18 19:55:53', '2025-09-17 17:55:53', '2025-09-17 17:55:53'),
+(240, 135, 'ea4574b615e160f67e6a55bdb66be4f1a69d222aaf01c7b70c8dcbbd87f2b936', '2025-09-18 19:58:52', '2025-09-17 17:58:52', '2025-09-17 17:58:52'),
+(241, 135, 'e9f6a015e3ad49e3426de1b4bea599fb3d8a32fcd0207801c360110d4c8e998a', '2025-09-18 20:04:08', '2025-09-17 18:04:08', '2025-09-17 18:04:08'),
+(242, 135, 'bfdd81eaafd00c5138636c7eace7b8e2d873bc3a51ff8052ee40ddf5220b2101', '2025-09-18 20:05:40', '2025-09-17 18:05:40', '2025-09-17 18:05:40'),
+(243, 85, 'f4fc6441b954bf9dbf1119571f84cb40147ed8f582009b532ae982ca549e427e', '2025-09-18 20:06:32', '2025-09-17 18:06:32', '2025-09-17 18:06:32'),
+(244, 135, '825256216efd65fe6c18ea222de6dc2946cbeb7c8b2d29804c4ab4dbff69164c', '2025-09-18 20:07:32', '2025-09-17 18:07:32', '2025-09-17 18:07:32'),
+(245, 134, '181c55b33a87486d43725c06728d7e6e6b9005273f1e4ff06f39337f14b82b85', '2025-09-18 20:13:00', '2025-09-17 18:13:00', '2025-09-17 18:13:00'),
+(246, 135, 'a27e9974fa0e987219fa21538769ec4696095c46bf24b31ea3986a54f8874d98', '2025-09-18 20:13:34', '2025-09-17 18:13:34', '2025-09-17 18:13:34'),
+(247, 135, '5107e329dd5aafeb9d98426e0384bcf4ad47f5c95d39c543871962f6e15835c7', '2025-09-18 20:16:15', '2025-09-17 18:16:15', '2025-09-17 18:16:15'),
+(248, 47, 'cdaaa8dcd1014df541bce88f6420fcca2b17ea60751dff71650b73ac107f2de5', '2025-09-18 20:24:39', '2025-09-17 18:24:39', '2025-09-17 18:24:39'),
+(249, 85, '4897f185b7441b42273d5a6383058a768eb3650ca2e7aaffc9e18ff5dd024cdb', '2025-09-18 20:25:57', '2025-09-17 18:25:57', '2025-09-17 18:25:57'),
+(250, 47, 'e6e6cd52ca995e7522b441a52a3c1ae2717f0899aff90569b259c5ea30321b7c', '2025-09-18 20:26:54', '2025-09-17 18:26:54', '2025-09-17 18:26:54'),
+(251, 85, 'a12c4345d37c76c3d50ecec9d500e39444cb515a63480a5f5c1c74d2f640a326', '2025-09-18 20:27:08', '2025-09-17 18:27:08', '2025-09-17 18:27:08'),
+(252, 47, '7edf49421ada0d5809447cab41386a87489557aceee424cf01a44833cbe5bb42', '2025-09-18 20:28:12', '2025-09-17 18:28:12', '2025-09-17 18:28:12'),
+(253, 85, '6f3240ad1bac042ce46eb3e165ebb334a9e897cf0733e7d96fe3bb52719d559a', '2025-09-18 20:34:21', '2025-09-17 18:34:21', '2025-09-17 18:34:21'),
+(254, 135, '227cf05585724ac847267e61444bea7dbfb186853f60f90bdfc37e515ee217f4', '2025-09-18 20:36:29', '2025-09-17 18:36:29', '2025-09-17 18:36:29'),
+(255, 47, 'c266cac954c7a1dc8ca2ac217cf1495421aaa108315b57ab478d6d3e8a5c5f4a', '2025-09-18 20:37:10', '2025-09-17 18:37:10', '2025-09-17 18:37:10'),
+(256, 135, 'b3a979c756a0d5f00bec4101f529e6b7126629714afaadac594d8453d5ad7890', '2025-09-18 20:39:55', '2025-09-17 18:39:55', '2025-09-17 18:39:55'),
+(257, 85, '11a5b72cb4992fb2b47847fdbf9f6645c87e844668ff8c2396825eea3c764d2e', '2025-09-18 21:04:22', '2025-09-17 19:04:22', '2025-09-17 19:04:22'),
+(258, 135, '455d931f07e277aebea4018081e422ef918ecdf273edf7b7e47d3c64e99c61ef', '2025-09-18 21:04:49', '2025-09-17 19:04:49', '2025-09-17 19:04:49'),
+(259, 47, '8f34d2f8a9b7b791c4254e3b1900e07c7210e69c0921fee628ff76f7bd00f97b', '2025-09-18 21:23:59', '2025-09-17 19:23:59', '2025-09-17 19:23:59'),
+(260, 134, 'e52d041c3721bd188e50a1643085cad7c1c95a46a9784d19337b966cfea88ae7', '2025-09-18 21:24:20', '2025-09-17 19:24:20', '2025-09-17 19:24:20'),
+(261, 85, '40bf6102741a02c45c042da6de3a47310a46524e5ca0a0e74176c877e159362b', '2025-09-18 21:24:48', '2025-09-17 19:24:48', '2025-09-17 19:24:48'),
+(262, 137, 'eb6e4646e208679a8186ec1a36398a185872a0e88cc218770805f19d5e6026e9', '2025-09-18 21:51:58', '2025-09-17 19:51:58', '2025-09-17 19:51:58'),
+(263, 137, '7efa6625d26eb748f1730483a96993189b872af3a1323b5fd120797c8642c487', '2025-09-18 22:29:16', '2025-09-17 20:29:16', '2025-09-17 20:29:16'),
+(264, 137, '9464b4afffe107c6ed82ea2213fcbbef3837caeb6d238b00cd8b9e37d030e25a', '2025-09-18 23:01:14', '2025-09-17 21:01:14', '2025-09-17 21:01:14'),
+(265, 134, '0b97588d0b9e846267d0fd6358812f6aaa4cb4359aca5a4252f2aeb66910dd3c', '2025-09-18 23:05:46', '2025-09-17 21:05:46', '2025-09-17 21:05:46'),
+(266, 137, '9807b9b1433f9beff2ab2284ce35168f205cf5957ce91892050211551623b379', '2025-09-18 23:06:11', '2025-09-17 21:06:11', '2025-09-17 21:06:11'),
+(267, 85, '4012169bf74afe5008fa0c63b6ebbef87c7d50d522238cd9734fa570aa715bcd', '2025-09-18 23:06:33', '2025-09-17 21:06:33', '2025-09-17 21:06:33'),
+(268, 137, '78546539c3d39ff102c9b868dae23d2e9dbed82ac58821c13a68d72c962b30e4', '2025-09-18 23:06:55', '2025-09-17 21:06:55', '2025-09-17 21:06:55');
 
 --
 -- Indexes for dumped tables
@@ -758,6 +996,13 @@ ALTER TABLE `booking`
   ADD KEY `route_id` (`route_id`);
 
 --
+-- Indexes for table `cost_settings`
+--
+ALTER TABLE `cost_settings`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `setting_name` (`setting_name`);
+
+--
 -- Indexes for table `drivers`
 --
 ALTER TABLE `drivers`
@@ -770,6 +1015,12 @@ ALTER TABLE `drivers`
 ALTER TABLE `guides`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `notifications`
+--
+ALTER TABLE `notifications`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `password_resets`
@@ -814,10 +1065,9 @@ ALTER TABLE `travellers`
 --
 ALTER TABLE `trips`
   ADD PRIMARY KEY (`trip_id`),
-  ADD KEY `traveler_id` (`traveler_id`),
-  ADD KEY `driver_id` (`driver_id`),
-  ADD KEY `guide_id` (`guide_id`),
-  ADD KEY `route_id` (`route_id`);
+  ADD UNIQUE KEY `traveler_id` (`traveler_id`,`route_id`,`driver_id`,`guide_id`),
+  ADD KEY `fk_trips_driver` (`driver_id`),
+  ADD KEY `fk_trips_guide` (`guide_id`);
 
 --
 -- Indexes for table `users`
@@ -844,85 +1094,97 @@ ALTER TABLE `user_sessions`
 -- AUTO_INCREMENT for table `admins`
 --
 ALTER TABLE `admins`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `admin_action`
 --
 ALTER TABLE `admin_action`
-  MODIFY `action_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `action_id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `attraction_place`
 --
 ALTER TABLE `attraction_place`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `booking_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `cost_settings`
+--
+ALTER TABLE `cost_settings`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `drivers`
 --
 ALTER TABLE `drivers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
 -- AUTO_INCREMENT for table `guides`
 --
 ALTER TABLE `guides`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT for table `notifications`
+--
+ALTER TABLE `notifications`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `password_resets`
 --
 ALTER TABLE `password_resets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `payment_id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `ratings_review`
 --
 ALTER TABLE `ratings_review`
-  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `review_id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `routes`
 --
 ALTER TABLE `routes`
-  MODIFY `route_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `route_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `travellers`
 --
 ALTER TABLE `travellers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `trips`
 --
 ALTER TABLE `trips`
-  MODIFY `trip_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `trip_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=109;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=136;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=138;
 
 --
 -- AUTO_INCREMENT for table `user_sessions`
 --
 ALTER TABLE `user_sessions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=179;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=269;
 
 --
 -- Constraints for dumped tables
@@ -984,10 +1246,9 @@ ALTER TABLE `travellers`
 -- Constraints for table `trips`
 --
 ALTER TABLE `trips`
-  ADD CONSTRAINT `trips_ibfk_1` FOREIGN KEY (`traveler_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `trips_ibfk_2` FOREIGN KEY (`driver_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `trips_ibfk_3` FOREIGN KEY (`guide_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `trips_ibfk_4` FOREIGN KEY (`route_id`) REFERENCES `routes` (`route_id`);
+  ADD CONSTRAINT `fk_trips_driver` FOREIGN KEY (`driver_id`) REFERENCES `drivers` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_trips_guide` FOREIGN KEY (`guide_id`) REFERENCES `guides` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_trips_traveler` FOREIGN KEY (`traveler_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `user_sessions`

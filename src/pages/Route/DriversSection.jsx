@@ -5,6 +5,20 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { apiMethods } from "../../utils/api-client";
 
+// Pro Tip Banner Component
+function ProTipBanner() {
+  return (
+    <div className="pro-tip-banner">
+      <span className="pro-tip-icon" role="img" aria-label="lightbulb">💡</span>
+      <span className="pro-tip-title">Pro Tip: Book Both &amp; Save!</span>
+      <span className="pro-tip-desc">
+        Get both a driver and guide together for the complete Sri Lankan experience.{" "}
+        <span className="pro-tip-highlight">Save 10% when you book as a package!</span>
+      </span>
+    </div>
+  );
+}
+
 const renderStars = (rating) => {
   return Array.from({ length: 5 }, (_, i) => (
     <span key={i} className={`star ${i < rating ? "filled" : ""}`}>
@@ -13,12 +27,12 @@ const renderStars = (rating) => {
   ));
 };
 
-export default function DriversSection() {
+export default function DriversSection({ onDriverSelect }) {
   const navigate = useNavigate();
   const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Get trip dates from localStorage
   const tripDatesStr = localStorage.getItem('tripDates');
   let tripDates = null;
@@ -33,14 +47,8 @@ export default function DriversSection() {
   useEffect(() => {
     const fetchDrivers = async () => {
       try {
-        console.log("🚀 Attempting to fetch drivers from API...");
-        console.log("API Base URL:", apiMethods.getBackendUrl());
-        console.log("Full URL:", `${apiMethods.getBackendUrl()}/drivers`);
-        
         // Test direct fetch first
         const directUrl = `${apiMethods.getBackendUrl()}/drivers`;
-        console.log("🔍 Testing direct fetch to:", directUrl);
-        
         const directResponse = await fetch(directUrl, {
           method: 'GET',
           headers: {
@@ -48,25 +56,19 @@ export default function DriversSection() {
             'Accept': 'application/json'
           }
         });
-        
-        console.log("📊 Direct fetch response status:", directResponse.status);
-        console.log("📊 Direct fetch response headers:", directResponse.headers);
-        
         if (directResponse.ok) {
-          const directData = await directResponse.json();
-          console.log("📊 Direct fetch response data:", directData);
-        } else {
-          console.log("❌ Direct fetch failed:", await directResponse.text());
+          await directResponse.json();
         }
-        
+
         // Now try with the API client
         const response = await apiMethods.authenticatedRequest("/drivers", null, "GET");
-        console.log("📊 API Client Response:", response);
+        
+        console.log('🔍 Full API response:', response);
+        console.log('🔍 Response.data:', response.data);
         
         // Handle different response structures
         let driverData = [];
         if (response.data) {
-          // Check for different response structures from backend
           if (Array.isArray(response.data.drivers)) {
             driverData = response.data.drivers;
           } else if (Array.isArray(response.data.data)) {
@@ -78,57 +80,43 @@ export default function DriversSection() {
           driverData = response;
         }
         
-        console.log("✅ Processed drivers data:", driverData);
-        
+        console.log('🔍 Processed driver data:', driverData);
+        if (driverData.length > 0) {
+          console.log('🔍 First driver structure:', driverData[0]);
+          console.log('🔍 First driver has driver_table_id?', driverData[0].driver_table_id);
+        }
         if (driverData.length === 0) {
-          console.log("⚠️ No drivers found in database");
           setDrivers([]);
           setError("No drivers available at the moment");
         } else {
           setDrivers(driverData);
         }
-        
       } catch (err) {
-        console.error("❌ Error fetching drivers from API:", err);
         setDrivers([]);
         setError("Failed to load drivers. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
-    
-    // Fetch real drivers from database
     fetchDrivers();
   }, []);
 
-  // Helper function to check if a driver is available - check database status
+  // Helper function to check if a driver is available
   const isDriverAvailable = (driver) => {
-    // Debug: Log each driver's status
-    console.log(`Driver ${driver.name || driver.user_name} status:`, driver.status);
-    console.log("Full driver object:", driver);
-    
-    // Only show drivers that are NOT "nonavailable"
     return driver.status !== "nonavailable";
-    
-    // Alternative: Only show drivers with specific available statuses
-    // return driver.status === "available" || driver.status === "Available";
   };
-  
-  // Filter drivers based on availability only (ignore date filtering)
+
+  // Filter drivers based on availability only
   const availableDrivers = Array.isArray(drivers) ? drivers.filter(isDriverAvailable) : [];
-  
-  // Add debug logging
-  console.log("Total drivers fetched:", drivers);
-  console.log("Available drivers after filtering:", availableDrivers);
-  console.log("Trip dates:", tripDates);
-  
+
   if (loading) return <div>Loading drivers...</div>;
   if (error) return <div style={{padding: '20px', color: 'red'}}>{error}</div>;
-  
+
   // Show message if no drivers available
   if (availableDrivers.length === 0) {
     return (
       <section className="drivers-section">
+        <ProTipBanner />
         <h2>MEET YOUR LOCAL DRIVERS</h2>
         <p className="subtitle">
           {Array.isArray(drivers) && drivers.length > 0 
@@ -147,6 +135,7 @@ export default function DriversSection() {
 
   return (
     <section className="drivers-section">
+      <ProTipBanner />
       <h2>MEET YOUR LOCAL DRIVERS</h2>
       <p className="subtitle">
         Professional, verified drivers ready to make your journey memorable!
@@ -155,66 +144,69 @@ export default function DriversSection() {
         }
       </p>
       <div className="cards">
-        {availableDrivers.map((driver) => {
-          // Debug: Log driver image info
-          console.log(`Driver ${driver.name} image info:`, {
-            image: driver.image,
-            photo_url: driver.photo_url,
-            photo: driver.photo
-          });
-          
-          return (
-            <article key={driver.id} className="driver-card">
-              <div className="image-container">
-                <img 
-                  src={driver.photo_url || driver.image || 'https://via.placeholder.com/150x150/4A90E2/FFFFFF?text=Driver'} 
-                  alt={driver.name} 
-                  className="driver-image" 
-                  onError={(e) => {
-                    console.log(`Image failed to load for ${driver.name}:`, e.target.src);
-                    e.target.src = 'https://via.placeholder.com/150x150/4A90E2/FFFFFF?text=Driver';
-                  }}
-                />
-                <span className="price-badge">{driver.status || driver.availability || 'Available'}</span>
-                {driver.verified && <span className="badge verified">Verified</span>}
-                {driver.recommended && <span className="badge recommended">Recommended</span>}
+        {availableDrivers.map((driver) => (
+          <article key={driver.id} className="driver-card">
+            <div className="image-container">
+              <img 
+                src={driver.photo_url || driver.image || 'https://via.placeholder.com/150x150/4A90E2/FFFFFF?text=Driver'} 
+                alt={driver.name} 
+                className="driver-image" 
+                onError={(e) => {
+                  e.target.src = 'https://via.placeholder.com/150x150/4A90E2/FFFFFF?text=Driver';
+                }}
+              />
+              <span className="price-badge">{driver.status || driver.availability || 'Available'}</span>
+              {driver.verified && <span className="badge verified">Verified</span>}
+              {driver.recommended && <span className="badge recommended">Recommended</span>}
+            </div>
+            <div className="card-body">
+              <h3>{driver.name}</h3>
+              <ul className="driver-info">
+                <li>🚗 {driver.vehicle_type || driver.vehicle || 'Vehicle Info'}</li>
+                <li>📍 {driver.location || 'Location Info'}</li>
+                <li>✅ {driver.license_no || driver.license || 'Licensed'}</li>
+              </ul>
+              <div className="rating">
+                {renderStars(driver.rating || 4)}
+                <span className="rating-text">({driver.rating || 4}/5)</span>
               </div>
-              <div className="card-body">
-                <h3>{driver.name}</h3>
-                <ul className="driver-info">
-                  <li>🚗 {driver.vehicle_type || driver.vehicle || 'Vehicle Info'}</li>
-                  <li>📍 {driver.location || 'Location Info'}</li>
-                  <li>✅ {driver.license_no || driver.license || 'Licensed'}</li>
-                </ul>
-                <div className="rating">
-                  {renderStars(driver.rating || 4)}
-                  <span className="rating-text">({driver.rating || 4}/5)</span>
-                </div>
-                <div className="experience">
-                  <span>Experience: {driver.experience || '5+'} years</span>
-                </div>
-                <button 
-                  className="book-now-btn"
-                  onClick={() => {
-                    // Store driver info in localStorage for booking
-                    localStorage.setItem('selectedDriver', JSON.stringify({
-                      id: driver.id,
-                      name: driver.name,
-                      vehicle: driver.vehicle_type || driver.vehicle,
-                      location: driver.location,
-                      rating: driver.rating || 4,
-                      phone: driver.phone,
-                      photo_url: driver.photo_url
-                    }));
+              <div className="experience">
+                <span>Experience: {driver.experience || '5+'} years</span>
+              </div>
+              <button 
+                className="book-now-btn"
+                onClick={() => {
+                  console.log('🎯 Driver selected, original driver object:', driver);
+                  
+                  const driverData = {
+                    id: driver.id,
+                    driver_table_id: driver.driver_table_id, // Include the actual drivers table ID
+                    user_id: driver.user_id, // Include user_id for backward compatibility
+                    name: driver.name,
+                    vehicle_type: driver.vehicle_type || driver.vehicle,
+                    location: driver.location,
+                    rating: driver.rating || 4,
+                    phone: driver.phone,
+                    photo_url: driver.photo_url,
+                    experience: driver.experience || '5+'
+                  };
+                  
+                  console.log('🎯 Processed driver data being sent to BookingModal:', driverData);
+                  console.log('🎯 driver_table_id value:', driverData.driver_table_id);
+                  
+                  if (onDriverSelect) {
+                    onDriverSelect(driverData);
+                  } else {
+                    localStorage.setItem('selectedDriver', JSON.stringify(driverData));
                     navigate('/booking');
-                  }}
-                >
-                  Book Now
-                </button>
-              </div>
-            </article>
-          );
-        })}
+                  }
+                }}
+              >
+                Book Now
+              </button>
+            </div>
+          </article>
+        ))}
       </div>
     </section>
   );

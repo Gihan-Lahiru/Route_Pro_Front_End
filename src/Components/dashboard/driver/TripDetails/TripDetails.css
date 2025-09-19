@@ -22,6 +22,9 @@
 .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; color: #fff; }
 .status-badge.active { background-color: #28a745; }
 .status-badge.scheduled { background-color: #f39c12; }
+.status-badge.cancelled { background-color: #dc3545; }
+.status-badge.completed { background-color: #17a2b8; }
+.status-badge.in-progress { background-color: #007bff; }
 
 .trip-actions {
   margin-top: 16px;
@@ -43,4 +46,69 @@
 
 .trip-actions button:hover {
   background-color: #218838;
+}
+
+.trip-info {
+  margin-bottom: 12px;
+}
+
+.destination {
+  color: #2c3e50;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  margin-top: 0;
+}
+
+.cancelled-notice {
+  text-align: center;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-left: 4px solid #dc3545;
+  border-radius: 4px;
+}
+
+.cancelled-notice p {
+  margin: 0;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 20px;
+  color: #6c757d;
+}
+
+.no-trips {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+}
+
+.no-trips p {
+  margin: 8px 0;
+}
+
+/* Special Requests Styling */
+.special-requests {
+  margin-top: 12px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-left: 4px solid #007bff;
+  border-radius: 4px;
+}
+
+.special-requests p {
+  margin: 0 0 8px 0;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.special-requests-content {
+  font-size: 14px;
+  color: #495057;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
