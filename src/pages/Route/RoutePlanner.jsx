@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import MapComponent from "./MapComponent";
+import GoogleMapComponent from "../../Components/GoogleMapComponent";
 import axios from "axios";
 import "./RoutePlanner.css";
 import TripDateSelector from "./TripDateSelector";
@@ -29,7 +29,16 @@ const RoutePlanner = () => {
 
   let distanceValue = 300;
   if (routeDetails.distance) {
-    distanceValue = parseFloat(routeDetails.distance) / 1; // meters to km
+    // Handle Google Maps distance format (e.g., "123 km" or "1,234 m")
+    const distanceStr = routeDetails.distance.toString();
+    if (distanceStr.includes('km')) {
+      distanceValue = parseFloat(distanceStr.replace(/[^\d.]/g, ''));
+    } else if (distanceStr.includes('m')) {
+      distanceValue = parseFloat(distanceStr.replace(/[^\d.]/g, '')) / 1000; // Convert meters to km
+    } else {
+      // Fallback: assume it's already in km
+      distanceValue = parseFloat(distanceStr) || 300;
+    }
     
     // Clear bike selection if distance exceeds 150km
     if (distanceValue > 150 && vehicle === "Bike") {
@@ -196,6 +205,19 @@ const RoutePlanner = () => {
               </button>
             ))}
           </div>
+
+          {/* Nearby Attractions Toggle */}
+          <div style={{ marginTop: '15px' }}>
+            <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '14px' }}>
+              <input
+                type="checkbox"
+                checked={findAttractions}
+                onChange={(e) => setFindAttractions(e.target.checked)}
+                style={{ marginRight: '8px' }}
+              />
+              🏛️ Find nearby attractions along the route
+            </label>
+          </div>
         </div>
 
         <div className="card route-info-card">
@@ -239,7 +261,7 @@ const RoutePlanner = () => {
 
       <div className="main-content">
         <div className="map-placeholder">
-          <MapComponent
+          <GoogleMapComponent
             origin={from}
             destination={to}
             setRouteDetails={setRouteDetails}

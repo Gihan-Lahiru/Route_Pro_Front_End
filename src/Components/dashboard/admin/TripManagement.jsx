@@ -388,7 +388,7 @@ const TripManagement = () => {
               onChange={handleStatusFilterChange}
             >
               <option value="all">All Status</option>
-              <option value="not_started">Not Started</option>
+              <option value="confirmed">Confirmed</option>
               <option value="confirmed">Confirmed</option>
               <option value="ongoing">Ongoing</option>
               <option value="completed">Completed</option>
@@ -481,10 +481,25 @@ const TripManagement = () => {
                     <>
                       <div className="name">
                         {trip.driver.name}
-                        <span className="rating">⭐ {trip.driver.rating || 0}</span>
-                        {(trip.driver.rating || 0) < 3 && <span className="warning">⚠️</span>}
+                        <div className="rating-section">
+                          {trip.driver.rating > 0 ? (
+                            <>
+                              <span className="rating">⭐ {trip.driver.rating.toFixed(1)}</span>
+                              <span className="review-count">({trip.driver.review_count || 0} reviews)</span>
+                            </>
+                          ) : (
+                            <span className="rating reset">⭐ 0.0 (Reset by admin)</span>
+                          )}
+                          {trip.driver.rating > 0 && trip.driver.rating < 3 && <span className="warning" title="Low rating - needs attention">⚠️</span>}
+                        </div>
                       </div>
                       <div className="contact">{trip.driver.phone || 'No phone'}</div>
+                      <div className="contact">{trip.driver.email || 'No email'}</div>
+                      {trip.driver.recent_reviews && trip.driver.recent_reviews.length > 0 && (
+                        <div className="recent-reviews">
+                          <small>Recent: "{trip.driver.recent_reviews[0].review_text?.substring(0, 50) || 'No comment'}..."</small>
+                        </div>
+                      )}
                     </>
                   ) : (
                     <div className="no-driver">No driver assigned</div>
@@ -499,9 +514,25 @@ const TripManagement = () => {
                     <>
                       <div className="name">
                         {trip.guide.name}
-                        <span className="rating">⭐ {trip.guide.rating || 0}</span>
+                        <div className="rating-section">
+                          {trip.guide.rating > 0 ? (
+                            <>
+                              <span className="rating">⭐ {trip.guide.rating.toFixed(1)}</span>
+                              <span className="review-count">({trip.guide.review_count || 0} reviews)</span>
+                            </>
+                          ) : (
+                            <span className="rating reset">⭐ 0.0 (Reset by admin)</span>
+                          )}
+                          {trip.guide.rating > 0 && trip.guide.rating < 3 && <span className="warning" title="Low rating - needs attention">⚠️</span>}
+                        </div>
                       </div>
                       <div className="contact">{trip.guide.phone || 'No phone'}</div>
+                      <div className="contact">{trip.guide.email || 'No email'}</div>
+                      {trip.guide.recent_reviews && trip.guide.recent_reviews.length > 0 && (
+                        <div className="recent-reviews">
+                          <small>Recent: "{trip.guide.recent_reviews[0].review_text?.substring(0, 50) || 'No comment'}..."</small>
+                        </div>
+                      )}
                     </>
                   ) : (
                     <div className="no-guide">No guide assigned</div>

@@ -179,7 +179,7 @@ const LoginPage = () => {
         <p className="login-subtitle">Login with Email</p>
 
         <form onSubmit={handleLogin}>
-          <div className="form-group">
+          <div className="formm-group">
             <input
               type="email"
               placeholder="Email"
@@ -189,7 +189,7 @@ const LoginPage = () => {
               disabled={loading}
             />
           </div>
-          <div className="form-group">
+          <div className="formm-group">
             <input
               type="password"
               placeholder="Password"

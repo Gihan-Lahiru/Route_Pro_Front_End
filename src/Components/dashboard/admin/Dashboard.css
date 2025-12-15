@@ -1,17 +1,20 @@
+/* Responsive Admin Dashboard */
 .dashboard {
-  padding: 24px;
+  padding: 16px;
+  background: #f8fafc;
+  min-height: 100vh;
 }
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-  margin-bottom: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .stat-card {
   background: white;
-  padding: 24px;
+  padding: 20px;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -27,6 +30,7 @@
   font-size: 14px;
   font-weight: 500;
   color: #64748b;
+  margin: 0;
 }
 
 .stat-icon {
@@ -34,10 +38,11 @@
   padding: 8px;
   background: #f1f5f9;
   border-radius: 8px;
+  color: #3b82f6;
 }
 
 .stat-value {
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 700;
   color: #1e293b;
   margin-bottom: 8px;
@@ -52,16 +57,20 @@
   color: #10b981;
 }
 
+.stat-change.negative {
+  color: #dc2626;
+}
+
 .dashboard-sections {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 24px;
+  gap: 20px;
 }
 
 .revenue-chart,
 .recent-trips {
   background: white;
-  padding: 24px;
+  padding: 20px;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -71,26 +80,28 @@
   font-size: 18px;
   font-weight: 600;
   color: #1e293b;
-  margin-bottom: 24px;
+  margin: 0 0 20px 0;
 }
 
 .chart-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .chart-item {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  padding: 8px 0;
 }
 
 .month {
-  width: 40px;
-  font-size: 14px;
+  width: 35px;
+  font-size: 13px;
   font-weight: 500;
   color: #64748b;
+  flex-shrink: 0;
 }
 
 .progress-bar {
@@ -99,6 +110,7 @@
   background: #f1f5f9;
   border-radius: 4px;
   overflow: hidden;
+  min-width: 100px;
 }
 
 .progress {
@@ -108,16 +120,18 @@
 }
 
 .amount {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #1e293b;
-  width: 80px;
+  min-width: 70px;
   text-align: right;
+  flex-shrink: 0;
 }
 
 .trip-item {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 12px;
   padding: 16px 0;
   border-bottom: 1px solid #f1f5f9;
 }
@@ -126,23 +140,38 @@
   border-bottom: none;
 }
 
+.trip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.trip-info {
+  flex: 1;
+  min-width: 0;
+}
+
 .trip-id {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
+  flex-wrap: wrap;
 }
 
 .trip-code {
   font-weight: 600;
   color: #1e293b;
+  font-size: 14px;
 }
 
 .trip-status {
   padding: 4px 8px;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .trip-status.completed {
@@ -159,28 +188,35 @@
   font-weight: 500;
   color: #1e293b;
   margin-bottom: 4px;
+  font-size: 14px;
 }
 
 .route {
-  font-size: 14px;
+  font-size: 13px;
   color: #64748b;
+  line-height: 1.4;
+}
+
+.trip-financial {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 .trip-amount {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: #10b981;
-  text-align: right;
-  margin-bottom: 4px;
 }
 
 .trip-staff {
-  font-size: 12px;
+  font-size: 11px;
   color: #64748b;
   text-align: right;
 }
 
-/* Loading and Error States */
 .loading-container,
 .error-container {
   display: flex;
@@ -226,7 +262,6 @@
   font-weight: 500;
   cursor: pointer;
   margin-top: 16px;
-  transition: background-color 0.2s;
 }
 
 .retry-btn:hover {
@@ -240,187 +275,67 @@
   padding: 40px 20px;
 }
 
-.stat-change.negative {
-  color: #dc2626;
-}
-.dashboard {
-  padding: 24px;
-}
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-  margin-bottom: 32px;
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .dashboard-sections {
+    grid-template-columns: 1fr;
+  }
 }
 
-.stat-card {
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 12px;
+  }
+  
+  .dashboard-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 12px;
+  }
+  
+  .stat-card {
+    padding: 16px;
+  }
+  
+  .stat-value {
+    font-size: 24px;
+  }
+  
+  .revenue-chart,
+  .recent-trips {
+    padding: 16px;
+  }
 }
 
-.stat-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.stat-header h3 {
-  font-size: 14px;
-  font-weight: 500;
-  color: #64748b;
-}
-
-.stat-icon {
-  font-size: 20px;
-  padding: 8px;
-  background: #f1f5f9;
-  border-radius: 8px;
-}
-
-.stat-value {
-  font-size: 32px;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 8px;
-}
-
-.stat-change {
-  font-size: 14px;
-  color: #64748b;
-}
-
-.stat-change.positive {
-  color: #10b981;
-}
-
-.dashboard-sections {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 24px;
-}
-
-.revenue-chart,
-.recent-trips {
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.revenue-chart h3,
-.recent-trips h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 24px;
-}
-
-.chart-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.chart-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.month {
-  width: 40px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #64748b;
-}
-
-.progress-bar {
-  flex: 1;
-  height: 8px;
-  background: #f1f5f9;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.progress {
-  height: 100%;
-  background: linear-gradient(90deg, #fbbf24, #00bfa6);
-  border-radius: 4px;
-}
-
-.amount {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1e293b;
-  width: 80px;
-  text-align: right;
-}
-
-.trip-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 16px 0;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.trip-item:last-child {
-  border-bottom: none;
-}
-
-.trip-id {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.trip-code {
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.trip-status {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.trip-status.completed {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.trip-status.ongoing {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.traveler {
-  font-weight: 500;
-  color: #1e293b;
-  margin-bottom: 4px;
-}
-
-.route {
-  font-size: 14px;
-  color: #64748b;
-}
-
-.trip-amount {
-  font-size: 18px;
-  font-weight: 700;
-  color: #10b981;
-  text-align: right;
-  margin-bottom: 4px;
-}
-
-.trip-staff {
-  font-size: 12px;
-  color: #64748b;
-  text-align: right;
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 8px;
+  }
+  
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .stat-card {
+    padding: 12px;
+  }
+  
+  .stat-value {
+    font-size: 20px;
+  }
+  
+  .revenue-chart,
+  .recent-trips {
+    padding: 12px;
+  }
+  
+  .trip-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .trip-financial {
+    align-items: flex-start;
+  }
 }

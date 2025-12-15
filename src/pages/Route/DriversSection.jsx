@@ -4,20 +4,7 @@ import "./DriversSection.css";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { apiMethods } from "../../utils/api-client";
-
-// Pro Tip Banner Component
-function ProTipBanner() {
-  return (
-    <div className="pro-tip-banner">
-      <span className="pro-tip-icon" role="img" aria-label="lightbulb">💡</span>
-      <span className="pro-tip-title">Pro Tip: Book Both &amp; Save!</span>
-      <span className="pro-tip-desc">
-        Get both a driver and guide together for the complete Sri Lankan experience.{" "}
-        <span className="pro-tip-highlight">Save 10% when you book as a package!</span>
-      </span>
-    </div>
-  );
-}
+import driversData from "./driversData"; // Import local drivers data as fallback
 
 const renderStars = (rating) => {
   return Array.from({ length: 5 }, (_, i) => (
@@ -85,15 +72,55 @@ export default function DriversSection({ onDriverSelect }) {
           console.log('🔍 First driver structure:', driverData[0]);
           console.log('🔍 First driver has driver_table_id?', driverData[0].driver_table_id);
         }
+        
+        // If API data is empty or fails, use local data as fallback
+        if (driverData.length === 0) {
+          console.log('🔄 API returned no drivers, using local driversData as fallback');
+          driverData = driversData;
+        }
+        
         if (driverData.length === 0) {
           setDrivers([]);
           setError("No drivers available at the moment");
         } else {
-          setDrivers(driverData);
+          // Fetch ratings for each driver
+          const driversWithRatings = await Promise.all(
+            driverData.map(async (driver) => {
+              try {
+                const ratingResponse = await fetch(`${apiMethods.getBackendUrl()}/api/reviews/reviews.php?driver_id=${driver.user_id}`);
+                const ratingData = await ratingResponse.json();
+                
+                if (ratingData.success && ratingData.stats) {
+                  return {
+                    ...driver,
+                    rating: parseFloat(ratingData.stats.average_rating) || 0,
+                    total_reviews: ratingData.stats.total_reviews || 0
+                  };
+                } else {
+                  return {
+                    ...driver,
+                    rating: 0,
+                    total_reviews: 0
+                  };
+                }
+              } catch (err) {
+                console.error(`Failed to fetch rating for driver ${driver.name}:`, err);
+                return {
+                  ...driver,
+                  rating: 0,
+                  total_reviews: 0
+                };
+              }
+            })
+          );
+          
+          setDrivers(driversWithRatings);
         }
       } catch (err) {
-        setDrivers([]);
-        setError("Failed to load drivers. Please try again later.");
+        console.log('🔄 API failed, using local driversData as fallback:', err);
+        // Use local driversData when API fails
+        setDrivers(driversData);
+        setError(null); // Clear error since we have fallback data
       } finally {
         setLoading(false);
       }
@@ -116,7 +143,6 @@ export default function DriversSection({ onDriverSelect }) {
   if (availableDrivers.length === 0) {
     return (
       <section className="drivers-section">
-        <ProTipBanner />
         <h2>MEET YOUR LOCAL DRIVERS</h2>
         <p className="subtitle">
           {Array.isArray(drivers) && drivers.length > 0 
@@ -135,7 +161,6 @@ export default function DriversSection({ onDriverSelect }) {
 
   return (
     <section className="drivers-section">
-      <ProTipBanner />
       <h2>MEET YOUR LOCAL DRIVERS</h2>
       <p className="subtitle">
         Professional, verified drivers ready to make your journey memorable!
@@ -167,8 +192,9 @@ export default function DriversSection({ onDriverSelect }) {
                 <li>✅ {driver.license_no || driver.license || 'Licensed'}</li>
               </ul>
               <div className="rating">
-                {renderStars(driver.rating || 4)}
-                <span className="rating-text">({driver.rating || 4}/5)</span>
+                {renderStars(Math.round(driver.rating) || 0)}
+                <span className="rating-text">({driver.rating ? driver.rating.toFixed(1) : '0.0'}/5)</span>
+                {driver.total_reviews > 0 && <span className="review-count"> • {driver.total_reviews} reviews</span>}
               </div>
               <div className="experience">
                 <span>Experience: {driver.experience || '5+'} years</span>
@@ -181,11 +207,13 @@ export default function DriversSection({ onDriverSelect }) {
                   const driverData = {
                     id: driver.id,
                     driver_table_id: driver.driver_table_id, // Include the actual drivers table ID
-                    user_id: driver.user_id, // Include user_id for backward compatibility
+                    user_id: driver.user_id || driver.id, // Use user_id if available, otherwise use id
                     name: driver.name,
                     vehicle_type: driver.vehicle_type || driver.vehicle,
                     location: driver.location,
-                    rating: driver.rating || 4,
+                    rating: driver.rating || 0,
+                    totalReviews: driver.totalReviews || 0,
+                    reviewsList: driver.reviewsList || [], // Include reviewsList for BookingModal
                     phone: driver.phone,
                     photo_url: driver.photo_url,
                     experience: driver.experience || '5+'

@@ -287,33 +287,37 @@ export default function Header() {
       </Navbar>
 
       {/* Join Modal */}
-      <Modal show={showModal} onHide={handleClose} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Join as</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="join-options">
-            <Button
-              className="join-option-button traveler"
-              onClick={() => handleJoinAs("traveler")}
-            >
-              Traveler
-            </Button>
-            <Button
-              className="join-option-button driver"
-              onClick={() => handleJoinAs("driver")}
-            >
-              Driver
-            </Button>
-            <Button
-              className="join-option-button guider"
-              onClick={() => handleJoinAs("guider")}
-            >
-              Guide
-            </Button>
+      {showModal && (
+        <div className="modal-overlay" onClick={handleClose}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">Join as</h2>
+            </div>
+            <div className="modal-body">
+              <div className="join-options">
+                <button
+                  className="join-option-button join-traveler-btn"
+                  onClick={() => handleJoinAs("traveler")}
+                >
+                  Traveler
+                </button>
+                <button
+                  className="join-option-button join-driver-btn"
+                  onClick={() => handleJoinAs("driver")}
+                >
+                  Driver
+                </button>
+                <button
+                  className="join-option-button join-guide-btn"
+                  onClick={() => handleJoinAs("guider")}
+                >
+                  Guide
+                </button>
+              </div>
+            </div>
           </div>
-        </Modal.Body>
-      </Modal>
+        </div>
+      )}
     </>
   );
 }

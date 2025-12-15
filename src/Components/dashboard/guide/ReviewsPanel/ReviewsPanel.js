@@ -1,35 +1,50 @@
-import React from 'react';
-import './ReviewsPanel.css';
+import React, { useState, useEffect } from "react";
+import ReviewDisplay from "../../../ReviewDisplay";
+import "./ReviewsPanel.css";
 
-const reviews = [
-  {
-    id: 1,
-    name: 'Alice Johnson',
-    date: '2024-06-28',
-    comment: 'Great ride, very polite driver!',
-    status: 'Pending',
-    response: ''
-  },
-  {
-    id: 2,
-    name: 'Bob Smith',
-    date: '2024-06-27',
-    comment: 'Smooth experience. Recommended!',
-    status: 'Responded',
-    response: 'Thanks Bob! Glad you enjoyed the ride.'
-  }
-];
+const ReviewsPanel = () => {
+  const [guideId, setGuideId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-const ReviewsPanel = () => (
-  <div className="reviews-panel">
-    <h2>Reviews</h2>
-    {reviews.map(review => (
-      <div key={review.id} className="review-card">
-        <p><strong>{review.name}</strong> <span>{review.date}</span></p>
-        <p>"{review.comment}"</p>
+  useEffect(() => {
+    // Get guide ID from localStorage (userId for guides)
+    const storedUserId = localStorage.getItem("userId");
+    if (storedUserId) {
+      setGuideId(storedUserId);
+    }
+    setLoading(false);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="reviews-panel">
+        <div className="loading">Loading reviews...</div>
       </div>
-    ))}
-  </div>
-);
+    );
+  }
+
+  if (!guideId) {
+    return (
+      <div className="reviews-panel">
+        <div className="error">
+          Unable to load guide information. Please log in again.
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="reviews-panel">
+      <h2>Customer Reviews</h2>
+      <ReviewDisplay
+        type="guide"
+        id={guideId}
+        showStats={true}
+        limit={10}
+        showFilters={true}
+      />
+    </div>
+  );
+};
 
 export default ReviewsPanel;

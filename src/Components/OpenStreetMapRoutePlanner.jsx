@@ -69,6 +69,9 @@ const OpenStreetMapRoutePlanner = ({
 
   // Find nearby attractions using Overpass API (OpenStreetMap data)
   const findNearbyAttractions = async (lat, lng, radiusKm = 10) => {
+    console.log('🌍 OpenStreetMap: Starting attraction search...');
+    console.log('📍 Search center:', { lat, lng, radiusKm });
+    
     try {
       const overpassQuery = `
         [out:json][timeout:25];
@@ -80,12 +83,20 @@ const OpenStreetMapRoutePlanner = ({
         out geom;
       `;
 
+      console.log('🔍 Overpass query:', overpassQuery);
+
       const response = await fetch('https://overpass-api.de/api/interpreter', {
         method: 'POST',
         body: overpassQuery
       });
 
+      if (!response.ok) {
+        throw new Error(`Overpass API error: ${response.status}`);
+      }
+
       const data = await response.json();
+      console.log('📡 Overpass API response:', data);
+      console.log('🎯 Found', data.elements?.length || 0, 'raw attractions');
       
       const attractions = data.elements.map(element => ({
         id: element.id,
@@ -96,9 +107,10 @@ const OpenStreetMapRoutePlanner = ({
         description: element.tags.description || `${element.tags.tourism || element.tags.historic || 'Attraction'} in the area`
       })).slice(0, 10); // Limit to 10 attractions
 
+      console.log('✅ Processed attractions:', attractions);
       return attractions;
     } catch (error) {
-      console.error('Error finding attractions:', error);
+      console.error('❌ Error finding attractions:', error);
       return [];
     }
   };
@@ -147,10 +159,13 @@ const OpenStreetMapRoutePlanner = ({
           
           // Find attractions if requested
           if (findAttractions) {
+            console.log('🎯 OpenStreetMap: Finding attractions enabled');
             const midLat = (originResult.lat + destinationResult.lat) / 2;
             const midLng = (originResult.lng + destinationResult.lng) / 2;
             
+            console.log('📍 Route midpoint:', { midLat, midLng });
             const foundAttractions = await findNearbyAttractions(midLat, midLng, 15);
+            console.log('🎪 Found attractions count:', foundAttractions.length);
             setAttractions(foundAttractions);
             
             // Add attraction markers
@@ -165,8 +180,13 @@ const OpenStreetMapRoutePlanner = ({
             newMarkers.push(...attractionMarkers);
             
             if (onAttractionsFound) {
+              console.log('📤 Calling onAttractionsFound with', foundAttractions.length, 'attractions');
               onAttractionsFound(foundAttractions);
+            } else {
+              console.log('⚠️ onAttractionsFound callback not provided');
             }
+          } else {
+            console.log('🚫 Attractions search disabled');
           }
           
           setMarkers(newMarkers);

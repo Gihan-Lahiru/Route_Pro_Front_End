@@ -27,7 +27,7 @@ export default function HeaderDashboard() {
       <Navbar collapseOnSelect expand="lg" fixed="top" className="header-navbar">
         <Container>
           <Link to="/homepage">
-                         <img src="/images/new logo.png" alt="Logo" className="routeprologo" />
+                         <img src="/images/newlogo.png" alt="Logo" className="routeprologo" />
           </Link>
 
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />

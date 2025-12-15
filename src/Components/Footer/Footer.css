@@ -1,6 +1,6 @@
 .footer {
-  background-color: #000;
-  color: #ccc;
+  background-color: #000000 !important;
+  color: #ffffff;
   padding: 50px 30px 20px;
   font-family: 'Segoe UI', sans-serif;
 }
@@ -20,10 +20,14 @@
   box-sizing: border-box;
 }
 
+.footer-section.about {
+  text-align: center;
+}
 
 .logo {
   font-size: 24px;
   margin-bottom: 15px;
+  margin-left: 85px;
 }
 
 .routepro-brand {
@@ -40,6 +44,7 @@
   line-height: 1.6;
   margin-bottom: 20px;
   align-items: center;
+  color: #ffffff;
 }
 
 .footer-section h4 {
@@ -59,7 +64,7 @@
 }
 
 .footer-section ul li a {
-  color: #ccc;
+  color: #ffffff;
   text-decoration: none;
   transition: color 0.3s;
 }
@@ -83,13 +88,15 @@
   display: flex;
   gap: 15px;
   font-size: 20px;
-
+  justify-content: center;
+  margin-left: 1px;
 }
 
 .social-icons svg {
   color: #fff;
   transition: color 0.3s;
   cursor: pointer;
+  
   
 }
 
@@ -99,23 +106,23 @@
   color: #f5c518;
 }
 
-.footer-bottom {
-  border-top: 1px solid #222;
-  margin-top: 10px;
-  padding-top: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.footer-bottom {
-  border-top: 1px solid #444;
+.footerr-bottom {
+  border-top: 1px solid #ffffff;
   margin-top: 30px;
   padding-top: 20px;
   text-align: center;
   font-size: 14px;
-  color: #ccc;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.copyright-text {
+  color: #ffffff !important;
+  margin: 0;
+  text-align: center;
+  margin-left: 1020px;
 }
 
 .footer-bottom a {

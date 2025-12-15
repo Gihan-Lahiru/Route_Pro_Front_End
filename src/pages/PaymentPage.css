@@ -1,7 +1,7 @@
 /* Payment Page Styles */
 .payment-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: rgb(255, 255, 255);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -9,7 +9,7 @@
 }
 
 .payment-container {
-  background: white;
+  background: rgb(190, 175, 175);
   border-radius: 16px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   max-width: 600px;
@@ -89,7 +89,7 @@
 
 .trip-summary h3 {
   margin: 0 0 20px 0;
-  color: #333;
+  color: black;
   font-size: 20px;
   font-weight: 600;
 }
@@ -100,7 +100,7 @@
 
 .cost-breakdown h4 {
   margin: 0 0 15px 0;
-  color: #333;
+  color: black;
   font-size: 16px;
   font-weight: 600;
   padding-top: 15px;
@@ -113,11 +113,11 @@
   align-items: center;
   padding: 10px 0;
   border-bottom: 1px solid #f8f9fa;
-  color: #000;
+  color: #6d4444;
 }
 
 .detail-row span {
-  color: #000;
+  color: #6d4444;
 }
 
 .detail-row:last-child {
@@ -125,7 +125,7 @@
 }
 
 .detail-row span:last-child {
-  color: #000;
+  color: #6d4444;
   font-weight: 500;
 }
 
@@ -139,7 +139,7 @@
 }
 
 .detail-row .amount {
-  color: #28a745;
+  color: #6d4444;
   font-weight: 700;
 }
 

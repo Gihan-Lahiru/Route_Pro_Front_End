@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { getStripePromise } from '../../../utils/stripe-config';
 import './PaymentModal.css';
 
-// Initialize Stripe with your publishable key
-const stripePromise = loadStripe('pk_test_51S8d8Y0jsSFGFhTzvrD8TJMxQ6Vv2xhDMOdhsXVaSXRWgf6rtldDhoDKESTvWCF0S6Pskl7JY9Pe9DhskMACmCac00m3wF2IyJ');
+// Get Stripe promise with error handling
+const stripePromise = getStripePromise();
 
 // Payment form component
 const PaymentForm = ({ trip, onSuccess, onCancel, onError }) => {

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { apiMethods } from '../utils/api-client';
+import { getStripePromise, isStripeAvailable } from '../utils/stripe-config';
+import tripAutoCompletionService from '../services/TripAutoCompletion';
 import './PaymentPage.css';
 
-// Initialize Stripe with your publishable key
-const stripePromise = loadStripe('pk_test_51S8d8Y0jsSFGFhTzvrD8TJMxQ6Vv2xhDMOdhsXVaSXRWgf6rtldDhoDKESTvWCF0S6Pskl7JY9Pe9DhskMACmCac00m3wF2IyJ');
+// Get Stripe promise with error handling
+const stripePromise = getStripePromise();
 
 // Payment form component
 const PaymentForm = ({ tripData }) => {
@@ -18,9 +19,27 @@ const PaymentForm = ({ tripData }) => {
   const [paymentIntentId, setPaymentIntentId] = useState('');
   const [cardError, setCardError] = useState('');
   const [paymentMessage, setPaymentMessage] = useState('');
+  const [stripeError, setStripeError] = useState(false);
 
   useEffect(() => {
-    if (tripData) {
+    // Check if Stripe loaded successfully
+    const checkStripe = async () => {
+      try {
+        const stripeInstance = await stripePromise;
+        if (!stripeInstance) {
+          setStripeError(true);
+          setPaymentMessage('❌ Payment system temporarily unavailable. Please try again later.');
+        }
+      } catch (error) {
+        console.error('❌ Stripe loading error:', error);
+        setStripeError(true);
+        setPaymentMessage('❌ Failed to load payment system. Please check your internet connection.');
+      }
+    };
+    
+    checkStripe();
+
+    if (tripData && !stripeError) {
       createPaymentIntent();
     }
   }, [tripData]);
@@ -237,69 +256,62 @@ const PaymentForm = ({ tripData }) => {
         setPaymentMessage('✅ Payment successful! Saving your trip...');
         
         try {
-          // First, save the trip to database
-          console.log('💾 Starting trip save to database...');
-          const tripId = await saveTrip();
-          console.log('✅ Trip saved with ID:', tripId);
+          let tripId;
           
-          setPaymentMessage('✅ Trip saved! Confirming payment...');
-          
-          // Then confirm payment on backend
-          console.log('🔄 Confirming payment with backend...');
-          const confirmResponse = await fetch('http://localhost/RoutePro-backend(02)/public/api/payments/stripe-payment.php', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              action: 'confirm_payment',
-              payment_intent_id: paymentIntentId,
-              trip_id: tripId
-            })
-          });
-
-          const confirmResponseText = await confirmResponse.text();
-          console.log('📄 Payment confirmation response:', confirmResponseText);
-          
-          let confirmData;
-          try {
-            confirmData = JSON.parse(confirmResponseText);
-          } catch (parseError) {
-            console.error('❌ Failed to parse confirm response:', parseError);
-            throw new Error(`Invalid confirmation response: ${confirmResponseText}`);
+          // Check if trip is already saved (has trip_id)
+          if (tripData.trip_id) {
+            console.log('🔄 Trip already exists with ID:', tripData.trip_id);
+            console.log('✅ Using existing trip ID, no need to save again');
+            tripId = tripData.trip_id;
+            setPaymentMessage('✅ Payment successful! Trip confirmed.');
+          } else {
+            // Save new trip to database
+            console.log('💾 Starting trip save to database...');
+            tripId = await saveTrip();
+            console.log('✅ Trip saved with ID:', tripId);
+            setPaymentMessage('✅ Trip saved! Payment completed successfully.');
           }
           
-          if (confirmData.success) {
-            console.log('✅ Payment and booking fully confirmed!');
-            
-            // Clear pending payment data
-            localStorage.removeItem('pendingTripPayment');
-            
-            // Store successful trip details
-            const tripDetails = {
-              ...tripData,
-              trip_id: tripId,
-              payment_id: paymentIntent.id,
-              trip_status: 'confirmed'
-            };
-            localStorage.setItem('latestTrip', JSON.stringify(tripDetails));
-            
-            setPaymentMessage('✅ Payment successful! Trip has been confirmed.');
-            
-            // Navigate to dashboard after showing success message
+          // Clear pending payment data
+          localStorage.removeItem('pendingTripPayment');
+          
+          // Store successful trip details
+          const tripDetails = {
+            ...tripData,
+            trip_id: tripId,
+            payment_id: paymentIntent.id,
+            trip_status: 'confirmed'
+          };
+          localStorage.setItem('latestTrip', JSON.stringify(tripDetails));
+          
+          // 🤖 Schedule auto-completion after 5 minutes
+          console.log('⏰ Scheduling auto-completion for trip:', tripId);
+          tripAutoCompletionService.scheduleCompletion(tripId);
+          
+          setPaymentMessage('✅ Payment successful! Trip has been confirmed.');
+          
+          // Navigate to dashboard after showing success message
+          setTimeout(() => {
+            setPaymentMessage('🎉 Redirecting to dashboard...');
+            setTimeout(() => {
+              navigate('/traveller-dashboard');
+            }, 1000);
+          }, 2000);
+        } catch (postPaymentError) {
+          console.error('❌ Error in post-payment processing:', postPaymentError);
+          // If trip save fails, show more helpful message
+          if (postPaymentError.message.includes('trip')) {
+            setPaymentMessage(`❌ Payment successful but trip save failed: ${postPaymentError.message}`);
+          } else {
+            setPaymentMessage(`❌ Payment successful! Trip booking completed but there was a minor issue: ${postPaymentError.message}`);
+            // Still navigate to dashboard after a delay since payment was successful
             setTimeout(() => {
               setPaymentMessage('🎉 Redirecting to dashboard...');
               setTimeout(() => {
                 navigate('/traveller-dashboard');
               }, 1000);
-            }, 2000);
-          } else {
-            console.error('❌ Payment confirmation failed:', confirmData);
-            setPaymentMessage(`❌ Payment processed but failed to confirm booking: ${confirmData.message || 'Unknown error'}`);
+            }, 3000);
           }
-        } catch (postPaymentError) {
-          console.error('❌ Error in post-payment processing:', postPaymentError);
-          setPaymentMessage(`❌ Payment successful but booking failed: ${postPaymentError.message}`);
         }
       } else {
         console.error('❌ Unexpected payment intent status:', paymentIntent?.status);
@@ -359,6 +371,46 @@ const PaymentForm = ({ tripData }) => {
           <div className="payment-header">
             <h2>🔄 Loading Payment Form...</h2>
             <p>Please wait while we initialize the secure payment system</p>
+            {stripeError && (
+              <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8d7da', color: '#721c24', borderRadius: '8px' }}>
+                <h4>⚠️ Payment System Unavailable</h4>
+                <p>The payment system is currently unavailable. This might be due to:</p>
+                <ul style={{ textAlign: 'left', marginTop: '10px' }}>
+                  <li>Network connectivity issues</li>
+                  <li>Firewall blocking payment services</li>
+                  <li>Temporary service outage</li>
+                </ul>
+                <div style={{ marginTop: '15px' }}>
+                  <button 
+                    onClick={() => window.location.reload()} 
+                    style={{ 
+                      marginRight: '10px', 
+                      padding: '8px 16px', 
+                      backgroundColor: '#007bff', 
+                      color: 'white', 
+                      border: 'none', 
+                      borderRadius: '4px', 
+                      cursor: 'pointer' 
+                    }}
+                  >
+                    🔄 Retry
+                  </button>
+                  <button 
+                    onClick={() => navigate('/traveller-dashboard')} 
+                    style={{ 
+                      padding: '8px 16px', 
+                      backgroundColor: '#6c757d', 
+                      color: 'white', 
+                      border: 'none', 
+                      borderRadius: '4px', 
+                      cursor: 'pointer' 
+                    }}
+                  >
+                    📋 Back to Dashboard
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -369,8 +421,13 @@ const PaymentForm = ({ tripData }) => {
     <div className="payment-page">
       <div className="payment-container">
         <div className="payment-header">
-          <h2>💳 Complete Your Payment</h2>
-          <p>Secure payment for your Sri Lanka trip</p>
+          <h2 style={{ 
+            background: 'linear-gradient(135deg, #ffeb3b, #4caf50)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>Complete Your Payment</h2>
+          <p style={{ color: 'white' }}>Secure payment for your Sri Lanka trip</p>
         </div>
 
         {paymentMessage && (
@@ -380,7 +437,7 @@ const PaymentForm = ({ tripData }) => {
         )}
 
         <div className="trip-summary">
-          <h3>🎯 Trip Summary</h3>
+          <h3 style={{ color: 'brown' }}>🎯 Trip Summary</h3>
           <div className="trip-details">
             <div className="detail-row">
               <span>📍 Route:</span>
@@ -409,7 +466,7 @@ const PaymentForm = ({ tripData }) => {
           </div>
 
           <div className="cost-breakdown">
-            <h4>💰 Cost Breakdown</h4>
+            <h4 style={{ color: 'brown' }}>💰 Cost Breakdown</h4>
             <div className="detail-row">
               <span>Route Cost:</span>
               <span>Rs. {(tripData.route_cost || 0).toLocaleString()}</span>
@@ -439,7 +496,7 @@ const PaymentForm = ({ tripData }) => {
 
         <form onSubmit={handleSubmit} className="payment-form">
           <div className="card-element-container">
-            <label htmlFor="card-element">
+            <label htmlFor="card-element" style={{ color: 'white' }}>
               💳 Card Information
             </label>
             <div className="card-element-wrapper">

@@ -79,10 +79,10 @@ const Footer = () => {
           </p>
         </div>
 
-        <div className="footer-bottom">
-      <p>
+        <div className="footerr-bottom">
+      <p className="copyright-text">
         © 2025 RoutePro All Rights Reserved.
-     </p>
+      </p>
         </div>
       </div>
     </footer>

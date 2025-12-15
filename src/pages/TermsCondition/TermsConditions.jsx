@@ -11,6 +11,11 @@ export default function TermsAndConditions() {
           alt="Terms and Conditions"
           className="terms-image"
         />
+        <img
+          src="/images/privacy.jpg"
+          alt="Privacy and Security"
+          className="terms-image secondary-image"
+        />
       </div>
       <div className="terms-right">
         <h1>Terms and Conditions</h1>
@@ -33,7 +38,7 @@ export default function TermsAndConditions() {
 
         <h3>Bookings and Payments</h3>
         <ul>
-          <li>All bookings are confirmed directly between the traveler and the service provider (driver or guide).</li>
+          <li>All bookings are confirmed directly between the traveler and the admin.</li>
           <li>Payments must be processed through the RoutePro system.</li>
           <li>Cancellations and refunds will follow our platform’s policy.</li>
         </ul>
@@ -43,6 +48,7 @@ export default function TermsAndConditions() {
           <li>After a trip, travelers can rate and review the service.</li>
           <li>Any driver or guide who receives an average rating below 2.5 will be flagged for admin review.</li>
           <li>Accounts that consistently perform poorly may be suspended or removed from the system.</li>
+          <li>If a traveler books a driver or guide, that driver or guide is required to accompany the trip; therefore, they must mark any periods of unavailability in their dashboard so that travelers cannot book them during those times.</li>
         </ul>
 
         <h3>Account Termination</h3>

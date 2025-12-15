@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import DriverDetails from "./pages/Route/DriverDetailsSimple";
 import GuideDetails from "./pages/Route/GuideDetails";
 import {
@@ -10,6 +10,7 @@ import {
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Components/styles/global.css";
+import tripAutoCompletionService from "./services/TripAutoCompletion";
 
 // Common components
 import Header from "./Components/Header/Header";
@@ -40,6 +41,7 @@ import TermsCondition from "./pages/TermsCondition/TermsConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy";
 import ContactUs from "./pages/ContactUs/ContactUs";
 import PaymentPage from "./pages/PaymentPage";
+import RatingPage from "./pages/RatingPage";
 
 // Map Examples and Enhanced Route Planner
 import MapExample from "./pages/MapExample";
@@ -113,6 +115,7 @@ const AppContent = () => {
           <Route path="/driver/:id" element={<DriverDetails />} />
           <Route path="/guide/:id" element={<GuideDetails />} />
           <Route path="/payment" element={<PaymentPage />} />
+          <Route path="/rating" element={<RatingPage />} />
 
           {/* Dashboards */}
           <Route path="/driver-dashboard" element={<DriverDashboard />} />
@@ -135,6 +138,18 @@ const AppContent = () => {
 };
 
 function App() {
+  // Initialize trip auto-completion service when app starts
+  useEffect(() => {
+    console.log("🚀 Starting Trip Auto-Completion Service...");
+    tripAutoCompletionService.start();
+
+    // Cleanup when app unmounts
+    return () => {
+      console.log("🛑 Stopping Trip Auto-Completion Service...");
+      tripAutoCompletionService.stop();
+    };
+  }, []);
+
   return (
     <Router>
       <ScrollToTop />

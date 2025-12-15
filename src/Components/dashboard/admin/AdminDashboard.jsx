@@ -12,10 +12,59 @@ import "./AdminDashboard.css";
 const AdminDashboard = () => {
   // Possible values: "dashboard", "trips", "users", "notifications"
   const [currentPage, setCurrentPage] = useState("dashboard");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   
   // Protect admin dashboard with authentication guard
   const { isAuthenticated, isLoading } = useAuthGuard('admin');
+
+  const handleLogout = () => {
+    // Clear ALL stored authentication data
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('email');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('role');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('name');
+    localStorage.removeItem('userRating');
+    localStorage.removeItem('userProfile');
+    localStorage.removeItem('sessionStartTime');
+    
+    // Set flag to indicate user just logged out
+    localStorage.setItem('justLoggedOut', 'true');
+    
+    // Clear session storage
+    sessionStorage.clear();
+    
+    // Navigate to login page
+    navigate('/user-login', { replace: true });
+  };
+
+  // Toggle mobile menu
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  // Close mobile menu when page changes
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    setIsMobileMenuOpen(false);
+  };
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMobileMenuOpen && !event.target.closest('.sidebar') && !event.target.closest('.mobile-menu-toggle')) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMobileMenuOpen]);
 
   // Additional session validation for admin
   useEffect(() => {
@@ -58,7 +107,7 @@ const AdminDashboard = () => {
     }
     
     return () => clearInterval(interval);
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, handleLogout]);
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -78,31 +127,6 @@ const AdminDashboard = () => {
     return null;
   }
 
-  const handleLogout = () => {
-    // Clear ALL stored authentication data
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('email');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('role');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('name');
-    localStorage.removeItem('userRating');
-    localStorage.removeItem('userProfile');
-    localStorage.removeItem('sessionStartTime');
-    
-    // Set flag to indicate user just logged out
-    localStorage.setItem('justLoggedOut', 'true');
-    
-    // Clear session storage
-    sessionStorage.clear();
-    
-    // Navigate to login page
-    navigate('/user-login', { replace: true });
-  };
-
   // Render the main content based on currentPage
   const renderContent = () => {
     switch (currentPage) {
@@ -121,8 +145,29 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard-layout">
-      <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} onLogout={handleLogout} />
-      <div className="admin-dashboard-content">
+      {/* Mobile menu toggle button */}
+      <button 
+        className="mobile-menu-toggle" 
+        onClick={toggleMobileMenu}
+        aria-label="Toggle navigation menu"
+      >
+        {isMobileMenuOpen ? '✕' : '☰'}
+      </button>
+
+      {/* Sidebar overlay for mobile */}
+      {isMobileMenuOpen && <div className="sidebar-overlay show" onClick={() => setIsMobileMenuOpen(false)} />}
+      
+      {/* Sidebar with mobile state */}
+      <div className={`sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+        <Sidebar 
+          currentPage={currentPage} 
+          setCurrentPage={handlePageChange} 
+          onLogout={handleLogout}
+        />
+      </div>
+
+      {/* Main content area */}
+      <div className={`admin-dashboard-content ${isMobileMenuOpen ? 'mobile-content' : ''}`}>
         {renderContent()}
       </div>
     </div>

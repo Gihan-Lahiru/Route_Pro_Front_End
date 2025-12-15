@@ -24,7 +24,7 @@ const Dashboard = () => {
       
       console.log('Fetching dashboard stats...');
       
-      const response = await fetch('http://localhost:80/RoutePro-backend(02)/public/api/admin/system-stats.php');
+      const response = await fetch('http://localhost/RoutePro-backend(02)/public/api/admin/system-stats.php');
       
       console.log('Response received:', response);
       console.log('Response status:', response.status);
@@ -148,23 +148,23 @@ const Dashboard = () => {
           {stats.recentTrips.length > 0 ? (
             stats.recentTrips.map((trip, index) => (
               <div key={index} className="trip-item">
-                <div className="trip-info">
-                  <div className="trip-id">
-                    <span className="trip-code">TR{String(trip.trip_id).padStart(3, '0')}</span>
-                    <span className={`trip-status ${trip.status}`}>{trip.status}</span>
-                  </div>
-                  <div className="trip-details">
+                <div className="trip-header">
+                  <div className="trip-info">
+                    <div className="trip-id">
+                      <span className="trip-code">TR{String(trip.trip_id).padStart(3, '0')}</span>
+                      <span className={`trip-status ${trip.status}`}>{trip.status}</span>
+                    </div>
                     <div className="traveler">{trip.traveler?.name || 'Unknown'}</div>
                     <div className="route">{trip.route}</div>
                   </div>
-                </div>
-                <div className="trip-meta">
-                  <div className="trip-amount">Rs. {trip.system_fee?.toFixed(2)}</div>
-                  <div className="trip-staff">
-                    {trip.driver?.name && trip.guide?.name 
-                      ? `${trip.driver.name} | ${trip.guide.name}`
-                      : trip.driver?.name || trip.guide?.name || 'No staff assigned'
-                    }
+                  <div className="trip-financial">
+                    <div className="trip-amount">Rs. {trip.total_cost?.toFixed(2) || '0.00'}</div>
+                    <div className="trip-staff">
+                      {trip.driver?.name && trip.guide?.name 
+                        ? `${trip.driver.name} | ${trip.guide.name}`
+                        : trip.driver?.name || trip.guide?.name || 'No staff assigned'
+                      }
+                    </div>
                   </div>
                 </div>
               </div>

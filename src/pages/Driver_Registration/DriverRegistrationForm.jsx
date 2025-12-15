@@ -269,7 +269,7 @@ export default function DriverRegistrationForm() {
       <div className="driver-form-section">
         <div className="driver-form-container">
           <div className="driver-form-header">
-            <img className="driver-logo-image" src="/images/new logo.png" alt="Logo" />
+            <img className="driver-logo-image" src="/images/newlogo.png" alt="Logo" />
             <h2>Join as a Driver</h2>
             <p>Create your driver account</p>
           </div>
@@ -374,7 +374,7 @@ export default function DriverRegistrationForm() {
 
               <button 
                 type="submit" 
-                className="driver-submit-btn" 
+                className="submit-btn" 
                 disabled={loading || !form.agree}
               >
                 {loading ? "Sending..." : "Send Verification Code"}

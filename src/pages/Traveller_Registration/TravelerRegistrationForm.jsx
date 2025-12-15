@@ -213,7 +213,7 @@ export default function TravelerRegistrationForm() {
       <div className="form-section">
         <div className="traveler-form-container">
           <div className="form-header">
-            <img className="logo-image" src="/images/new logo.png" alt="Logo" />
+            <img className="logo-image" src="/images/newlogo.png" alt="Logo" />
             <h2>{step === "form" ? "Join as a Traveler" : "Verify Your Email"}</h2>
             <p>{step === "form" ? "Create your traveler account" : "Enter the verification code sent to your email"}</p>
           </div>

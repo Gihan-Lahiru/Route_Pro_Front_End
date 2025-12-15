@@ -29,6 +29,7 @@ h1 {
 
 .highlight-teal {
      background: linear-gradient(90deg, #2a7f62, #FFD700);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
@@ -69,8 +70,10 @@ h1 {
 
 .food-cards {
   display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  gap: 1rem;
+  flex-wrap: nowrap;
+  justify-content: center;
+  overflow-x: auto;
 }
 
 .food-card {
@@ -78,9 +81,11 @@ h1 {
   color: black;
   border-radius: 10px;
   overflow: hidden;
-  width: 150px;
+  width: 140px;
+  min-width: 140px;
   text-align: center;
   transition: transform 0.3s ease;
+  flex-shrink: 0;
 }
 
 .food-card img {

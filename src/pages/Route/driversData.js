@@ -2,6 +2,7 @@
 const drivers = [
   {
     id: 0,
+    user_id: 1, // Add user_id for API calls
     name: "Cabral 422",
     city: "Negombo",
     experience: 5,
@@ -18,11 +19,40 @@ const drivers = [
     email: "cabral422@email.com",
     mobile: "+94 71 123 4567",
     booked: false,
+    specialties: [
+      "Safe Driving",
+      "Airport Transfers",
+      "City Tours",
+      "Night Driving",
+      "Highway Experience",
+    ],
+    totalReviews: 4,
+    reviewsList: [
+      {
+        rating: 5,
+        user_name: "Sarah Johnson",
+        date: "2025-09-20",
+        text: "Excellent driver! Very professional and punctual. Made our airport transfer smooth and comfortable.",
+      },
+      {
+        rating: 5,
+        user_name: "Michael Chen",
+        date: "2025-09-18",
+        text: "Cabral is an amazing driver. Safe, reliable, and knows all the best routes around Negombo.",
+      },
+      {
+        rating: 4,
+        user_name: "Emma Wilson",
+        date: "2025-09-15",
+        text: "Good service and clean vehicle. Would recommend for city tours.",
+      },
+    ],
     // Array to track when driver is booked
     bookings: [],
   },
   {
     id: 1,
+    user_id: 2, // Add user_id for API calls
     name: "Silva 012",
     city: "Colombo",
     experience: 7,
@@ -39,10 +69,39 @@ const drivers = [
     email: "silva012@email.com",
     mobile: "+94 77 222 3333",
     booked: false,
+    specialties: [
+      "Luxury Vehicles",
+      "Business Transfers",
+      "Long Distance",
+      "Mountain Roads",
+      "VIP Service",
+    ],
+    totalReviews: 8,
+    reviewsList: [
+      {
+        rating: 4,
+        user_name: "David Kumar",
+        date: "2025-09-22",
+        text: "Professional service with luxury vehicle. Perfect for business meetings.",
+      },
+      {
+        rating: 5,
+        user_name: "Lisa Zhang",
+        date: "2025-09-19",
+        text: "Silva provided excellent VIP service. Comfortable ride and great knowledge of Colombo.",
+      },
+      {
+        rating: 4,
+        user_name: "Robert Mills",
+        date: "2025-09-16",
+        text: "Good long distance driver. Made our trip to the mountains very pleasant.",
+      },
+    ],
     bookings: [],
   },
   {
     id: 2,
+    user_id: 3, // Add user_id for API calls
     name: "Fernando 024",
     city: "Kandy",
     experience: 6,
@@ -59,6 +118,85 @@ const drivers = [
     email: "fernando024@email.com",
     mobile: "+94 76 555 7777",
     booked: false,
+    specialties: [
+      "Group Transport",
+      "Family Tours",
+      "Scenic Routes",
+      "Hill Country",
+      "Cultural Sites",
+    ],
+    totalReviews: 12,
+    reviewsList: [
+      {
+        rating: 5,
+        user_name: "Jennifer Lee",
+        date: "2025-09-21",
+        text: "Perfect for our family group tour! Fernando was patient with the kids and knew all the best cultural sites.",
+      },
+      {
+        rating: 5,
+        user_name: "Mark Thompson",
+        date: "2025-09-19",
+        text: "Excellent van driver for our group of 8. Smooth ride through the hill country and very knowledgeable.",
+      },
+      {
+        rating: 4,
+        user_name: "Anna Rodriguez",
+        date: "2025-09-16",
+        text: "Great scenic route recommendations. Made our Kandy trip memorable and comfortable.",
+      },
+    ],
+    bookings: [],
+  },
+  {
+    id: 3,
+    user_id: 4, // Add user_id for API calls
+    name: "Dihansi",
+    city: "Badulla",
+    experience: 2,
+    vehicle: "Car (4 Pax)",
+    contact: "+94 77 445 6789",
+    image: "/images/driver4.jpg",
+    rating: 3.7,
+    reviews: 8,
+    location: "Badulla",
+    license: "Private Chauffeur Guide",
+    verified: true,
+    recommended: false,
+    availability: "Available",
+    email: "dihansi@email.com",
+    mobile: "+94 77 445 6789",
+    booked: false,
+    description:
+      "Professional driver/guide with excellent knowledge of Sri Lankan roads and safety protocols.",
+    specialties: [
+      "Hill Country Routes",
+      "Tea Estate Tours",
+      "Mountain Driving",
+      "Scenic Photography",
+      "Local Heritage",
+    ],
+    totalReviews: 8,
+    reviewsList: [
+      {
+        rating: 4,
+        user_name: "Chris Williams",
+        date: "2025-09-20",
+        text: "Good knowledge of hill country routes. Took us to some amazing tea estate viewpoints.",
+      },
+      {
+        rating: 3,
+        user_name: "Maria Santos",
+        date: "2025-09-17",
+        text: "Decent service for mountain driving. Could improve on communication but safe driver.",
+      },
+      {
+        rating: 4,
+        user_name: "James Mitchell",
+        date: "2025-09-14",
+        text: "Great for scenic photography stops. Knows all the hidden local heritage spots in Badulla.",
+      },
+    ],
     bookings: [],
   },
 ];

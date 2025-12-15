@@ -25,7 +25,7 @@ const LocalEventsFoods = () => {
 
           <div className="food-cards">
             <div className="food-card">
-              <img src="/images/milk rice.jpg" alt="Meal 1" />
+              <img src="/images/kiribath.jpg" alt="Meal 1" />
               <p>Milk Rice (Kiribath)</p>
             </div>
             <div className="food-card">
@@ -33,7 +33,7 @@ const LocalEventsFoods = () => {
               <p>Pittu</p>
             </div>
             <div className="food-card">
-              <img src="/images/rice and curry.jpg" alt="Meal 3" />
+              <img src="/images/rice-curry.jpg" alt="Meal 3" />
               <p>Rice and Curry</p>
             </div>
             <div className="food-card">
@@ -43,6 +43,10 @@ const LocalEventsFoods = () => {
             <div className="food-card">
               <img src="/images/vesak-festival.jpg" alt="Meal 5" />
               <p>Vesak Festival</p>
+            </div>
+            <div className="food-card">
+              <img src="/images/hoppers.jpg" alt="Meal 6" />
+              <p>Hoppers (Appa)</p>
             </div>
           </div>
         </div>

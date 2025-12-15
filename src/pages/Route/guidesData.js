@@ -2,6 +2,7 @@
 const guides = [
   {
     id: 0,
+    user_id: 5, // Add user_id for API calls
     name: "Ayesha Kumar",
     image: "/images/guide1.jpg",
     rating: 5,
@@ -16,11 +17,40 @@ const guides = [
     reviews: 25,
     booked: false,
     specialization: "Cultural Tours",
+    specialties: [
+      "Ancient Temples",
+      "Buddhist Heritage",
+      "Local Cuisine",
+      "Historical Sites",
+      "Photography Tours",
+    ],
     location: "Kandy",
+    totalReviews: 25,
+    reviewsList: [
+      {
+        rating: 5,
+        user_name: "Jessica Adams",
+        date: "2025-09-21",
+        text: "Ayesha is an exceptional guide! Her knowledge of Buddhist heritage and ancient temples is incredible.",
+      },
+      {
+        rating: 5,
+        user_name: "Thomas Mueller",
+        date: "2025-09-17",
+        text: "Amazing cultural tour guide. Made our temple visits very educational and memorable.",
+      },
+      {
+        rating: 4,
+        user_name: "Sophie Brown",
+        date: "2025-09-14",
+        text: "Great local cuisine recommendations and photography spots. Highly recommended!",
+      },
+    ],
     bookings: [],
   },
   {
     id: 1,
+    user_id: 6, // Add user_id for API calls
     name: "Rohan Perera",
     image: "/images/guide2.jpg",
     rating: 4,
@@ -35,11 +65,40 @@ const guides = [
     reviews: 17,
     booked: false,
     specialization: "Cultural Tours",
+    specialties: [
+      "Wildlife Safari",
+      "National Parks",
+      "Bird Watching",
+      "Nature Trails",
+      "Adventure Tours",
+    ],
     location: "Jaffna",
+    totalReviews: 17,
+    reviewsList: [
+      {
+        rating: 4,
+        user_name: "Rachel Green",
+        date: "2025-09-22",
+        text: "Amazing wildlife safari guide! Rohan spotted so many animals and birds we would have missed.",
+      },
+      {
+        rating: 5,
+        user_name: "Kevin Park",
+        date: "2025-09-18",
+        text: "Best nature trail guide ever! His knowledge of national parks and bird watching is incredible.",
+      },
+      {
+        rating: 4,
+        user_name: "Laura Davis",
+        date: "2025-09-15",
+        text: "Great adventure tour experience. Rohan made our nature walks educational and fun.",
+      },
+    ],
     bookings: [],
   },
   {
     id: 2,
+    user_id: 7, // Add user_id for API calls
     name: "Priya Silva",
     image: "/images/guide3.jpg",
     rating: 5,
@@ -54,7 +113,85 @@ const guides = [
     reviews: 30,
     booked: false,
     specialization: "Cultural Tours",
+    specialties: [
+      "Coastal Heritage",
+      "Dutch Colonial",
+      "Tea Plantations",
+      "Gem Mining",
+      "Traditional Crafts",
+    ],
     location: "colombo",
+    totalReviews: 30,
+    reviewsList: [
+      {
+        rating: 5,
+        user_name: "Hans Mueller",
+        date: "2025-09-21",
+        text: "Priya speaks excellent German and knows everything about Dutch colonial history. Perfect guide for Galle!",
+      },
+      {
+        rating: 5,
+        user_name: "Patricia Jones",
+        date: "2025-09-18",
+        text: "Outstanding coastal heritage tour. Her knowledge of traditional crafts and gem mining was fascinating.",
+      },
+      {
+        rating: 5,
+        user_name: "Carlos Rodriguez",
+        date: "2025-09-16",
+        text: "Best tea plantation tour guide! Priya made the experience both educational and enjoyable.",
+      },
+    ],
+    bookings: [],
+  },
+  {
+    id: 3,
+    user_id: 8, // Add user_id for API calls
+    name: "Nimal Fernando",
+    image: "/images/guide4.jpg",
+    rating: 4.2,
+    availability: "Available",
+    languages: ["English", "Sinhala"],
+    hometown: "Badulla",
+    city: "Badulla",
+    experience: 3,
+    email: "nimal.fernando@email.com",
+    mobile: "+94 76 333 4444",
+    contact: "+94 76 333 4444",
+    reviews: 15,
+    booked: false,
+    specialization: "Cultural Tours",
+    description:
+      "Professional driver/guide with excellent knowledge of Sri Lankan roads and safety protocols.",
+    specialties: [
+      "Ancient Temples",
+      "Hill Country Culture",
+      "Ella Rock Hiking",
+      "Waterfall Tours",
+      "Tea Factory Visits",
+    ],
+    location: "Badulla",
+    totalReviews: 15,
+    reviewsList: [
+      {
+        rating: 4,
+        user_name: "Amanda Wilson",
+        date: "2025-09-20",
+        text: "Great guide for Ella Rock hiking! Nimal knows all the safe paths and best viewpoints.",
+      },
+      {
+        rating: 4,
+        user_name: "Daniel Brown",
+        date: "2025-09-17",
+        text: "Excellent knowledge of hill country culture and ancient temples. Made our Badulla trip special.",
+      },
+      {
+        rating: 5,
+        user_name: "Michelle Garcia",
+        date: "2025-09-14",
+        text: "Amazing waterfall tours and tea factory visits. Nimal is passionate about his local area!",
+      },
+    ],
     bookings: [],
   },
 ];

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import DriversSection from "./DriversSection";
 import LocalGuidesSection from "./LocalGuidesSection";
 import BookingModal from "../../Components/BookingModal";
+import { apiMethods } from "../../utils/api-client";
+import "./BookDriver.css";
 
 
 export default function BookDriver() {
@@ -42,21 +44,42 @@ export default function BookDriver() {
   // Fetch reviews/ratings when driver/guide is selected
   useEffect(() => {
     if (selectedDriver) {
-      // Fetch driver reviews/ratings from your backend
-      // Example:
-      fetch(`/api/reviews/driver/${selectedDriver.id}`)
-        .then(res => res.json())
-        .then(data => {
-          setReviews(data.reviews || []);
-          setRating(data.rating || 0);
+      // Fetch driver reviews/ratings from backend API
+      // Use user_id (not driver_table_id) as the API expects user_id
+      const driverId = selectedDriver.user_id || selectedDriver.id;
+      console.log('🔍 Fetching reviews for driver user_id:', driverId);
+      
+      apiMethods.authenticatedRequest(`/reviews.php?driver_id=${driverId}`, null, "GET")
+        .then(response => {
+          console.log('📊 Driver reviews response:', response);
+          if (response && response.data) {
+            setReviews(response.data.reviews || []);
+            setRating(parseFloat(response.data.stats?.average_rating || selectedDriver.rating || 0));
+          }
+        })
+        .catch(error => {
+          console.error('❌ Error fetching driver reviews:', error);
+          setReviews([]);
+          setRating(selectedDriver.rating || 0);
         });
     } else if (selectedGuide) {
-      // Fetch guide reviews/ratings from your backend
-      fetch(`/api/reviews/guide/${selectedGuide.id}`)
-        .then(res => res.json())
-        .then(data => {
-          setReviews(data.reviews || []);
-          setRating(data.rating || 0);
+      // Fetch guide reviews/ratings from backend API
+      // Use user_id (not guide_table_id) as the API expects user_id
+      const guideId = selectedGuide.user_id || selectedGuide.id;
+      console.log('🔍 Fetching reviews for guide user_id:', guideId);
+      
+      apiMethods.authenticatedRequest(`/reviews.php?guide_id=${guideId}`, null, "GET")
+        .then(response => {
+          console.log('📊 Guide reviews response:', response);
+          if (response && response.data) {
+            setReviews(response.data.reviews || []);
+            setRating(parseFloat(response.data.stats?.average_rating || selectedGuide.rating || 0));
+          }
+        })
+        .catch(error => {
+          console.error('❌ Error fetching guide reviews:', error);
+          setReviews([]);
+          setRating(selectedGuide.rating || 0);
         });
     }
   }, [selectedDriver, selectedGuide]);
@@ -65,12 +88,14 @@ export default function BookDriver() {
     if (packageBookingMode && packageStep === 'select-driver') {
       // Package mode - driver selected, show booking modal for driver details
       setSelectedDriver(driver);
+      setRating(driver.rating || 0);
       setPackageStep('confirm-driver');
       setShowModal(true);
     } else if (!packageBookingMode) {
       // Regular single booking mode
       setSelectedDriver(driver);
       setSelectedGuide(null);
+      setRating(driver.rating || 0);
       setShowModal(true);
     }
   };
@@ -79,12 +104,14 @@ export default function BookDriver() {
     if (packageBookingMode && packageStep === 'select-guide') {
       // Package mode - guide selected, show booking modal for guide details
       setSelectedGuide(guide);
+      setRating(guide.rating || 0);
       setPackageStep('confirm-guide');
       setShowModal(true);
     } else if (!packageBookingMode) {
       // Regular single booking mode
       setSelectedGuide(guide);
       setSelectedDriver(null);
+      setRating(guide.rating || 0);
       setShowModal(true);
     }
   };
@@ -154,70 +181,35 @@ export default function BookDriver() {
   return (
     <div>
       {/* Simple Package Booking Button */}
-      <div style={{
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        color: 'white',
-        padding: '20px',
-        margin: '20px 0',
-        borderRadius: '12px',
-        textAlign: 'center'
-      }}>
-        <h3>🌟 Pro Tip: Book Both & Save!</h3>
-        <p>Get both a driver and guide together for the complete Sri Lankan experience. Save 10% when you book as a package!</p>
+      <div className="driver-booking-package-promo">
+        <h3 className="driver-booking-package-promo-title">🌟 Pro Tip: Book Both & Save!</h3>
+        <p className="driver-booking-package-promo-description">Get both a driver and guide together for the complete Sri Lankan experience. Save 10% when you book as a package!</p>
         <button 
           onClick={handlePackageBooking}
-          style={{
-            background: '#4ade80',
-            color: 'white',
-            border: 'none',
-            padding: '12px 24px',
-            borderRadius: '8px',
-            fontSize: '16px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            marginRight: '10px'
-          }}
+          className="driver-booking-package-start-btn"
         >
           📦 Start Package Booking
         </button>
         {packageBookingMode && (
           <button 
             onClick={handleCancelPackage}
-            style={{
-              background: '#ef4444',
-              color: 'white',
-              border: 'none',
-              padding: '12px 24px',
-              borderRadius: '8px',
-              fontSize: '16px',
-              cursor: 'pointer'
-            }}
+            className="driver-booking-package-cancel-btn"
           >
             Cancel Package
           </button>
         )}
         {packageBookingMode && (
-          <div style={{ marginTop: '15px', fontSize: '14px' }}>
-            {packageStep === 'select-driver' && <p>👆 Step 1: Select a driver below</p>}
-            {packageStep === 'confirm-driver' && <p>📝 Step 1: Fill driver booking details</p>}
-            {packageStep === 'select-guide' && <p>✅ Driver confirmed! 👆 Step 2: Select a guide below</p>}
-            {packageStep === 'confirm-guide' && <p>📝 Step 2: Fill guide booking details</p>}
+          <div className="driver-booking-package-status">
+            {packageStep === 'select-driver' && <p className="driver-booking-step-indicator">👆 Step 1: Select a driver below</p>}
+            {packageStep === 'confirm-driver' && <p className="driver-booking-step-indicator">📝 Step 1: Fill driver booking details</p>}
+            {packageStep === 'select-guide' && <p className="driver-booking-step-indicator">✅ Driver confirmed! 👆 Step 2: Select a guide below</p>}
+            {packageStep === 'confirm-guide' && <p className="driver-booking-step-indicator">📝 Step 2: Fill guide booking details</p>}
             {packageStep === 'final-confirm' && (
-              <div>
-                <p>✅ Both services ready! Review and confirm your package booking.</p>
+              <div className="driver-booking-final-step">
+                <p className="driver-booking-final-message">✅ Both services ready! Review and confirm your package booking.</p>
                 <button 
                   onClick={handleFinalPackageBooking}
-                  style={{
-                    background: '#10b981',
-                    color: 'white',
-                    border: 'none',
-                    padding: '15px 30px',
-                    borderRadius: '8px',
-                    fontSize: '18px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    marginTop: '10px'
-                  }}
+                  className="driver-booking-confirm-both-btn"
                 >
                   🎯 Confirm Both Bookings
                 </button>

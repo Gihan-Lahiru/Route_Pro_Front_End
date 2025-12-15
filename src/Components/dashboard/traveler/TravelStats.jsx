@@ -26,7 +26,7 @@ const TravelStats = () => {
       if (data.success && data.trips) {
         const completedTrips = data.trips.filter(trip => trip.trip_status === 'completed').length;
         const upcomingTrips = data.trips.filter(trip => 
-          trip.trip_status === 'not_started' || trip.trip_status === 'in_progress'
+          trip.trip_status === 'not_started' || trip.trip_status === 'confirmed'
         ).length;
         
         // Calculate total distance from completed trips

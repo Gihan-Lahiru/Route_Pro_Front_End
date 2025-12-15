@@ -10,7 +10,7 @@ const Sidebar = ({ currentPage, setCurrentPage, onLogout }) => {
   ]
 
   return (
-    <div className="sidebar">
+    <>
       <div className="sidebar-header">
         <div className="logo">
           <span className="logo-icon">📊</span>
@@ -46,7 +46,7 @@ const Sidebar = ({ currentPage, setCurrentPage, onLogout }) => {
           <span className="nav-label">Logout</span>
         </button>
       </div>
-    </div>
+    </>
   )
 }
 

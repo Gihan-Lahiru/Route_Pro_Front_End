@@ -1,13 +1,24 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './HeroSection.css';
 import CountUp from '../../Components/CountUp'; // your custom CountUp or react-countup?
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+
+  const handleStartPlanningClick = () => {
+    navigate('/route');
+  };
+
+  const handleExploreCultureClick = () => {
+    navigate('/culture');
+  };
+
   return (
     <div className="hero-section">
       <div className="hero-buttons">
-        <button className="primary-btn">Start Planning Your Trip</button>
-        <button className="secondary-btn">Explore Attractions</button>
+        <button className="primary-btn" onClick={handleStartPlanningClick}>Start Planning Your Trip</button>
+        <button className="secondary-btn" onClick={handleExploreCultureClick}>Explore Culture</button>
       </div>
 
       <div className="stats">

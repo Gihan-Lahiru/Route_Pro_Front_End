@@ -61,7 +61,23 @@ const TripDetails = () => {
       if (data.success) {
         // Show ALL trips (don't filter by date) - drivers should see their full history
         console.log("🚗 Total trips found:", data.trips.length);
-        setTrips(data.trips || []);
+
+        // Sort trips by trip_id in descending order (newest first: #175, #174, #173...)
+        const sortedTrips = (data.trips || []).sort((a, b) => {
+          const tripIdA = parseInt(a.trip_id);
+          const tripIdB = parseInt(b.trip_id);
+          return tripIdB - tripIdA; // Descending order (highest trip_id first)
+        });
+
+        console.log(
+          "🚗 Trips sorted in descending order:",
+          sortedTrips.length > 0
+            ? `#${sortedTrips[0].trip_id} to #${
+                sortedTrips[sortedTrips.length - 1].trip_id
+              }`
+            : "No trips"
+        );
+        setTrips(sortedTrips);
       } else {
         console.error("🚗 Failed to fetch trips:", data);
         setError(data.message || "Failed to fetch trips");
@@ -110,7 +126,7 @@ const TripDetails = () => {
         return "in-progress";
       case "cancelled":
         return "cancelled";
-      case "not_started":
+      case "confirmed":
       default:
         return "active";
     }
@@ -123,6 +139,10 @@ const TripDetails = () => {
       );
       if (!confirmStart) return;
 
+      console.log(
+        `🚀 Starting trip ${tripId} at ${new Date().toLocaleTimeString()}`
+      );
+
       const response = await fetch(
         `${apiMethods.getBackendUrl()}/api/trips/update-status.php`,
         {
@@ -133,6 +153,8 @@ const TripDetails = () => {
           body: JSON.stringify({
             trip_id: tripId,
             status: "in_progress",
+            started_at: new Date().toISOString(),
+            updated_by: "driver",
           }),
         }
       );
@@ -141,6 +163,7 @@ const TripDetails = () => {
 
       if (result.success) {
         alert("Trip started successfully!");
+        console.log(`✅ Trip ${tripId} marked as IN PROGRESS`);
         fetchDriverTrips(); // Refresh trips list
       } else {
         alert(`Failed to start trip: ${result.message}`);
@@ -158,6 +181,11 @@ const TripDetails = () => {
       );
       if (!confirmComplete) return;
 
+      const completedAt = new Date();
+      console.log(
+        `🏁 Completing trip ${tripId} at ${completedAt.toLocaleTimeString()}`
+      );
+
       const response = await fetch(
         `${apiMethods.getBackendUrl()}/api/trips/update-status.php`,
         {
@@ -168,6 +196,8 @@ const TripDetails = () => {
           body: JSON.stringify({
             trip_id: tripId,
             status: "completed",
+            completed_at: completedAt.toISOString(),
+            updated_by: "driver",
           }),
         }
       );
@@ -175,7 +205,30 @@ const TripDetails = () => {
       const result = await response.json();
 
       if (result.success) {
-        alert("Trip completed successfully!");
+        // Show duration information if available
+        if (result.trip_duration) {
+          const duration = result.trip_duration;
+          let durationMessage = `Trip completed successfully!\n\n⏱️ Trip Duration: ${duration} minutes`;
+
+          if (duration <= 5) {
+            durationMessage += `\n🎯 Quick trip! Completed in ${duration} minutes (≤5 min target)`;
+          } else if (duration <= 10) {
+            durationMessage += `\n⚡ Fast trip! (${duration} minutes)`;
+          } else {
+            durationMessage += `\n📍 Extended trip (${duration} minutes)`;
+          }
+
+          alert(durationMessage);
+          console.log(`📊 Trip ${tripId} Duration Analysis:`, {
+            duration: duration,
+            isQuick: duration <= 5,
+            isFast: duration <= 10,
+            timestamp: completedAt.toISOString(),
+          });
+        } else {
+          alert("Trip completed successfully!");
+        }
+
         fetchDriverTrips(); // Refresh trips list
       } else {
         alert(`Failed to complete trip: ${result.message}`);
@@ -274,7 +327,11 @@ const TripDetails = () => {
                   <strong>Start Time:</strong> {formatTime(trip.start_time)}
                 </p>
                 <p>
-                  <strong>Distance:</strong> {trip.distance_km} km
+                  <strong>Distance:</strong>{" "}
+                  {trip.distance_km && trip.distance_km < 1
+                    ? (trip.distance_km * 1000).toFixed(1)
+                    : trip.distance_km}{" "}
+                  km
                 </p>
                 <p>
                   <strong>Estimated Time:</strong>{" "}
@@ -313,7 +370,7 @@ const TripDetails = () => {
                   </div>
                 ) : (
                   <>
-                    {trip.trip_status === "not_started" && (
+                    {trip.trip_status === "confirmed" && (
                       <button
                         onClick={() => handleStartTrip(trip.trip_id)}
                         className="start-trip-btn"

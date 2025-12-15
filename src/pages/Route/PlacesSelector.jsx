@@ -12,6 +12,11 @@ const PlacesSelector = ({ nearbyPlaces = [], setNearbyPlaces }) => {
   const [isSearching, setIsSearching] = useState(false)
   const scrollRef = useRef(null)
 
+  // Debug logging
+  console.log('🎪 PlacesSelector rendered with nearbyPlaces:', nearbyPlaces);
+  console.log('📊 nearbyPlaces length:', nearbyPlaces?.length);
+  console.log('🔍 nearbyPlaces type:', typeof nearbyPlaces);
+
   // Default places to show when nearbyPlaces is empty
   const defaultPlaces = [
     {
@@ -34,6 +39,15 @@ const PlacesSelector = ({ nearbyPlaces = [], setNearbyPlaces }) => {
 
   // Use nearbyPlaces if available, otherwise use default places
   const placesToShow = nearbyPlaces && nearbyPlaces.length > 0 ? nearbyPlaces : defaultPlaces
+  
+  console.log('📋 Final placesToShow:', placesToShow.map(p => p.name));
+  console.log('🎯 Using dynamic places:', nearbyPlaces && nearbyPlaces.length > 0);
+  console.log('🔍 nearbyPlaces array:', nearbyPlaces);
+
+  // Show a warning if we're still using default places
+  if (!nearbyPlaces || nearbyPlaces.length === 0) {
+    console.warn('⚠️ PlacesSelector: Still using default places. nearbyPlaces not populated.');
+  }
 
   // Mock Places API search function with images
   const searchPlaces = async (query) => {
@@ -188,12 +202,78 @@ const PlacesSelector = ({ nearbyPlaces = [], setNearbyPlaces }) => {
         <div className="recommended-header">
           <button onClick={() => setIsRecommendedOpen(!isRecommendedOpen)} className="recommended-toggle">
             <ChevronDown className={`chevron-icon ${!isRecommendedOpen ? "rotated" : ""}`} />
-            <span>Recommended places</span>
+            <span>{nearbyPlaces && nearbyPlaces.length > 0 ? "🏛️ Places to Visit Along Your Route" : "Recommended places"}</span>
           </button>
+          
+          {/* Debug info for troubleshooting */}
+          {process.env.NODE_ENV === 'development' && (
+            <div style={{ fontSize: '10px', color: '#666', marginTop: '5px' }}>
+              Debug: {nearbyPlaces?.length || 0} dynamic places | Using: {nearbyPlaces && nearbyPlaces.length > 0 ? 'Dynamic' : 'Default'}
+              <br />
+              <button 
+                onClick={() => {
+                  console.log('🧪 Testing manual setNearbyPlaces');
+                  const testPlaces = [
+                    { name: 'Test Place 1', vicinity: 'Test Location', rating: 4.5, place_id: 'test1' },
+                    { name: 'Test Place 2', vicinity: 'Test Location', rating: 4.2, place_id: 'test2' }
+                  ];
+                  setNearbyPlaces(testPlaces);
+                }}
+                style={{ 
+                  fontSize: '10px', 
+                  padding: '2px 6px', 
+                  marginTop: '3px',
+                  background: '#28a745',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '3px',
+                  cursor: 'pointer'
+                }}
+              >
+                🧪 Test Set Places
+              </button>
+              <button 
+                onClick={() => {
+                  if (window.testGooglePlaces) {
+                    console.log('🧪 Calling manual Google Places test');
+                    window.testGooglePlaces();
+                  } else {
+                    console.log('🧪 testGooglePlaces not available');
+                  }
+                }}
+                style={{ 
+                  fontSize: '10px', 
+                  padding: '2px 6px', 
+                  marginTop: '3px',
+                  marginLeft: '5px',
+                  background: '#007bff',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '3px',
+                  cursor: 'pointer'
+                }}
+              >
+                🧪 Test Google API
+              </button>
+            </div>
+          )}
         </div>
 
         {isRecommendedOpen && (
           <div className="recommended-content">
+            {nearbyPlaces && nearbyPlaces.length > 0 && (
+              <div className="attraction-info" style={{ 
+                padding: '12px', 
+                background: 'linear-gradient(135deg, #f0f9ff, #e0f2fe)', 
+                borderRadius: '8px', 
+                margin: '8px 0 16px 0',
+                border: '1px solid rgba(14, 165, 233, 0.2)',
+                fontSize: '14px',
+                color: '#0c4a6e'
+              }}>
+                ✨ Found {nearbyPlaces.length} attractions near your route! Click on any place to add it to your itinerary.
+              </div>
+            )}
             <div className="explore-container">
               <button onClick={scrollLeft} className="scroll-button">
                 <ChevronLeft className="scroll-icon" />
@@ -201,40 +281,58 @@ const PlacesSelector = ({ nearbyPlaces = [], setNearbyPlaces }) => {
 
               <div className="explore-info">
                 <MapPin className="explore-pin" />
-                <span>Explore more</span>
+                <span>{nearbyPlaces && nearbyPlaces.length > 0 ? "Places along your route" : "Explore more"}</span>
               </div>
 
               <div ref={scrollRef} className="places-scroll">
-                {placesToShow.map((place, index) => (
-                  <div key={index} className="place-thumbnail">
-                    <div
-                      onClick={() =>
-                        addPlace({
-                          id: Date.now() + index,
-                          name: place.name,
-                          image:
-                            place.photos && place.photos[0]
-                              ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=80&photoreference=${place.photos[0].photo_reference}&key=YOUR_API_KEY`
-                              : `https://picsum.photos/80/60?random=${index}`,
-                        })
-                      }
-                      className="thumbnail-container"
-                    >
-                      <img
-                        src={
-                          place.photos && place.photos[0]
-                            ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=80&photoreference=${place.photos[0].photo_reference}&key=YOUR_API_KEY`
-                            : `https://picsum.photos/80/60?random=${index}`
+                {placesToShow.map((place, index) => {
+                  // Handle both default places and Google Maps places
+                  const placeId = place.place_id || place.id || `place_${index}`;
+                  const placeName = place.name || 'Unnamed Place';
+                  
+                  // Debug each place
+                  console.log('🎪 Rendering place:', { name: placeName, id: placeId, photos: place.photos });
+                  
+                  return (
+                    <div key={placeId} className="place-thumbnail">
+                      <div
+                        onClick={() =>
+                          addPlace({
+                            id: Date.now() + index,
+                            name: placeName,
+                            image:
+                              place.photos && place.photos[0]
+                                ? (place.photos[0].getUrl ? place.photos[0].getUrl() : 
+                                   `https://picsum.photos/80/60?random=${index}`)
+                                : `https://picsum.photos/80/60?random=${index}`,
+                          })
                         }
-                        alt={place.name}
-                        className="thumbnail-image"
-                      />
-                      <div className="thumbnail-overlay">
-                        <Plus className="plus-icon" />
+                        className="thumbnail-container"
+                      >
+                        <img
+                          src={
+                            place.photos && place.photos[0]
+                              ? (place.photos[0].getUrl ? place.photos[0].getUrl() : 
+                                 `https://picsum.photos/80/60?random=${index}`)
+                              : `https://picsum.photos/80/60?random=${index}`
+                          }
+                          alt={placeName}
+                          className="thumbnail-image"
+                          onError={(e) => {
+                            console.log('🖼️ Image load error for', placeName, 'falling back to placeholder');
+                            e.target.src = `https://picsum.photos/80/60?random=${index}`;
+                          }}
+                        />
+                        <span className="thumbnail-label">{placeName}</span>
+                        {place.rating && (
+                          <div className="place-rating">
+                            ⭐ {place.rating}
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               <button onClick={scrollRight} className="scroll-button">

@@ -22,7 +22,32 @@ export default function BookingModal({
   onPackageComplete
 }) {
   const navigate = useNavigate();
-  const person = driver || guide;
+  
+  // State for fetched reviews
+  const [fetchedReviews, setFetchedReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  
+  // Determine which person to show based on package step
+  let person;
+  if (packageMode) {
+    if (packageStep === 'confirm-driver') {
+      person = driver;
+      console.log('🚗 Package Mode: Showing driver details', driver?.name);
+    } else if (packageStep === 'confirm-guide') {
+      person = guide;
+      console.log('🗺️ Package Mode: Showing guide details', guide?.name);
+    } else if (packageStep === 'final-confirm') {
+      person = null; // Final confirmation shows both
+      console.log('📋 Package Mode: Final confirmation - showing both');
+    } else {
+      person = driver || guide;
+      console.log('🔄 Package Mode: Default selection', person?.name);
+    }
+  } else {
+    // Regular booking mode - show whichever is selected
+    person = driver || guide;
+    console.log('👤 Regular Mode: Showing', person?.name, 'Type:', driver ? 'driver' : 'guide');
+  }
   
   // Determine modal title based on package mode and step
   let modalTitle = "Book";
@@ -53,6 +78,31 @@ export default function BookingModal({
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
 
   const currentUser = sessionUtils.getCurrentUser();
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      // Add class to body to prevent scrolling
+      document.body.classList.add('driver-booking-modal-open');
+      // Store current scroll position
+      const scrollY = window.scrollY;
+      document.body.style.top = `-${scrollY}px`;
+    } else {
+      // Remove class and restore scroll position
+      document.body.classList.remove('driver-booking-modal-open');
+      const scrollY = document.body.style.top;
+      document.body.style.top = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      }
+    }
+
+    // Cleanup function to ensure body scroll is restored
+    return () => {
+      document.body.classList.remove('driver-booking-modal-open');
+      document.body.style.top = '';
+    };
+  }, [isOpen]);
 
   // Debug logging
   useEffect(() => {
@@ -94,6 +144,45 @@ export default function BookingModal({
       });
     }
   }, [driver, guide, routeCost, routeDetails, driverCost, guideCost, packageCost, systemFee, totalPayable]);
+
+  // Fetch reviews when person changes
+  useEffect(() => {
+    const fetchReviews = async () => {
+      if (!person || !person.user_id) {
+        setFetchedReviews([]);
+        return;
+      }
+
+      setReviewsLoading(true);
+      try {
+        const role = driver && !guide ? 'driver' : 'guide';
+        const response = await fetch(
+          `${apiMethods.getBackendUrl()}/mock-get-reviews.php?user_id=${person.user_id}&role=${role}`
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setFetchedReviews(data.reviews || []);
+            console.log('✅ Reviews fetched successfully:', data.reviews?.length, 'reviews');
+          } else {
+            console.log('⚠️ Reviews API returned error:', data.message);
+            setFetchedReviews([]);
+          }
+        } else {
+          console.log('⚠️ Reviews API request failed:', response.status);
+          setFetchedReviews([]);
+        }
+      } catch (error) {
+        console.error('❌ Error fetching reviews:', error);
+        setFetchedReviews([]);
+      } finally {
+        setReviewsLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, [person?.user_id, driver, guide, apiMethods]);
 
   useEffect(() => {
     console.log('💰 Cost calculation starting with routeCost:', routeCost);
@@ -183,6 +272,15 @@ export default function BookingModal({
     console.log('⚠️ IMPORTANT: This function will NOT save trip to database yet!');
     console.log('💡 Trip will only be saved AFTER successful Stripe payment!');
     
+    // Debug flag to bypass payment (for testing)
+    const BYPASS_PAYMENT_FOR_TESTING = false; // Set to true to skip payment
+    
+    if (BYPASS_PAYMENT_FOR_TESTING) {
+      console.log('🚨 DEBUG MODE: Bypassing payment, saving trip directly');
+      bookTrip(); // Call the direct booking function
+      return;
+    }
+    
     try {
       // Get current user using sessionUtils (consistent with header)
       const currentUser = sessionUtils.getCurrentUser();
@@ -268,7 +366,7 @@ export default function BookingModal({
         guide_id: finalGuideId,
         date: actualDate,
         start_time: actualTime,
-        trip_status: 'not_started',
+        trip_status: 'confirmed',
         route_cost: routeCost || 0,
         driver_cost: driver ? driverCost : 0,
         guide_cost: guide ? guideCost : 0,
@@ -302,7 +400,7 @@ export default function BookingModal({
       localStorage.setItem('pendingTripPayment', JSON.stringify(tripDataForPayment));
       
       // Show message and redirect to payment
-      alert('Trip details prepared! Redirecting to secure payment...\n\nNote: Your trip will only be saved after successful payment.');
+      alert('Trip details prepared! Redirecting to secure payment...\n\n💳 You will complete your booking after payment confirmation.');
       
       setTimeout(() => {
         onClose(); // Close booking modal
@@ -319,13 +417,187 @@ export default function BookingModal({
     }
   };
 
-  // ❌ DEPRECATED: This function saves directly to database - USE prepareForPayment() instead
-  // bookTrip() should NOT be called anymore as it saves trip before payment
+  // ✅ DIRECT TRIP BOOKING: Only use this for special cases (testing, admin, etc.)
+  // For normal user flow, use prepareForPayment() which redirects to secure payment
   const bookTrip = async () => {
-    console.error('❌ bookTrip() called but this function is DEPRECATED!');
-    console.error('⚠️ Use prepareForPayment() instead to ensure payment happens BEFORE database save');
-    alert('Error: Invalid booking flow. Please refresh and try again.');
-    return;
+    console.log('🚀 bookTrip function called for immediate confirmation!');
+    console.log('⚠️ WARNING: This bypasses payment and directly confirms the trip!');
+    console.log('📊 bookTrip initial state:', { loading, packageMode, packageStep });
+    
+    setLoading(true);
+    try {
+      // Get current user using sessionUtils (consistent with header)
+      const currentUser = sessionUtils.getCurrentUser();
+      const routeData = JSON.parse(localStorage.getItem('routeData') || '{}');
+      
+      // Validate user is logged in
+      if (!currentUser?.userId) {
+        setError('User not logged in. Please log in first.');
+        setLoading(false);
+        return;
+      }
+
+      // Try to get route_id from multiple sources
+      let routeId = null;
+      
+      if (routeData?.route_id) {
+        routeId = routeData.route_id;
+      } else if (routeData?.id) {
+        routeId = routeData.id;
+      } else if (routeDetails?.route_id) {
+        routeId = routeDetails.route_id;
+      } else if (routeDetails?.id) {
+        routeId = routeDetails.id;
+      } else {
+        const storedRouteId = localStorage.getItem('routeId') || localStorage.getItem('route_id');
+        if (storedRouteId) {
+          routeId = storedRouteId;
+        } else {
+          routeId = 1; // Default fallback
+        }
+      }
+
+      // For package mode, use collected booking details instead of form data
+      const actualDate = packageMode && packageStep === 'final-confirm' 
+        ? (driverBookingDetails?.trip_date || guideBookingDetails?.trip_date)
+        : bookingData.trip_date;
+      const actualTime = packageMode && packageStep === 'final-confirm'
+        ? (driverBookingDetails?.start_time || guideBookingDetails?.start_time)
+        : bookingData.start_time;
+
+      // Validate required fields
+      if (!actualDate || !actualTime) {
+        if (packageMode && packageStep === 'final-confirm') {
+          // Use fallbacks for package booking
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          const fallbackDate = tomorrow.toISOString().split('T')[0];
+          const fallbackTime = '09:00';
+          
+          console.log('⚠️ Using fallback date/time for package booking');
+        } else {
+          setError('Please select a valid date and start time.');
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Prepare IDs
+      let finalDriverId = null;
+      let finalGuideId = null;
+      
+      if (driver) {
+        finalDriverId = driver.driver_table_id || driver.id || driver.user_id || null;
+      }
+      
+      if (guide) {
+        finalGuideId = guide.guide_table_id || guide.id || guide.user_id || null;
+      }
+
+      // Validate at least one service provider
+      if (!finalDriverId && !finalGuideId) {
+        setError('Please select a driver or guide.');
+        setLoading(false);
+        return;
+      }
+
+      // Extract route location data
+      const startLocation = routeData?.start_location || routeData?.startLocation || routeData?.from || 'Start Location';
+      const endLocation = routeData?.end_location || routeData?.endLocation || routeData?.to || 'End Location';
+
+      // Prepare trip data for immediate database save
+      const tripPayload = {
+        traveler_id: currentUser?.userId,
+        route_id: routeId,
+        driver_id: finalDriverId,
+        guide_id: finalGuideId,
+        date: actualDate,
+        start_time: actualTime,
+        trip_status: 'confirmed',
+        route_cost: routeCost || 0,
+        driver_cost: driver ? driverCost : 0,
+        guide_cost: guide ? guideCost : 0,
+        total_cost: totalPayable,
+        system_fee: systemFee,
+        special_requests: packageMode && packageStep === 'final-confirm'
+          ? `Driver requests: ${driverBookingDetails?.special_requests || 'None'} | Guide requests: ${guideBookingDetails?.special_requests || 'None'}`
+          : (bookingData.special_requests || null),
+        start_location: startLocation,
+        end_location: endLocation
+      };
+      
+      console.log('🚀 Sending trip payload for immediate confirmation:', tripPayload);
+      
+      const bookingUrl = `${apiMethods.getBackendUrl()}/api/trips/trips.php`;
+      console.log('🔗 Booking API URL:', bookingUrl);
+      
+      const response = await fetch(bookingUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tripPayload)
+      });
+      
+      console.log('📡 Response status:', response.status);
+      
+      const responseText = await response.text();
+      console.log('📄 Raw response text:', responseText);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}, response: ${responseText}`);
+      }
+      
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('❌ JSON parse error:', parseError);
+        throw new Error(`Invalid JSON response: ${responseText.substring(0, 200)}...`);
+      }
+      
+      console.log('📥 API Response:', result);
+      
+      setLoading(false);
+      if (result.success) {
+        setBookingConfirmed(true);
+        
+        // Store trip details
+        const tripDetails = {
+          trip_id: result.trip_id,
+          date: actualDate,
+          start_time: actualTime,
+          driver_name: driver?.name || driver?.firstName + ' ' + driver?.lastName || (driver ? 'Selected Driver' : null),
+          guide_name: guide?.name || guide?.firstName + ' ' + guide?.lastName || (guide ? 'Selected Guide' : null),
+          total_cost: totalPayable,
+          trip_status: 'confirmed',
+          start_location: startLocation,
+          end_location: endLocation,
+          booking_time: new Date().toISOString()
+        };
+        
+        console.log('💾 Storing trip details:', tripDetails);
+        localStorage.setItem('latestTrip', JSON.stringify(tripDetails));
+        
+        // Show success message
+        alert(`✅ Trip confirmed successfully! Your trip will start in "confirmed" status and automatically complete after 5 minutes for testing.`);
+        
+        // Close modal and redirect
+        setTimeout(() => {
+          onClose();
+          if (packageMode && onPackageComplete) {
+            onPackageComplete();
+          }
+          // Navigate to traveller dashboard to see the trip
+          navigate('/traveller-dashboard');
+        }, 1500);
+      } else {
+        console.error('❌ Booking failed:', result);
+        setError(result.message || result.error || 'Failed to book trip');
+      }
+    } catch (err) {
+      setLoading(false);
+      console.error('💥 Booking error details:', err);
+      setError(`Error booking trip: ${err.message}`);
+    }
   };
 
   // Original bookTrip function commented out to prevent database saving before payment
@@ -566,7 +838,7 @@ export default function BookingModal({
         guide_id: finalGuideId,
         date: actualDate, // Use the validated actualDate
         start_time: actualTime, // Use the validated actualTime
-        trip_status: 'not_started',
+        trip_status: 'confirmed',
         route_cost: routeCost || 0,
         driver_cost: driver ? driverCost : 0,
         guide_cost: guide ? guideCost : 0,
@@ -644,7 +916,7 @@ export default function BookingModal({
           driver_cost: driver ? driverCost : 0,
           guide_cost: guide ? guideCost : 0,
           system_fee: systemFee,
-          trip_status: 'not_started',
+          trip_status: 'confirmed',
           start_location: routeData?.start_location || routeData?.startLocation || routeData?.from || 'Start Location',
           end_location: routeData?.end_location || routeData?.endLocation || routeData?.to || 'End Location',
           special_requests: packageMode && packageStep === 'final-confirm'
@@ -724,7 +996,7 @@ export default function BookingModal({
       guide_id: guide ? (guide.guide_table_id || guide.id || guide.user_id || null) : null,
       date: bookingData.trip_date,
       start_time: bookingData.start_time,
-      trip_status: "not_started",
+      trip_status: "confirmed",
       route_cost: routeCost || 0,
       driver_cost: driver ? driverCost : 0,
       guide_cost: guide ? guideCost : 0,
@@ -756,7 +1028,7 @@ export default function BookingModal({
           driver_cost: driver ? driverCost : 0,
           guide_cost: guide ? guideCost : 0,
           system_fee: systemFee,
-          trip_status: 'not_started',
+          trip_status: 'confirmed',
           start_location: routeData?.start_location || routeData?.startLocation || routeData?.from || 'Start Location',
           end_location: routeData?.end_location || routeData?.endLocation || routeData?.to || 'End Location',
           special_requests: bookingData.special_requests || null,
@@ -790,15 +1062,15 @@ export default function BookingModal({
   if (!isOpen) return null;
 
   return (
-    <div className="booking-modal-overlay">
-      <div className="booking-modal">
-        <div className="modal-header" style={{display: "flex", alignItems: "center", justifyContent: "center", position: "relative"}}>
+    <div className="driver-booking-modal-overlay">
+      <div className="driver-booking-modal">
+        <div className="driver-booking-modal-header" style={{display: "flex", alignItems: "center", justifyContent: "center", position: "relative"}}>
           <h2 style={{margin: "0", textAlign: "center"}}>{modalTitle}</h2>
-          <button className="close-btn" onClick={onClose} style={{position: "absolute", right: "0"}}>×</button>
+          <button className="driver-booking-close-btn" onClick={onClose} style={{position: "absolute", right: "0"}}>×</button>
         </div>
-        <div className="modal-content">
-          <div className="modal-left">
-            <div className="profile-card">
+        <div className="driver-booking-modal-content">
+          <div className="driver-booking-modal-left">
+            <div className="driver-booking-profile-card">
               {/* Service Provider Profile */}
               {packageMode && packageStep === 'final-confirm' ? (
                 // Show both driver and guide in final confirmation
@@ -840,60 +1112,69 @@ export default function BookingModal({
               ) : (
                 // Show single service provider profile
                 <>
-                  <div className="avatar">
+                  <div className="driver-booking-avatar">
                     {person?.photo_url
                       ? <img src={person.photo_url} alt={person.name} />
-                      : <div className="avatar-initials">{person?.name?.split(" ").map(n=>n[0]).join("")}</div>
+                      : <div className="driver-booking-avatar-initials">{person?.name?.split(" ").map(n=>n[0]).join("")}</div>
                     }
                   </div>
-                  <div className="profile-details">
+                  <div className="driver-booking-profile-details">
                     <h3>{person?.name}</h3>
-                    <div className="meta">
+                    <div className="driver-booking-meta">
                       <span>📍 {person?.location}</span>
                       <span>• {person?.experience} years of experience</span>
                     </div>
-                    <div className="rating-row">
-                      <span className="stars">
+                    <div className="driver-booking-rating-row">
+                      <span className="driver-booking-stars">
                         {Array.from({ length: 5 }, (_, i) => (
                           <span key={i} className={`star ${i < (rating || 0) ? "filled" : ""}`}>★</span>
                         ))}
                       </span>
-                      <span className="rating-value">
+                      <span className="driver-booking-rating-value">
                         {rating ? rating.toFixed(1) : "0.0"}
-                        {reviews?.length > 0 && (
-                          <span className="review-count">({reviews.length} reviews)</span>
+                        {((reviews?.length > 0) || (person?.totalReviews > 0)) && (
+                          <span className="driver-booking-review-count">
+                            ({person?.totalReviews || reviews?.length || 0} reviews)
+                          </span>
                         )}
                       </span>
                     </div>
-                    <div className="desc">
+                    <div className="driver-booking-desc">
                       {person?.description || "Professional driver/guide with excellent knowledge of Sri Lankan roads and safety protocols."}
                     </div>
-                    {guide && (
-                      <div className="languages">
-                        <span className="section-label">Languages</span>
+                    {(guide && !packageMode) || (packageMode && packageStep === 'confirm-guide') ? (
+                      <div className="driver-booking-languages">
+                        <span className="driver-booking-section-label">Languages</span>
                         <div>
                           {Array.isArray(person?.languages)
                             ? person.languages.map((lang, idx) => (
-                                <span key={idx} className="lang-pill">{lang}</span>
+                                <span key={idx} className="driver-booking-lang-pill">{lang}</span>
                               ))
                             : person.languages
-                              ? <span className="lang-pill">{person.languages}</span>
+                              ? <span className="driver-booking-lang-pill">{person.languages}</span>
                               : null
                           }
                         </div>
                       </div>
-                    )}
-                    <div className="specialties">
-                      <span className="section-label">Specialties</span>
+                    ) : null}
+                    <div className="driver-booking-specialties">
                       <div>
-                        {Array.isArray(person?.specialties)
-                          ? person.specialties.map((spec, idx) => (
-                              <span key={idx} className="spec-pill">{spec}</span>
-                            ))
-                          : person.specialties
-                            ? <span className="spec-pill">{person.specialties}</span>
-                            : null
-                        }
+                        {(() => {
+                          // Define default specialties based on role
+                          const defaultDriverSpecialties = ["Safe Driving", "Local Routes", "Tourist Areas", "Professional Service", "Clean Vehicle"];
+                          const defaultGuideSpecialties = ["Cultural Sites", "Historical Knowledge", "Local Stories", "Photography", "Traditional Culture"];
+                          
+                          const isDriver = packageMode && packageStep === 'confirm-driver' || (driver && !guide);
+                          const defaultSpecialties = isDriver ? defaultDriverSpecialties : defaultGuideSpecialties;
+                          
+                          const specialties = person?.specialties || defaultSpecialties;
+                          
+                          return Array.isArray(specialties)
+                            ? specialties.map((spec, idx) => (
+                                <span key={idx} className="driver-booking-spec-pill">{spec}</span>
+                              ))
+                            : <span className="driver-booking-spec-pill">{specialties}</span>;
+                        })()}
                       </div>
                     </div>
                   </div>
@@ -902,20 +1183,55 @@ export default function BookingModal({
             </div>
             <div className="reviews-section">
               <h4>Recent Reviews</h4>
-              {(!reviews || reviews.length === 0) && <div className="no-reviews">No reviews yet.</div>}
-              {reviews?.slice(0, 3).map((review, idx) => (
-                <div key={idx} className="review-card">
-                  <div className="review-rating">
-                    {Array.from({ length: 5 }, (_, i) => (
-                      <span key={i} className={`star ${i < (review.rating || 0) ? "filled" : ""}`}>★</span>
-                    ))}
+              {(() => {
+                // Use fetched reviews first, then reviews prop, then person's reviewsList
+                const reviewsToShow = fetchedReviews.length > 0 ? fetchedReviews : (reviews || person?.reviewsList || []);
+                
+                // Debug logging
+                console.log('🔍 Review Debug:', {
+                  fetchedReviews: fetchedReviews,
+                  fetchedReviewsCount: fetchedReviews.length,
+                  reviews,
+                  personReviewsList: person?.reviewsList,
+                  reviewsToShow,
+                  totalReviews: person?.totalReviews,
+                  personName: person?.name,
+                  reviewsLoading
+                });
+                
+                if (reviewsLoading) {
+                  return <div className="no-reviews">Loading reviews...</div>;
+                }
+                
+                if (reviewsToShow.length === 0) {
+                  return (
+                    <div className="no-reviews">
+                      {person?.totalReviews > 0 
+                        ? `This ${
+                            packageMode && packageStep === 'confirm-driver' ? 'driver' :
+                            packageMode && packageStep === 'confirm-guide' ? 'guide' :
+                            driver && !guide ? 'driver' : 'guide'
+                          } has ${person.totalReviews} reviews. Recent reviews will load here.`
+                        : "No reviews yet."
+                      }
+                    </div>
+                  );
+                }
+                
+                return reviewsToShow.slice(0, 3).map((review, idx) => (
+                  <div key={idx} className="review-card">
+                    <div className="review-rating">
+                      {Array.from({ length: 5 }, (_, i) => (
+                        <span key={i} className={`star ${i < (review.rating || 0) ? "filled" : ""}`}>★</span>
+                      ))}
+                    </div>
+                    <div className="review-author">
+                      <strong>{review.user_name}</strong> <span>{review.date}</span>
+                    </div>
+                    <div className="review-text">{review.text}</div>
                   </div>
-                  <div className="review-author">
-                    <strong>{review.user_name}</strong> <span>{review.date}</span>
-                  </div>
-                  <div className="review-text">{review.text}</div>
-                </div>
-              ))}
+                ));
+              })()}
             </div>
           </div>
           <div className="modal-right">
@@ -938,19 +1254,19 @@ export default function BookingModal({
                           bookingData
                         });
                         
-                        // For package final confirmation, prepare for payment instead of direct booking
+                        // For package final confirmation, redirect to payment
                         if (packageMode && packageStep === 'final-confirm') {
-                          console.log('🚀 Package final confirmation - preparing for payment');
-                          prepareForPayment(); // This will prepare data and redirect to payment
+                          console.log('🚀 Package final confirmation - redirecting to payment');
+                          prepareForPayment(); // This will redirect to payment page
                         } else {
-                          // Regular booking flow - also prepare for payment
+                          // Regular booking flow - redirect to payment
                           prepareForPayment();
                         }
                       }}
                       disabled={loading}
                       style={{ marginTop: '20px' }}
                     >
-                      {loading ? "Processing..." : "Complete Package Booking"}
+                      {loading ? "Processing..." : "💳 Proceed to Payment"}
                     </button>
                   </div>
                 ) : (
@@ -984,10 +1300,17 @@ export default function BookingModal({
                       </div>
                     )}
                     {driver && guide && (
-                      <div style={{ marginBottom: "8px" }}>
-                        <span style={{ color: "#eab308" }}>
-                          Package Deal (Save 10%): <strong>Rs. {packageCost}</strong>
-                        </span>
+                      <div className="driver-booking-package-deal">
+                        <div className="driver-booking-package-badge">
+                          💡 Pro Tip
+                        </div>
+                        <div className="driver-booking-package-content">
+                          <div className="driver-booking-package-description">
+                            <span className="driver-booking-package-title">Book Both & Save!</span>
+                            <span className="driver-booking-package-subtitle">Get both a driver and guide together for the complete Sri Lankan experience. Save 10% when you book as a package!</span>
+                          </div>
+                          <span className="driver-booking-package-price">Rs. {packageCost}</span>
+                        </div>
                       </div>
                     )}
                     <div style={{ marginBottom: "8px", fontSize: "0.95rem", color: "#666" }}>
@@ -1012,7 +1335,7 @@ export default function BookingModal({
                 <form
                   onSubmit={e => {
                     e.preventDefault();
-                    console.log('📝 Form submission started - ONLY preparing for payment, NOT saving to database');
+                    console.log('📝 Form submission started - preparing for payment flow');
                     
                     if (!bookingData.trip_date) {
                       setError('Please select a trip date');
@@ -1031,7 +1354,7 @@ export default function BookingModal({
                     }
                     setError('');
                     
-                    // Handle different booking modes - ALL should only prepare for payment
+                    // Handle different booking modes
                     if (packageMode && packageStep === 'confirm-driver') {
                       console.log('📝 Driver confirmation step - collecting booking details only');
                       // Confirm driver booking details (this doesn't save to DB)
@@ -1041,12 +1364,12 @@ export default function BookingModal({
                       // Confirm guide booking details (this doesn't save to DB)
                       onGuideConfirmed(bookingData);
                     } else if (packageMode && packageStep === 'final-confirm') {
-                      console.log('📝 Package final step - preparing for payment ONLY');
-                      // Package final step - prepare for payment (NO database save)
+                      console.log('📝 Package final step - redirecting to payment');
+                      // Package final step - redirect to payment
                       prepareForPayment();
                     } else {
-                      console.log('📝 Regular booking - preparing for payment ONLY (NO database save)');
-                      // Regular booking - prepare for payment ONLY (NO database save)
+                      console.log('📝 Regular booking - redirecting to payment');
+                      // Regular booking - redirect to payment
                       prepareForPayment();
                     }
                   }}
@@ -1094,10 +1417,28 @@ export default function BookingModal({
                     {loading ? "Processing..." : 
                       packageMode && packageStep === 'confirm-driver' ? "Confirm Driver & Continue" :
                       packageMode && packageStep === 'confirm-guide' ? "Confirm Guide & Continue" :
-                      packageMode && packageStep === 'final-confirm' ? "Complete Package Booking" :
-                      "💳 Do the Payment"
+                      packageMode && packageStep === 'final-confirm' ? "Proceed to Payment" :
+                      "💳 Proceed to Payment"
                     }
                   </button>
+                  
+                  <div style={{ 
+                    marginTop: '15px', 
+                    textAlign: 'center',
+                    padding: '10px',
+                    backgroundColor: '#f0f8ff',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    color: '#666',
+                    border: '1px solid #b3d9ff'
+                  }}>
+                    <p style={{ margin: '0 0 8px 0' }}>
+                      🔒 <strong>Secure Payment Required</strong>
+                    </p>
+                    <p style={{ margin: '0' }}>
+                      Trip will be confirmed after successful payment
+                    </p>
+                  </div>
                 </form>
                   </>
                 )}

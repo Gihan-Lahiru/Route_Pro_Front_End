@@ -1,287 +1,406 @@
-/* ==================== BOOKING MODAL STYLES ==================== */
+/* ==================== DRIVER BOOKING MODAL STYLES ==================== */
+
+/* Prevent body scroll when driver booking modal is open */
+.driver-booking-modal-open {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+}
 
 /* Overlay and Modal Container */
-.booking-modal-overlay {
+.driver-booking-modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.18);
+  background: white !important;
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow-y: auto;
+  padding: 20px;
+  animation: driverBookingFadeInBlur 0.3s ease-out forwards;
 }
 
-.booking-modal {
+@keyframes driverBookingFadeInBlur {
+  from { 
+    opacity: 0;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+  to { 
+    opacity: 1;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+.driver-booking-modal {
   max-width: 900px;
   width: 98vw;
-  margin: 32px auto;
+  max-height: 90vh;
+  margin: 0 auto;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-  overflow: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
 
+/* ==================== DRIVER BOOKING HEADER SECTION ==================== */
 
-/* ==================== HEADER SECTION ==================== */
-
-.modal-header {
+.driver-booking-modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 32px 0 32px;
+  padding: 20px 20px 0px 32px;
+  margin-bottom: 16px;
 }
 
-.close-btn {
-  background: #e5e7eb;
+.driver-booking-close-btn {
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
   border: none;
-  border-radius: 50%;
-  font-size: 1.5rem;
-  width: 36px;
-  height: 36px;
+  border-radius: 12px;
+  font-size: 1.4rem;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(203, 213, 225, 0.5);
+  backdrop-filter: blur(10px);
+  position: absolute;
+  top: 16px;
+  right: 16px;
 }
 
-.close-btn:hover {
-  background: #d1d5db;
+.driver-booking-close-btn:hover {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #ffffff;
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.5);
 }
 
-/* ==================== MAIN CONTENT LAYOUT ==================== */
+.driver-booking-close-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
 
-.modal-content {
+/* ==================== DRIVER BOOKING MAIN CONTENT LAYOUT ==================== */
+
+.driver-booking-modal-content {
   display: flex;
   flex-direction: row;
   gap: 0;
-  padding: 0 32px 32px 32px;
+  padding: 16px 32px 32px 32px;
   min-width: 0;
+  flex: 1;
+  overflow-y: auto;
 }
 
-.modal-left,
-.modal-right {
+.driver-booking-modal-left,
+.driver-booking-modal-right {
   flex: 1 1 0;
   min-width: 0;
   padding: 0 16px;
   box-sizing: border-box;
 }
 
-.modal-left {
+.driver-booking-modal-left {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
 }
 
+/* ==================== DRIVER BOOKING PROFILE CARD SECTION ==================== */
 
-/* ==================== PROFILE CARD SECTION ==================== */
-
-.profile-card {
+.driver-booking-profile-card {
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   align-items: center;
   text-align: center;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
+  border: 1px solid #f1f5f9;
 }
 
-/* Avatar Styling */
-.avatar {
-  width: 70px;
-  height: 70px;
+/* Driver Booking Avatar Styling */
+.driver-booking-avatar {
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  background: #4a90e2;
+  background: linear-gradient(135deg, #4a90e2, #357abd);
   color: #fff;
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+  border: 3px solid #fff;
 }
 
-.avatar img {
+.driver-booking-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
 }
 
-.avatar-initials {
+.driver-booking-avatar-initials {
   width: 100%;
   text-align: center;
   font-size: 2rem;
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
 }
 
-/* Profile Details */
-.profile-details {
+/* Driver Booking Profile Details */
+.driver-booking-profile-details {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   width: 100%;
+  gap: 8px;
 }
 
-.profile-details h3 {
-  margin: 0 0 8px 0;
-  font-size: 1.3rem;
+.driver-booking-profile-details h3 {
+  margin: 0;
+  font-size: 1.4rem;
   font-weight: 700;
+  color: #1f2937;
   text-align: center;
+  line-height: 1.3;
 }
 
-.meta {
-  color: #666;
+.driver-booking-meta {
+  color: #64748b;
   font-size: 1rem;
-  margin-bottom: 8px;
+  margin: 0;
   text-align: center;
-}
-
-/* Rating System */
-.rating-row {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-bottom: 8px;
-}
-
-.stars .star,
-.review-rating .star {
-  color: #eab308;
-  font-size: 1.1rem;
-}
-
-.rating-value {
-  font-weight: 600;
-  color: #222;
-  text-align: center;
-}
-
-.review-count {
-  color: #666;
-  font-size: 0.95rem;
-  margin-left: 4px;
-  text-align: center;
-}
-
-/* Description */
-.desc {
-  margin: 12px 0;
-  color: #444;
-  font-size: 1rem;
-  text-align: center;
-}
-
-/* Languages and Specialties */
-.languages,
-.specialties {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 12px 0;
-  text-align: center;
-  width: 100%;
-}
-
-.languages .section-label,
-.specialties .section-label {
-  margin-bottom: 8px;
-  margin-right: 0;
-  text-align: center;
-}
-
-.section-label {
-  font-weight: 600;
-  color: #222;
-  font-size: 1rem;
-  margin-right: 8px;
-  text-align: center;
-}
-
-/* Pills for Languages and Specialties */
-.lang-pill,
-.spec-pill {
-  display: inline-block;
-  background: #f3f4f6;
-  color: #222;
+  padding: 8px 12px;
+  background: #f8fafc;
   border-radius: 8px;
-  padding: 4px 12px;
-  font-size: 0.95rem;
-  margin: 2px 4px 2px 0;
+  border: 1px solid #e2e8f0;
+}
+
+.driver-booking-meta .location-icon {
+  color: #ef4444;
+  font-size: 0.9rem;
+}
+
+/* Driver Booking Rating System */
+.driver-booking-rating-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 12px 0;
+  padding: 12px 16px;
+  background: #fef3c7;
+  border-radius: 12px;
+  border: 1px solid #fbbf24;
+}
+
+.driver-booking-stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.driver-booking-stars .star,
+.driver-booking-review-rating .star {
+  color: #f59e0b;
+  font-size: 1.2rem;
+  text-shadow: 0 1px 2px rgba(245, 158, 11, 0.3);
+}
+
+.driver-booking-rating-value {
+  font-weight: 700;
+  color: #92400e;
+  text-align: center;
+  font-size: 1.1rem;
+  background: #fff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #f59e0b;
+}
+
+.driver-booking-review-count {
+  color: #92400e;
+  font-size: 0.9rem;
   font-weight: 500;
   text-align: center;
 }
 
-.spec-pill {
-  background: #d1fae5;
-  color: #059669;
+/* Driver Booking Description */
+.driver-booking-desc {
+  margin: 16px 0;
+  color: #374151;
+  font-size: 1rem;
+  text-align: center;
+  line-height: 1.6;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  font-style: italic;
 }
 
-
-/* ==================== REVIEWS SECTION ==================== */
-
-.reviews-section {
-  margin-top: 24px;
+/* Driver Booking Languages and Specialties */
+.driver-booking-languages,
+.driver-booking-specialties {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 16px 0;
+  text-align: center;
   width: 100%;
-  max-width: 400px;
+  padding: 16px;
+  background: #f0f9ff;
+  border-radius: 12px;
+  border: 1px solid #bae6fd;
+}
+
+.driver-booking-languages .section-label,
+.driver-booking-specialties .section-label {
+  margin-bottom: 12px;
+  margin-right: 0;
   text-align: center;
 }
 
-.reviews-section h4 {
-  font-size: 1.1rem;
+.driver-booking-section-label {
   font-weight: 700;
+  color: #1e40af;
+  font-size: 1.1rem;
+  margin-right: 8px;
+  text-align: center;
+  background: #dbeafe;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #93c5fd;
+}
+
+/* Pills for Driver Booking Languages and Specialties */
+.driver-booking-lang-pill,
+.driver-booking-spec-pill {
+  display: inline-block;
+  background: #f3f4f6;
+  color: #374151;
+  border-radius: 12px;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  margin: 4px 6px 4px 0;
+  font-weight: 600;
+  text-align: center;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.driver-booking-spec-pill {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+/* ==================== DRIVER BOOKING REVIEWS SECTION ==================== */
+
+.driver-booking-reviews-section {
+  margin-top: 20px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  padding: 20px;
+  background: #fefce8;
+  border-radius: 12px;
+  border: 1px solid #fde047;
+}
+
+.driver-booking-reviews-section h4 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-align: center;
+  color: #854d0e;
+  background: #fef3c7;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #f59e0b;
+}
+
+.driver-booking-review-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 16px;
   margin-bottom: 12px;
   text-align: center;
+  border: 1px solid #e5e7eb;
 }
 
-.review-card {
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-  padding: 12px 16px;
-  margin-bottom: 10px;
-  text-align: center;
-}
-
-.review-author {
+.driver-booking-review-author {
   font-size: 1rem;
-  font-weight: 600;
-  color: #222;
-  margin-bottom: 2px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 6px;
   text-align: center;
 }
 
-.review-author span {
-  color: #888;
-  font-size: 0.95rem;
+.driver-booking-review-author span {
+  color: #6b7280;
+  font-size: 0.9rem;
   margin-left: 8px;
   text-align: center;
+  font-weight: 500;
+  background: #f3f4f6;
+  padding: 2px 8px;
+  border-radius: 6px;
 }
 
-.review-text {
-  color: #444;
+.driver-booking-review-text {
+  color: #4b5563;
   font-size: 1rem;
-  margin-top: 2px;
+  margin-top: 8px;
   text-align: center;
+  line-height: 1.5;
+  font-style: italic;
 }
 
-.no-reviews {
-  color: #888;
+.driver-booking-no-reviews {
+  color: #9ca3af;
   font-size: 1rem;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   text-align: center;
+  font-style: italic;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px dashed #d1d5db;
 }
 
-/* ==================== BOOKING OPTIONS (Legacy) ==================== */
+/* ==================== DRIVER BOOKING OPTIONS ==================== */
 
-.booking-options label {
+.driver-booking-options label {
   font-weight: 700;
   color: #222;
   margin-bottom: 8px;
@@ -289,7 +408,7 @@
   font-size: 1.1rem;
 }
 
-.option-list {
+.driver-booking-option-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -298,7 +417,7 @@
   width: 100%;
 }
 
-.option-card {
+.driver-booking-option-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -361,15 +480,19 @@
 
 .booking-total {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
   font-size: 1.2rem;
   font-weight: 700;
   margin: 24px 0 18px 0;
+  text-align: left;
 }
 
 .total-price {
   color: #4a90e2;
+  text-align: left;
+  margin-top: 5px;
 }
 
 .proceed-btn {
@@ -453,13 +576,44 @@
 
 /* Cost Information Display */
 .cost-info {
-  text-align: center;
+  text-align: left;
   margin-bottom: 20px;
   font-size: 1.1rem;
   font-weight: 600;
   color: #4a90e2;
   width: 100%;
   max-width: 400px;
+}
+
+/* Driver Booking Cost Display */
+.driver-booking-cost-display {
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: #222;
+  font-size: 1.05rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  text-align: left;
+}
+
+.driver-booking-cost-display > div {
+  text-align: left;
+}
+
+.driver-booking-cost-item {
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.driver-booking-total-section {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 2px solid #e5e7eb;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: left;
 }
 
 /* Trip Details Form Groups */
@@ -693,4 +847,157 @@
   .booking-form {
     padding: 0 4px;
   }
+}
+
+/* ==================== PACKAGE DEAL SECTION ==================== */
+
+.driver-booking-package-deal {
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  border: 1px solid rgba(14, 165, 233, 0.15);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  box-shadow: 
+    0 8px 32px rgba(14, 165, 233, 0.08),
+    0 4px 16px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.driver-booking-package-deal:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 16px 48px rgba(14, 165, 233, 0.12),
+    0 8px 24px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border-color: rgba(14, 165, 233, 0.25);
+}
+
+.driver-booking-package-deal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #06b6d4, #0ea5e9, #3b82f6, #8b5cf6);
+  border-radius: 20px 20px 0 0;
+}
+
+.driver-booking-package-deal::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.03) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.driver-booking-package-deal:hover::after {
+  opacity: 1;
+}
+
+.driver-booking-package-badge {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, #06b6d4, #0ea5e9);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 25px;
+  margin-bottom: 16px;
+  box-shadow: 
+    0 4px 12px rgba(6, 182, 212, 0.3),
+    0 2px 6px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.driver-booking-package-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 
+    0 6px 16px rgba(6, 182, 212, 0.4),
+    0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.driver-booking-package-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(14, 165, 233, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.driver-booking-package-description {
+  flex: 1;
+  min-width: 280px;
+}
+
+.driver-booking-package-title {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #0c4a6e;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #0c4a6e, #0ea5e9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.driver-booking-package-subtitle {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #64748b;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.driver-booking-package-price {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #059669;
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  padding: 12px 20px;
+  border-radius: 16px;
+  border: 2px solid rgba(5, 150, 105, 0.2);
+  box-shadow: 
+    0 4px 12px rgba(5, 150, 105, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.driver-booking-package-price::before {
+  content: '💰';
+  position: absolute;
+  top: 50%;
+  left: -30px;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  opacity: 0.3;
+  transition: all 0.3s ease;
+}
+
+.driver-booking-package-price:hover::before {
+  left: -10px;
+  opacity: 0.6;
 }

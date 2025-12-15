@@ -102,8 +102,46 @@ export default function LocalGuidesSection({ onGuideSelect }) {
         console.log("✅ Guide data type:", typeof guideData);
         console.log("✅ Is guide data array?", Array.isArray(guideData));
         
-        // Always set the guides data, even if empty, for debugging
-        setGuides(guideData);
+        // Fetch ratings for each guide before setting the data
+        if (Array.isArray(guideData) && guideData.length > 0) {
+          console.log("🔄 Fetching ratings for guides...");
+          
+          const guidesWithRatings = await Promise.all(
+            guideData.map(async (guide) => {
+              try {
+                const ratingResponse = await apiMethods.authenticatedRequest(
+                  `/reviews.php?type=guide&user_id=${guide.user_id || guide.id}`,
+                  null,
+                  "GET"
+                );
+                
+                if (ratingResponse && ratingResponse.data) {
+                  const avgRating = parseFloat(ratingResponse.data.average_rating || 0);
+                  const totalReviews = parseInt(ratingResponse.data.total_reviews || 0);
+                  return {
+                    ...guide,
+                    rating: avgRating > 0 ? avgRating : null,
+                    totalReviews: totalReviews
+                  };
+                }
+              } catch (error) {
+                console.log(`❌ Failed to fetch rating for guide ${guide.name}:`, error);
+              }
+              
+              return {
+                ...guide,
+                rating: null,
+                totalReviews: 0
+              };
+            })
+          );
+          
+          console.log("✅ Guides with ratings:", guidesWithRatings);
+          setGuides(guidesWithRatings);
+        } else {
+          // Always set the guides data, even if empty, for debugging
+          setGuides(guideData);
+        }
         
         if (guideData.length === 0) {
           console.log("⚠️ No guides found - checking if API returned empty array or no data");
@@ -199,8 +237,11 @@ export default function LocalGuidesSection({ onGuideSelect }) {
                 <li>✅ {guide.languages || 'Languages'}</li>
               </ul>
               <div className="rating">
-                {renderStars(guide.rating || 4)}
-                <span className="rating-text">({guide.rating || 4}/5)</span>
+                {renderStars(guide.rating ? Math.round(guide.rating) : 0)}
+                <span className="rating-text">
+                  ({guide.rating ? guide.rating.toFixed(1) : '0.0'}/5)
+                  {guide.totalReviews > 0 && ` • ${guide.totalReviews} reviews`}
+                </span>
               </div>
               <div className="experience">
                 <span>Experience: {guide.experience || '5+'} years</span>
@@ -219,7 +260,8 @@ export default function LocalGuidesSection({ onGuideSelect }) {
                       specialization: guide.specialization || guide.languages,
                       languages: guide.languages || 'English',
                       location: guide.location,
-                      rating: guide.rating || 4,
+                      rating: guide.rating || 0,
+                      totalReviews: guide.totalReviews || 0,
                       phone: guide.phone,
                       photo_url: guide.photo_url,
                       experience: guide.experience || '5+'

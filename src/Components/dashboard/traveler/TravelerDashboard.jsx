@@ -6,6 +6,7 @@ import useAuthGuard from '../../../hooks/useAuthGuard';
 import ProfileInfo from './ProfileInfo';
 import UpcomingTrips from './UpcomingTrips';
 import RecentActivity from './RecentActivity';
+import NotificationButton from './NotificationButton';
 
 const TravelerDashboard = () => {
   const [userName, setUserName] = useState('');
@@ -86,7 +87,10 @@ const TravelerDashboard = () => {
     <div className={styles.dashboard}>
       <div className={styles.headerRow}>
         <h2>Welcome back, {userName || 'Traveller'}!</h2>
-        <button className="action-button" onClick={handleLogout}>Log Out</button>
+        <div className={styles.headerActions}>
+          <NotificationButton />
+          <button className="action-button" onClick={handleLogout}>Log Out</button>
+        </div>
       </div>
 
       <ProfileInfo onProfileUpdate={handleProfileUpdate} />
